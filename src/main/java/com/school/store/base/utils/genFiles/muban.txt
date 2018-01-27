@@ -1,0 +1,106 @@
+import com.school.store.admin.admin.entity.Admin;
+import com.school.store.admin.xxx.entity.Xxx;
+import com.school.store.admin.xxx.service.XxxService;
+import com.school.store.base.controller.BaseAdminController;
+import com.school.store.enums.ResultEnum;
+import com.school.store.vo.ResultVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/admin/xxx")
+public class XxxController extends BaseAdminController {
+
+    @Autowired
+    private XxxService xxxService;
+
+    @PostMapping("/addXxx")
+    public ResultVo addXxx(@RequestBody Xxx xxx, @SessionAttribute("admin") Admin admin) {
+
+        xxxService.save(entityUtil.updateInfoDefault(xxx, admin.getId(), admin.getId(), true));
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    @PostMapping(value = "/updateXxx")
+    public ResultVo updateXxx(@RequestBody Xxx xxx, @SessionAttribute("admin") Admin admin) {
+        // 更新的话不需要更改 创建者和创建时间
+        xxxService.save(entityUtil.updateInfoDefault(xxx, null, admin.getId(), false));
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    @PostMapping(value = "/deleteXxx")
+    public ResultVo deleteXxx(@RequestBody Xxx xxx, @SessionAttribute("admin") Admin admin) {
+        // 这里的RequestBody 的 user只需要一个id就行了
+        xxxService.delete(xxx);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+    @PostMapping(value = "/deleteXxxs")
+    public ResultVo deleteXxxs(@RequestBody List<Xxx> xxxs, @SessionAttribute("admin") Admin admin) {
+        // 这里的RequestBody 的 xxxs 是一个 xxx 的数组
+        xxxService.delete(xxxs);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    /**
+     * 参数 page ,size 是一定要有的 ，另外两个可以默认
+     *
+     * @param page      第几页
+     * @param size      每页的包含多少纪录
+     * @param direction 按照顺序还是逆序排列 （ASC 或者 DESC）
+     * @param property  按照什么排列
+     * @return
+     */
+    @GetMapping(value = "/findAllXxxs")
+    public ResultVo findAllXxxs(@RequestParam(required = true) Integer page,
+                                @RequestParam(required = false, defaultValue = "20") Integer size,
+                                @RequestParam(required = false, defaultValue = "DESC") String direction,
+                                @RequestParam(required = false, defaultValue = "updateTime") String property) {
+
+        // 配置分页信息
+        PageRequest pager = null;
+        if (direction.equals("ASC")) {
+            pager = new PageRequest(page, size, Sort.Direction.ASC, property);
+        }
+        if (direction.equals("DESC")) {
+            pager = new PageRequest(page, size, Sort.Direction.DESC, property);
+        }
+
+        Page<Xxx> xxxs = xxxService.findAll(pager);
+
+        return simpleResult(ResultEnum.SUCCESS, xxxs);
+    }
+
+
+    /**
+     *  防止代码重复的工具代码
+     * @param xxx
+     */
+    public void setXxxs(Xxx xxx){
+
+    }
+
+}
+
+
+=============
+下面的是service的代码
+=============
+
+
+import com.school.store.admin.xxx.entity.Xxx;
+import com.school.store.base.repository.IBaseRepository;
+
+import java.io.Serializable;
+
+public interface XxxService extends IBaseRepository<Xxx, Serializable>{
+
+}

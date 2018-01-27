@@ -1,0 +1,164 @@
+import com.school.store.admin.admin.entity.Admin;
+import com.school.store.admin.xxx.entity.Xxx;
+import com.school.store.admin.xxx.entity.XxxItem;
+import com.school.store.admin.xxx.service.XxxItemService;
+import com.school.store.admin.xxx.service.XxxService;
+import com.school.store.base.controller.BaseAdminController;
+import com.school.store.enums.ResultEnum;
+import com.school.store.vo.ResultVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+
+@RestController
+@RequestMapping("/admin/xxx")
+public class XxxController extends BaseAdminController {
+
+    @Autowired
+    private XxxService xxxService;
+
+    @Autowired
+    private XxxItemService xxxItemService;
+
+    @Transactional(readOnly = false)
+    @PostMapping("/addXxx")
+    public ResultVo addXxx(@RequestBody Xxx xxx, @SessionAttribute("admin") Admin admin) {
+
+        xxxService.save(entityUtil.updateInfoDefault(xxx, admin.getId(), admin.getId(), true));
+
+        // 保存明细内容，但是要先设置ID
+        List<XxxItem> xxxItems = xxx.getXxxItems();
+        if(xxxItems != null && !xxxItems.isEmpty()){
+            xxxItems.forEach(xxxItem -> {
+                xxxItem.setOrderId(xxx.getId());
+            });
+            xxxItemService.save(xxxItems);
+        }
+
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/updateXxx")
+    public ResultVo updateXxx(@RequestBody Xxx xxx, @SessionAttribute("admin") Admin admin) {
+
+        // 更新明细内容
+        List<XxxItem> xxxItems = xxx.getXxxItems();
+        if(xxxItems != null && !xxxItems.isEmpty()){
+            xxxItemService.save(xxxItems);
+        }
+
+        xxxService.save(entityUtil.updateInfoDefault(xxx, null, admin.getId(), false));
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/deleteXxx")
+    public ResultVo deleteXxx(@RequestBody Xxx xxx, @SessionAttribute("admin") Admin admin) {
+
+        // 先删除明细，在删除总单
+        List<XxxItem> xxxItems = xxx.getXxxItems();
+        if(xxxItems != null && !xxxItems.isEmpty()){
+            xxxItemService.delete(xxxItems);
+        }
+        xxxService.delete(xxx);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/deleteXxxs")
+    public ResultVo deleteXxxs(@RequestBody List<Xxx> xxxs, @SessionAttribute("admin") Admin admin) {
+
+        // 先删除明细，在删除总单
+        xxxs.forEach(xxx -> {
+            List<XxxItem> xxxItems = xxx.getXxxItems();
+            if(xxxItems != null && !xxxItems.isEmpty()){
+                xxxItemService.delete(xxxItems);
+            }
+        });
+
+        xxxService.delete(xxxs);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    /**
+     * 参数 page ,size 是一定要有的 ，另外两个可以默认
+     *
+     * @param page      第几页
+     * @param size      每页的包含多少纪录
+     * @param direction 按照顺序还是逆序排列 （ASC 或者 DESC）
+     * @param property  按照什么排列
+     * @return
+     */
+    @GetMapping(value = "/findAllXxxs")
+    public ResultVo findAllXxxs(@RequestParam(required = true) Integer page,
+                                @RequestParam(required = false, defaultValue = "20") Integer size,
+                                @RequestParam(required = false, defaultValue = "DESC") String direction,
+                                @RequestParam(required = false, defaultValue = "updateTime") String property) {
+
+        // 配置分页信息
+        PageRequest pager = null;
+        if (direction.equals("ASC")) {
+            pager = new PageRequest(page, size, Sort.Direction.ASC, property);
+        }
+        if (direction.equals("DESC")) {
+            pager = new PageRequest(page, size, Sort.Direction.DESC, property);
+        }
+
+        Page<Xxx> xxxs = xxxService.findAll(pager);
+
+        return simpleResult(ResultEnum.SUCCESS, xxxs);
+    }
+
+
+    /**
+     *  防止代码重复的工具代码
+     * @param xxx
+     */
+    public void setXxxs(Xxx xxx){
+        List<XxxItem> xxxItems =xxxItemService.findByOrderId(xxx.getId());
+        if(xxxItems != null && !xxxItems.isEmpty()){
+            xxx.setXxxItems(xxxItems);
+        }
+    }
+
+}
+
+
+=============
+下面的是service的代码
+=============
+
+
+import com.school.store.admin.xxx.entity.Xxx;
+import com.school.store.base.repository.IBaseRepository;
+
+import java.io.Serializable;
+
+public interface XxxService extends IBaseRepository<Xxx, Serializable>{
+
+}
+
+
+============
+第二个service的代码
+============
+
+
+import com.school.store.admin.xxx.entity.XxxItem;
+import com.school.store.base.repository.IBaseRepository;
+
+import java.io.Serializable;
+import java.util.List;
+
+public interface XxxItemService extends IBaseRepository<XxxItem, Serializable>{
+
+    public List<XxxItem> findByOrderId(String orderId);
+}
