@@ -7,5 +7,5 @@ import com.school.store.base.repository.IBaseRepository;
 import java.io.Serializable;
 
 public interface BuyOrderService extends IBaseRepository<BuyOrder, Serializable>{
-
+    public BuyOrder findById(String id);
 }

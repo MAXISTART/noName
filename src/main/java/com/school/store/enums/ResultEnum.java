@@ -11,8 +11,11 @@ public enum ResultEnum {
 
     SUCCESS(0, "成功"),
 
-    PARAM_ERROR(1, "参数不正确")
+    UNKNOWN_ERROR(-1, "未知错误"),
 
+    PARAM_ERROR(1, "参数不正确"),
+
+    NAME_SPEC_REPEAT(2, "同样名字和规格的已经重复")
 
     ;
 

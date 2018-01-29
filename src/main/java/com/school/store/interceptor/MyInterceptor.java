@@ -32,9 +32,9 @@ public class MyInterceptor implements HandlerInterceptor {
         // 这里仅仅是用来测试的session用的
         if(session.getAttribute("admin") == null){
             Admin admin = new Admin();
-            admin.setId("1");
-            admin.setName("maxistar");
-            admin.setPhoneNumber("15603004668");
+            admin.setId("4028fbdf6137215b01613723faa80000");
+            admin.setName("智老板");
+            admin.setPhoneNumber("15603004842");
             session.setAttribute("admin", admin);
         }
 

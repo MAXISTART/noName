@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,18 @@ public class StoreItemController extends BaseAdminController {
 
     @Autowired
     private StoreItemService storeItemService;
+
+    // 测试添加和删除
+    @GetMapping("/testAdd")
+    public String testAdd(@RequestParam String goodId, @RequestParam Integer number){
+        return addNumber(goodId, number) + "";
+    }
+
+    @GetMapping("/testReduce")
+    public String testReduce(@RequestParam String goodId, @RequestParam Integer number){
+        return reduceNumber(goodId, number) + "";
+    }
+
 
     @PostMapping("/addStoreItem")
     public ResultVo addStoreItem(@RequestBody StoreItem storeItem, @SessionAttribute("admin") Admin admin) {
@@ -81,12 +94,33 @@ public class StoreItemController extends BaseAdminController {
     }
 
 
-    /**
-     *  防止代码重复的工具代码
-     * @param storeItem
-     */
-    public void setStoreItems(StoreItem storeItem){
 
+    @Transactional(readOnly = false)
+    public boolean addNumber(String goodId, Integer number){
+        StoreItem storeItem = storeItemService.findByGoodId(goodId);
+        storeItem.setNumber(storeItem.getNumber() + number);
+        storeItemService.save(storeItem);
+        return true;
+    }
+
+    @Transactional(readOnly = false)
+    public boolean reduceNumber(String goodId, Integer number){
+        StoreItem storeItem = storeItemService.findByGoodId(goodId);
+        if(storeItem.getNumber() < number){
+            // 如果库存所含数量小于要减少的数量
+            return false;
+        }
+        storeItem.setNumber(storeItem.getNumber() - number);
+        storeItemService.save(storeItem);
+        return true;
+    }
+
+    @Transactional(readOnly = false)
+    public boolean setLockNumber(String goodId, Integer lockNumber){
+        StoreItem storeItem = storeItemService.findByGoodId(goodId);
+        storeItem.setLockNumber(lockNumber);
+        storeItemService.save(storeItem);
+        return true;
     }
 
 }

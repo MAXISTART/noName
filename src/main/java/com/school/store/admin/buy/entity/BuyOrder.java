@@ -48,7 +48,7 @@ public class BuyOrder extends BaseEntity {
 	@Column(name = "approvalTaskId", length = 36)
 	private String approvalTaskId;
 
-	// 审批结果，1表示通过，0表示不通过
+	// 审批结果，1表示通过，0表示不通过，2表示还未审核
 	@Column(name = "approvalResult", length = 4)
 	private Integer approvalResult;
 

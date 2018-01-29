@@ -45,15 +45,19 @@ public class MyBeanUtil {
      * @param sourceList
      * @param targetList
      */
-    public static void copyPropertiesList(List sourceList, List targetList) {
-        if (CollectionUtils.isEmpty(sourceList) || CollectionUtils.isEmpty(targetList)) {
-            System.out.println("MyBeanUtil 中的copyPropertiesList报错");
+    public static <T> void copyPropertiesList(List sourceList, List<T> targetList, Class clazz) {
+        try{
+            if (CollectionUtils.isEmpty(sourceList) || targetList == null ) {
+                System.out.println("MyBeanUtil 中的copyPropertiesList报错");
+            }
+            for(Object items : sourceList){
+                T target = (T)clazz.newInstance();
+                BeanUtils.copyProperties(items, target);
+                targetList.add(target);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
-        sourceList.forEach(items -> {
-            Object target = new Object();
-            BeanUtils.copyProperties(items, target);
-            targetList.add(target);
-        });
     }
 
 
@@ -114,26 +118,30 @@ public class MyBeanUtil {
      *
      * @param obj
      */
-    public static Map<String, Object> transBean2Map(Object obj) throws IntrospectionException, InvocationTargetException, IllegalAccessException {
+    public static Map<String, Object> transBean2Map(Object obj){
 
         if (obj == null) {
             return null;
         }
         Map<String, Object> map = new HashMap<String, Object>();
-        BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
-        PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
-        for (PropertyDescriptor property : propertyDescriptors) {
-            String key = property.getName();
+        try {
+            BeanInfo beanInfo = Introspector.getBeanInfo(obj.getClass());
+            PropertyDescriptor[] propertyDescriptors = beanInfo.getPropertyDescriptors();
+            for (PropertyDescriptor property : propertyDescriptors) {
+                String key = property.getName();
 
-            // 过滤class属性
-            if (!key.equals("class")) {
-                // 得到property对应的getter方法
-                Method getter = property.getReadMethod();
-                Object value = getter.invoke(obj);
+                // 过滤class属性
+                if (!key.equals("class")) {
+                    // 得到property对应的getter方法
+                    Method getter = property.getReadMethod();
+                    Object value = getter.invoke(obj);
 
-                map.put(key, value);
+                    map.put(key, value);
+                }
+
             }
-
+        }catch (Exception e){
+            e.printStackTrace();
         }
         return map;
     }

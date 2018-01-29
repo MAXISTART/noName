@@ -31,7 +31,7 @@ public class BaseEntity implements Serializable {
 	protected boolean delFlag;
 
 	// 创建时间，最后修改时间，创建者 和 最后修改者
-	@Column(name = "createTime")
+	@Column(name = "createTime", updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)   //获取数据库时间格式
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")   //Hibernate中@ResponseBody返回的时间格式
 	private Date createTime;
@@ -41,7 +41,7 @@ public class BaseEntity implements Serializable {
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")   //Hibernate中@ResponseBody返回的时间格式
 	private Date updateTime;
 
-	@Column(name = "createAdmin", length = 255)
+	@Column(name = "createAdmin", length = 255, updatable = false)
 	private String createAdmin;
 	@Column(name = "updateAdmin", length = 255)
 	private String updateAdmin;

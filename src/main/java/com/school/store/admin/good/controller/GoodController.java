@@ -3,15 +3,24 @@ package com.school.store.admin.good.controller;
 import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.good.entity.GoodItem;
 import com.school.store.admin.good.service.GoodItemService;
+import com.school.store.admin.store.controller.StoreItemController;
+import com.school.store.admin.store.entity.StoreItem;
+import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.base.model.SqlParams;
 import com.school.store.enums.ResultEnum;
+import com.school.store.utils.EntityUtil;
+import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -22,18 +31,46 @@ public class GoodController extends BaseAdminController {
     @Autowired
     GoodItemService goodItemService;
 
-    @PostMapping("/addGoodItem")
-    public ResultVo addUser(@RequestBody GoodItem goodItem, @SessionAttribute("admin") Admin admin) {
+    @Autowired
+    StoreItemController storeItemController;
 
-        goodItemService.save(entityUtil.updateInfoDefault(goodItem, admin.getId(), admin.getId(), true));
-        return simpleResult(ResultEnum.SUCCESS, null);
+    @Transactional(readOnly = false)
+    @PostMapping("/addGoodItem")
+    public ResultVo addGoodItem(@RequestBody GoodItem goodItem, @SessionAttribute("admin") Admin admin) {
+
+        // 先检查录入的名字是否有问题
+        int rs_code = checkGoodItemNameAndSpec(goodItem);
+        switch (rs_code){
+            case 0:
+                goodItemService.save(entityUtil.updateInfoDefault(goodItem, admin.getId(), admin.getId(), true));
+                // 同时还存进仓库表中
+                storeItemController.addStoreItem(changeGoodItem2StoreItem(goodItem), admin);
+                return simpleResult(ResultEnum.SUCCESS, null);
+            case 1:
+                return simpleResult(ResultEnum.NAME_SPEC_REPEAT, null);
+            case 2:
+                return simpleResult(ResultEnum.PARAM_ERROR,null);
+        }
+        return simpleResult(ResultEnum.UNKNOWN_ERROR, null);
+
+
     }
 
 
     @PostMapping(value = "/updateGoodItem")
     public ResultVo updateGoodItem(@RequestBody GoodItem goodItem, @SessionAttribute("admin") Admin admin) {
-        // 更新的话不需要更改 创建者和创建时间
-        goodItemService.save(entityUtil.updateInfoDefault(goodItem, null, admin.getId(), false));
+
+        // 先检查录入的名字是否有问题
+        int rs_code = checkGoodItemNameAndSpec(goodItem);
+        switch (rs_code){
+            case 0:
+                goodItemService.save(entityUtil.updateInfoDefault(goodItem, admin.getId(), admin.getId(), false));
+                return simpleResult(ResultEnum.SUCCESS, null);
+            case 1:
+                return simpleResult(ResultEnum.NAME_SPEC_REPEAT, null);
+            case 2:
+                return simpleResult(ResultEnum.PARAM_ERROR,null);
+        }
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -82,6 +119,39 @@ public class GoodController extends BaseAdminController {
         return simpleResult(ResultEnum.SUCCESS, goodItems);
     }
 
+
+    /**
+     *  录入物品的时候检查物品名称是否重复 ，0 表示 无重复 ， 1 表示重复 ， 2表示参数错误
+     * @return
+     */
+    public int checkGoodItemNameAndSpec(GoodItem item){
+        SqlParams sqlParams = new SqlParams();
+        if(item.getName() != null && !item.getName().trim().equals("")){
+            if(goodItemService.findByNameAndSpec(item.getName(), item.getSpec()).size() > 0){
+                return 1;
+            }else{
+                return 0;
+            }
+        }else{
+            return 2;
+        }
+
+    }
+
+
+    /**
+     *  转换GoodItem 和 StoreItem
+     */
+    public StoreItem changeGoodItem2StoreItem(GoodItem goodItem){
+
+        StoreItem storeItem = new StoreItem();
+        storeItem.setNumber(goodItem.getNumber());
+        storeItem.setGoodId(goodItem.getId());
+        storeItem.setLockNumber(0);
+        storeItem.setInputTime(EntityUtil.getNowDate());
+        storeItem.setTotalPrice(goodItem.getPrice().multiply(new BigDecimal(goodItem.getNumber())));
+        return storeItem;
+    }
 
 
 }

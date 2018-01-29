@@ -9,4 +9,6 @@ import java.util.List;
 public interface StoreOperationItemService extends IBaseRepository<StoreOperationItem, Serializable>{
 
     public List<StoreOperationItem> findByOrderId(String orderId);
+
+    public StoreOperationItem findByGoodId(String goodId);
 }

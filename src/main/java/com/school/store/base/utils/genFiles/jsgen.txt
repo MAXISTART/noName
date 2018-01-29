@@ -1,0 +1,276 @@
+//Admin
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"description":null,
+	"id":null,
+	"name":null,
+	"phoneNumber":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//ApprovalTask
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"description":null,
+	"id":null,
+	"requestorId":null,
+	"requestorTime":null,
+	"taskCompleteTime":null,
+	"taskCreateTime":null,
+	"taskLife":null,
+	"taskNodeIds":null,
+	"taskResult":null,
+	"taskStageIndex":null,
+	"taskState":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//ApprovalTaskNode
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"id":null,
+	"nextNodeId":null,
+	"opinion":null,
+	"previousNodeId":null,
+	"requestContent":null,
+	"requestorId":null,
+	"requestorTime":null,
+	"response":null,
+	"responsor":null,
+	"taskId":null,
+	"taskNodeState":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//Boy
+{
+	"age":null,
+	"aid":null,
+	"createAdmin":null,
+	"createTime":null,
+	"cupSize":null,
+	"delFlag":false,
+	"girls":null,
+	"id":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//BuyOrder
+{
+	"approvalResult":null,
+	"approvalTaskId":null,
+	"approvalTime":null,
+	"bills":null,
+	"buyOrderItems":null,
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"departmentId":null,
+	"description":null,
+	"id":null,
+	"requestTime":null,
+	"requestTotalPrice":null,
+	"requestorId":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//BuyOrderItem
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"goodId":null,
+	"id":null,
+	"name":null,
+	"number":null,
+	"orderId":null,
+	"price":null,
+	"sort":null,
+	"spec":null,
+	"unit":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//Department
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"description":null,
+	"id":null,
+	"name":null,
+	"responsorId":null,
+	"responsorName":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//Girl
+{
+	"age":null,
+	"aid":null,
+	"boy":null,
+	"createAdmin":null,
+	"createTime":null,
+	"cupSize":null,
+	"delFlag":false,
+	"id":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//GoodItem
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"id":null,
+	"name":null,
+	"price":null,
+	"sort":null,
+	"spec":null,
+	"unit":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//StoreItem
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"id":null,
+	"inputTime":null,
+	"name":null,
+	"price":null,
+	"sort":null,
+	"spec":null,
+	"totalPrice":null,
+	"unit":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//StoreOperation
+{
+	"approvalResult":null,
+	"approvalTaskId":null,
+	"approvalTime":null,
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"departmentId":null,
+	"id":null,
+	"opinion":null,
+	"requestTime":null,
+	"requestTotalPrice":null,
+	"responsorId":null,
+	"storeOperationItems":null,
+	"type":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//StoreOperationItem
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"goodId":null,
+	"id":null,
+	"name":null,
+	"number":null,
+	"orderId":null,
+	"price":null,
+	"sort":null,
+	"spec":null,
+	"unit":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//TakeOrder
+{
+	"approvalResult":null,
+	"approvalTaskId":null,
+	"approvalTime":null,
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"departmentId":null,
+	"description":null,
+	"id":null,
+	"outputTime":null,
+	"outputTotalPrice":null,
+	"requestorId":null,
+	"takeOrderItems":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//TakeOrderItem
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"goodId":null,
+	"id":null,
+	"name":null,
+	"orderId":null,
+	"price":null,
+	"returnNumber":null,
+	"sort":null,
+	"spec":null,
+	"takeNumber":null,
+	"unit":null,
+	"updateAdmin":null,
+	"updateTime":null
+}
+
+
+//User
+{
+	"createAdmin":null,
+	"createTime":null,
+	"delFlag":false,
+	"departmentId":null,
+	"departmentName":null,
+	"description":null,
+	"gradeId":null,
+	"id":null,
+	"mailbox":null,
+	"name":null,
+	"openId":null,
+	"phoneNumber":null,
+	"qqNumber":null,
+	"updateAdmin":null,
+	"updateTime":null,
+	"weixin":null
+}
+
+

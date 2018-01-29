@@ -73,7 +73,7 @@ public class EntityUtil {
      *
      * @return
      */
-    public Date getNowDate() {
+    public static Date getNowDate() {
         return new Date();
     }
 

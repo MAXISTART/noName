@@ -37,5 +37,10 @@ public class GoodItem extends BaseEntity {
     // 采购的物品的规格
     @Column(name = "spec", length = 255)
     private String spec;
+
+	// 刚开始的入库数量 ， 管理员不修改数量的话默认为 0
+	@Column(name = "number", columnDefinition = "int(255) default 0 ")
+	private Integer number;
+
 }
 

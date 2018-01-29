@@ -20,7 +20,7 @@ import java.util.List;
 @Data
 public class StoreOperation extends BaseEntity {
 
-    // 操作类型(比如1表示入库,不同类型对应不同的业务逻辑)，详见业务设定表
+    // 操作类型(比如1表示入库,2表示出库, 不同类型对应不同的业务逻辑)，详见业务设定表
     @Column(name = "type", length = 4)
     private Integer type;
 
@@ -38,6 +38,14 @@ public class StoreOperation extends BaseEntity {
     @Column(name = "requestTotalPrice", precision = 10, scale = 2)
     private BigDecimal requestTotalPrice;
 
+    // 操作申请人Id
+    @Column(name = "requestorId", length = 36)
+    private String requestorId;
+
+    // 操作申请原因
+    @Column(name = "description",columnDefinition = "TEXT")
+    private String description;
+
     // 操作审批人Id
     @Column(name = "responsorId", length = 36)
     private String responsorId;
@@ -46,7 +54,7 @@ public class StoreOperation extends BaseEntity {
     @Column(name = "approvalTaskId", length = 36)
     private Integer approvalTaskId;
 
-    // 审批结果，1表示通过，0表示不通过
+    // 审批结果，1表示通过，0表示不通过，2表示还未审核
     @Column(name = "approvalResult", length = 4)
     private Integer approvalResult;
 

@@ -11,6 +11,8 @@ import java.math.BigDecimal;
 
 /**
  * store_operation_items 仓库操作纪录明细表
+ *                       这些记录都具有时效性，尽管物品升价了，原来的记录也不会改变他的纪录，并不是统计用的，而是展示历史数据用的，
+ *                       所以所有数据都需要持久化到数据库
  * Thu Jan 25 15:17:21 CST 2018 MaXiStar
  */
 

@@ -4,8 +4,13 @@ import com.school.store.admin.buy.entity.BuyOrder;
 import com.school.store.admin.buy.entity.BuyOrderItem;
 import com.school.store.admin.buy.service.BuyOrderItemService;
 import com.school.store.admin.buy.service.BuyOrderService;
+import com.school.store.admin.store.controller.StoreOperationController;
+import com.school.store.admin.store.entity.StoreOperation;
+import com.school.store.admin.store.entity.StoreOperationItem;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.enums.ResultEnum;
+import com.school.store.utils.EntityUtil;
+import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -14,7 +19,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/buyOrder")
@@ -26,28 +37,103 @@ public class BuyOrderController extends BaseAdminController {
     @Autowired
     private BuyOrderItemService buyOrderItemService;
 
+    @Autowired
+    private StoreOperationController storeOperationController;
+
+    @GetMapping("/testChangeBuyOrder2StoreOperation")
+    public StoreOperation testChangeBuyOrder2StoreOperation(){
+        return changeBuyOrder2StoreOperation(findBuyOrderById("4028fbdf6140fc96016140fcc9f30000"));
+    }
+
+
+    /**
+     *  这是提供给用户的接口，并不是给管理员用的
+     * @param buyOrder
+     * @param admin
+     * @return
+     */
     @Transactional(readOnly = false)
     @PostMapping("/addBuyOrder")
     public ResultVo addBuyOrder(@RequestBody BuyOrder buyOrder, @SessionAttribute("admin") Admin admin) {
 
+        // 默认用户提交的是未审核的采购表
+        buyOrder.setApprovalResult(2);
+        buyOrder.setRequestTime(entityUtil.getNowDate());
+        // 计算总价
+        List<BuyOrderItem> buyOrderItems = buyOrder.getBuyOrderItems();
+        BigDecimal totalPrice = new BigDecimal("0");
+
+        for(BuyOrderItem buyOrderItem : buyOrderItems){
+            BigDecimal temp = buyOrderItem.getPrice().multiply(new BigDecimal(buyOrderItem.getNumber()));
+            totalPrice = totalPrice.add(temp);
+        }
+        buyOrder.setRequestTotalPrice(totalPrice);
+
         buyOrderService.save(entityUtil.updateInfoDefault(buyOrder, admin.getId(), admin.getId(), true));
 
         // 保存明细内容，但是要先设置ID
-        List<BuyOrderItem> buyOrderItems = buyOrder.getBuyOrderItems();
         if(buyOrderItems != null && !buyOrderItems.isEmpty()){
             buyOrder.getBuyOrderItems().forEach(buyOrderItem -> {
                 buyOrderItem.setOrderId(buyOrder.getId());
+                buyOrderItem = entityUtil.updateInfoDefault(buyOrderItem, admin.getId(), admin.getId(), true);
             });
             buyOrderItemService.save(buyOrderItems);
         }
-
-        Integer approvalResult =buyOrder.getApprovalResult();
-        if(approvalResult!=null && approvalResult == 1){
-            // 如果审批结果是通过的，就执行微信通知
-
-        }
         return simpleResult(ResultEnum.SUCCESS, null);
     }
+
+
+    /**
+     *  管理员点击审核通过会执行下面的方法，
+     *  传递的参数格式如下，千万别多别少
+     *  [
+     *      {
+     *          "id":"",
+     *          "approvvalResult":""
+     *      },
+     *      {...},
+     *  ]
+     * @param buyOrders
+     * @param admin
+     * @return
+     */
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/approve")
+    public ResultVo approve(@RequestBody List<BuyOrder> buyOrders, @SessionAttribute("admin") Admin admin) {
+        List<BuyOrder> buyOrdersForSql = new ArrayList<>();
+        buyOrders.forEach(buyOrder -> {
+            BuyOrder buyOrderForSql = buyOrderService.findById(buyOrder.getId());
+            buyOrderForSql.setApprovalResult(buyOrder.getApprovalResult());
+            buyOrderForSql.setApprovalTime(entityUtil.getNowDate());
+            buyOrderForSql = entityUtil.updateInfoDefault(buyOrderForSql, admin.getId(), admin.getId(), true);
+            buyOrdersForSql.add(buyOrderForSql);
+        });
+        buyOrderService.save(buyOrdersForSql);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    /**
+     *  快速入库，要先检查是否已经审批了，如果已经审批了才能创建入库单
+     *  同样是支持批量快速入库
+     *  主要做法是先把buyOrder转化为StoreOperation，同时设置disciption等信息
+     *  然后再调用StoreItemController的 addStoreOperation 的接口
+     * @return
+     */
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/quickInput")
+    public ResultVo quickInput( @RequestBody List<String> buyOrderIds, @SessionAttribute("admin") Admin admin) {
+
+        List<StoreOperation> storeOperations = new ArrayList<>();
+        for(String buyOrderId : buyOrderIds){
+            storeOperations.add(changeBuyOrder2StoreOperation(findBuyOrderById(buyOrderId)));
+        }
+        // 测试用的
+        //return storeOperationController.testAddStoreOperations(storeOperations);
+        return storeOperationController.addStoreOperations(storeOperations, admin);
+    }
+
+
 
 
     @Transactional(readOnly = false)
@@ -147,5 +233,39 @@ public class BuyOrderController extends BaseAdminController {
             buyOrder.setBuyOrderItems(buyOrderItems);
         }
     }
+
+
+    /**
+     *  findById
+     */
+    @PostMapping("/findBuyOrderById")
+    public BuyOrder findBuyOrderById(@RequestParam  String buyOrderId){
+        BuyOrder buyOrder = buyOrderService.findById(buyOrderId);
+        setBuyOrderItems(buyOrder);
+        return buyOrder;
+    }
+
+
+    /**
+     *  转换buyOrder 和 StoreOperation
+     */
+    public StoreOperation changeBuyOrder2StoreOperation(BuyOrder buyOrder){
+
+        //Map<String, Object> buyOrderMap = MyBeanUtil.transBean2Map(buyOrder);
+        StoreOperation storeOperation = new StoreOperation();
+        MyBeanUtil.copyProperties(buyOrder, storeOperation);
+        // 明细也一起复制过去
+        List<StoreOperationItem> storeOperationItems = new ArrayList<>();
+        MyBeanUtil.copyPropertiesList(buyOrder.getBuyOrderItems(),storeOperationItems, StoreOperationItem.class);
+        storeOperation.setStoreOperationItems(storeOperationItems);
+        // 设置类型为 带审批的入库操作
+        storeOperation.setType(1);
+        storeOperation.setOpinion("管理员从采购那里进行快速入库");
+        // 一定要让id置null，这样才会增加纪录
+        storeOperation.setId(null);
+
+        return storeOperation;
+    }
+
 
 }
