@@ -25,14 +25,14 @@ public class TakeOrder extends BaseEntity{
     private String departmentId;
 
     // 申领时间
-    @Column(name = "outputTime")
+    @Column(name = "requestTime")
     @Temporal(TemporalType.TIMESTAMP)   //获取数据库时间格式
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")   //Hibernate中@ResponseBody返回的时间格式
-    private Date outputTime;
+    private Date requestTime;
 
     // 申领总额
-    @Column(name = "outputTotalPrice", precision = 10, scale = 2)
-    private BigDecimal outputTotalPrice;
+    @Column(name = "requestTotalPrice", precision = 10, scale = 2)
+    private BigDecimal requestTotalPrice;
 
     // 申领人员的ID
     @Column(name = "requestorId", length = 36)

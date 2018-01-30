@@ -47,7 +47,7 @@ public class BuyOrderController extends BaseAdminController {
 
 
     /**
-     *  这是提供给用户的接口，并不是给管理员用的
+     *  这是提供给用户的接口，并不是给管理员用的，requestorId要前台传过来的
      * @param buyOrder
      * @param admin
      * @return

@@ -70,7 +70,7 @@ public class StoreOperationController extends BaseAdminController {
                             }else{
                                 String data = "规格为: " + storeOperationItem.getSpec() + "的"
                                         + storeOperationItem.getName() + " 当前数量不足";
-                                return simpleResult(ResultEnum.SUCCESS, data);
+                                return simpleResult(ResultEnum.STORE_UNSATISFY, data);
                             }
                     }
 
@@ -185,73 +185,6 @@ public class StoreOperationController extends BaseAdminController {
         }
     }
 
-
-    /**
-     * 修改库存
-     */
-    @Transactional(readOnly = false)
-    public int changeStore(StoreOperation storeOperation, Admin admin) throws Exception{
-
-        if(storeOperation == null || storeOperation.getStoreOperationItems().isEmpty()){
-            // 传入的参数不符
-            return -1;
-        }
-
-        Integer type = storeOperation.getType();
-
-        switch (type){
-
-            case 1:
-                // 如果是普通入库（不带审批）操作，就向库存添加数量
-                storeOperation.getStoreOperationItems().forEach(storeOperationItem -> {
-                    StoreItem storeItem = storeItemService.findByGoodId(storeOperationItem.getGoodId());
-                    storeItem.setNumber(storeItem.getNumber() + storeOperationItem.getNumber());
-                    storeItemService.save(entityUtil.updateInfoDefault(storeItem, admin.getId(), admin.getId(), false));
-                });
-                // 普通入库成功
-                return 1;
-            case 2:
-                // 如果是普通出库（不带审批）操作，就向库存减
-                for(StoreOperationItem storeOperationItem: storeOperation.getStoreOperationItems()){
-                    StoreItem storeItem = storeItemService.findByGoodId(storeOperationItem.getGoodId());
-                    if(storeItem.getNumber() < storeOperationItem.getNumber()){
-                        // 如果库存已经不够了，那么就回滚事务并且报错
-                        TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-                        // 库存不足，普通出库失败
-                        return 2;
-                    }else{
-                        storeItem.setNumber(storeItem.getNumber() - storeOperationItem.getNumber());
-                        storeItemService.save(entityUtil.updateInfoDefault(storeItem, admin.getId(), admin.getId(), false));
-                    }
-                }
-                // 普通出库成功
-                return 3;
-
-            case 3:
-                // 如果是审批入库操作，就需要对审批结果进行判断先
-                if(storeOperation.getApprovalResult() == 1){
-                    for(StoreOperationItem storeOperationItem: storeOperation.getStoreOperationItems()){
-                        StoreItem storeItem = storeItemService.findByGoodId(storeOperationItem.getGoodId());
-                        storeItem.setNumber(storeItem.getNumber() - storeOperationItem.getNumber());
-                        storeItemService.save(entityUtil.updateInfoDefault(storeItem, admin.getId(), admin.getId(), false));
-                    }
-                    // 审批入库成功
-                    return 4;
-                }else {
-                    // 该操作尚未审批通过
-                    return 5;
-                }
-            case 4:
-                // 如果是审批出库操作，如果还没审批通过就会对库存物品设置
-                if(storeOperation.getApprovalResult() == 0){
-                    // 如果审批还未通过而且
-
-                }
-
-        }
-
-        return 0;
-    }
 
 
 

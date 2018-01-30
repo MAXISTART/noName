@@ -1,12 +1,20 @@
 package com.school.store.admin.take.controller;
 
 import com.school.store.admin.admin.entity.Admin;
+import com.school.store.admin.buy.entity.BuyOrderItem;
+import com.school.store.admin.store.controller.StoreItemController;
+import com.school.store.admin.store.controller.StoreOperationController;
+import com.school.store.admin.store.entity.StoreItem;
+import com.school.store.admin.store.entity.StoreOperation;
+import com.school.store.admin.store.entity.StoreOperationItem;
+import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.admin.take.entity.TakeOrder;
 import com.school.store.admin.take.entity.TakeOrderItem;
 import com.school.store.admin.take.service.TakeOrderItemService;
 import com.school.store.admin.take.service.TakeOrderService;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.enums.ResultEnum;
+import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +23,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -27,29 +37,118 @@ public class TakeOrderController extends BaseAdminController {
     @Autowired
     private TakeOrderItemService takeOrderItemService;
 
+    @Autowired
+    private StoreItemController storeItemController;
+
+    @Autowired
+    private StoreOperationController storeOperationController;
+
+    /**
+     *  这是提供给用户的接口，并不是给管理员用的，用户通过这个进行申领表的创建,requestorId要前台传过来
+     * @param takeOrder
+     * @param admin
+     * @return
+     */
     @Transactional(readOnly = false)
     @PostMapping("/addTakeOrder")
     public ResultVo addTakeOrder(@RequestBody TakeOrder takeOrder, @SessionAttribute("admin") Admin admin) {
 
+        // 默认用户提交的是未审核的申领表
+        takeOrder.setApprovalResult(2);
+        takeOrder.setRequestTime(entityUtil.getNowDate());
+        // 计算总价
+        List<TakeOrderItem> takeOrderItems = takeOrder.getTakeOrderItems();
+        BigDecimal totalPrice = new BigDecimal("0");
+
+        for(TakeOrderItem takeOrderItem : takeOrderItems){
+            BigDecimal temp = takeOrderItem.getPrice().multiply(new BigDecimal(takeOrderItem.getNumber()));
+            totalPrice = totalPrice.add(temp);
+        }
+        takeOrder.setRequestTotalPrice(totalPrice);
+
         takeOrderService.save(entityUtil.updateInfoDefault(takeOrder, admin.getId(), admin.getId(), true));
 
-        // 保存明细内容，但是要先设置ID
-        List<TakeOrderItem> takeOrderItems = takeOrder.getTakeOrderItems();
+
         if(takeOrderItems != null && !takeOrderItems.isEmpty()){
-            takeOrderItems.forEach(takeOrderItem -> {
-                takeOrderItem.setOrderId(takeOrder.getId());
-            });
+            for (TakeOrderItem takeOrderItem : takeOrderItems){
+                if(storeItemController.checkNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber())){
+                    takeOrderItem.setOrderId(takeOrder.getId());
+                    // 锁住部分库存先
+                    storeItemController.setLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
+                    // 设置returnNumber
+                    takeOrderItem.setReturnNumber(0);
+                    // 更新创建时间
+                    entityUtil.updateInfoDefault(takeOrderItem, admin.getId(), admin.getId(), true);
+                }else{
+                    String data = "规格为: " + takeOrderItem.getSpec() + "的"
+                            + takeOrderItem.getName() + " 当前数量不足";
+                    return simpleResult(ResultEnum.STORE_UNSATISFY, data);
+                }
+            }
             takeOrderItemService.save(takeOrderItems);
-        }
-
-        Integer approvalResult =takeOrder.getApprovalResult();
-        if(approvalResult!=null && approvalResult == 1){
-            // 如果审批结果是通过的，就执行微信通知
-
         }
 
         return simpleResult(ResultEnum.SUCCESS, null);
     }
+
+
+
+
+
+    /**
+     *  管理员点击审核通过会执行下面的方法，
+     *  传递的参数格式如下，千万别多别少
+     *  [
+     *      {
+     *          "id":"",
+     *          "approvvalResult":""
+     *      },
+     *      {...},
+     *  ]
+     * @param takeOrders
+     * @param admin
+     * @return
+     */
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/approve")
+    public ResultVo approve(@RequestBody List<TakeOrder> takeOrders, @SessionAttribute("admin") Admin admin) {
+        List<TakeOrder> takeOrdersForSql = new ArrayList<>();
+        takeOrders.forEach(takeOrder -> {
+            TakeOrder takeOrderForSql = takeOrderService.findById(takeOrder.getId());
+            takeOrderForSql.setApprovalResult(takeOrder.getApprovalResult());
+            takeOrderForSql.setApprovalTime(entityUtil.getNowDate());
+            takeOrderForSql = entityUtil.updateInfoDefault(takeOrderForSql, admin.getId(), admin.getId(), true);
+            takeOrdersForSql.add(takeOrderForSql);
+        });
+        takeOrderService.save(takeOrdersForSql);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+
+
+
+    /**
+     *  快速出库，要先检查是否已经审批了，如果已经审批了才能创建入库单
+     *  同样是支持批量快速入库
+     *  主要做法是先把takeOrder转化为StoreOperation，同时设置disciption等信息
+     *  然后再调用StoreItemController的 addStoreOperation 的接口
+     * @return
+     */
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/quickOutput")
+    public ResultVo quickOutput( @RequestBody List<String> takeOrderIds, @SessionAttribute("admin") Admin admin) {
+
+        List<StoreOperation> storeOperations = new ArrayList<>();
+        for(String takeOrderId : takeOrderIds){
+            storeOperations.add(changeTakeOrder2StoreOperation(findTakeOrderById(takeOrderId)));
+        }
+        // 测试用的
+        //return storeOperationController.testAddStoreOperations(storeOperations);
+        return storeOperationController.addStoreOperations(storeOperations, admin);
+    }
+
+
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/updateTakeOrder")
@@ -142,4 +241,37 @@ public class TakeOrderController extends BaseAdminController {
         }
     }
 
+
+
+
+    /**
+     *  findById
+     */
+    @PostMapping("/findTakeOrderById")
+    public TakeOrder findTakeOrderById(@RequestParam  String takeOrderId){
+        TakeOrder takeOrder = takeOrderService.findById(takeOrderId);
+        setTakeOrders(takeOrder);
+        return takeOrder;
+    }
+
+
+    /**
+     *  转换buyOrder 和 StoreOperation
+     */
+    public StoreOperation changeTakeOrder2StoreOperation(TakeOrder takeOrder){
+
+        StoreOperation storeOperation = new StoreOperation();
+        MyBeanUtil.copyProperties(takeOrder, storeOperation);
+        // 明细也一起复制过去
+        List<StoreOperationItem> storeOperationItems = new ArrayList<>();
+        MyBeanUtil.copyPropertiesList(takeOrder.getTakeOrderItems(),storeOperationItems, StoreOperationItem.class);
+        storeOperation.setStoreOperationItems(storeOperationItems);
+        // 设置类型为 带审批的出库操作
+        storeOperation.setType(2);
+        storeOperation.setOpinion("管理员从申领那里进行快速出库");
+        // 一定要让id置null，这样才会增加纪录
+        storeOperation.setId(null);
+
+        return storeOperation;
+    }
 }

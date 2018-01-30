@@ -15,7 +15,9 @@ public enum ResultEnum {
 
     PARAM_ERROR(1, "参数不正确"),
 
-    NAME_SPEC_REPEAT(2, "同样名字和规格的已经重复")
+    NAME_SPEC_REPEAT(2, "同样名字和规格的已经重复"),
+
+    STORE_UNSATISFY(3, "库存不足")
 
     ;
 
