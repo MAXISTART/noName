@@ -14,6 +14,7 @@ import com.school.store.admin.take.service.TakeOrderItemService;
 import com.school.store.admin.take.service.TakeOrderService;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.enums.ResultEnum;
+import com.school.store.exception.BaseException;
 import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,15 +75,14 @@ public class TakeOrderController extends BaseAdminController {
                 if(storeItemController.checkNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber())){
                     takeOrderItem.setOrderId(takeOrder.getId());
                     // 锁住部分库存先
-                    storeItemController.setLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
+                    storeItemController.addLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
                     // 设置returnNumber
                     takeOrderItem.setReturnNumber(0);
                     // 更新创建时间
                     entityUtil.updateInfoDefault(takeOrderItem, admin.getId(), admin.getId(), true);
                 }else{
-                    String data = "规格为: " + takeOrderItem.getSpec() + "的"
-                            + takeOrderItem.getName() + " 当前数量不足";
-                    return simpleResult(ResultEnum.STORE_UNSATISFY, data);
+                    // 事务自动回滚
+                    throw new BaseException(ResultEnum.STORE_UNSATISFY);
                 }
             }
             takeOrderItemService.save(takeOrderItems);

@@ -9,6 +9,7 @@ import com.school.store.admin.store.service.StoreOperationItemService;
 import com.school.store.admin.store.service.StoreOperationService;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.enums.ResultEnum;
+import com.school.store.exception.BaseException;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -65,12 +66,11 @@ public class StoreOperationController extends BaseAdminController {
                             // 如果是带审批的出库类型
                             if(storeItemController.reduceNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber())){
                                 // 解放锁住的lockNumber
-                                storeItemController.setLockNumber(storeOperationItem.getGoodId(), 0);
+                                storeItemController.reduceLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
                                 break;
                             }else{
-                                String data = "规格为: " + storeOperationItem.getSpec() + "的"
-                                        + storeOperationItem.getName() + " 当前数量不足";
-                                return simpleResult(ResultEnum.STORE_UNSATISFY, data);
+                                // 事务自动回滚
+                                throw new BaseException(ResultEnum.STORE_UNSATISFY);
                             }
                     }
 

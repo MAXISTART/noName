@@ -115,19 +115,46 @@ public class StoreItemController extends BaseAdminController {
         return true;
     }
 
+    /**
+     * 添加正在审批的数量
+     * @param goodId
+     * @param lockNumber
+     * @return
+     */
     @Transactional(readOnly = false)
-    public boolean setLockNumber(String goodId, Integer lockNumber){
+    public boolean addLockNumber(String goodId, Integer lockNumber){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
-        storeItem.setLockNumber(lockNumber);
+        storeItem.setLockNumber(storeItem.getLockNumber() + lockNumber);
         storeItemService.save(storeItem);
         return true;
     }
 
+    /**
+     * 减少正在审批的数量
+     * @param goodId
+     * @param lockNumber
+     * @return
+     */
+    @Transactional(readOnly = false)
+    public boolean reduceLockNumber(String goodId, Integer lockNumber){
+        StoreItem storeItem = storeItemService.findByGoodId(goodId);
+        storeItem.setLockNumber(storeItem.getLockNumber() - lockNumber);
+        storeItemService.save(storeItem);
+        return true;
+    }
+
+    /**
+     *  检查是否有足够的自由库存， 自由库存 = 库存 - lockNumber
+     * @param goodId
+     * @param number
+     * @return
+     */
+    @Transactional(readOnly = false)
     public boolean checkNumber(String goodId, Integer number){
         // 检查库存是否足够
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
-        if(storeItem.getNumber() < number){
-            // 如果库存所含数量小于要减少的数量
+        if((storeItem.getNumber() - storeItem.getLockNumber()) < number){
+            // 如果库存自由的数量小于要减少的数量
             return false;
         }else{
             return true;
