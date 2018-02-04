@@ -1,6 +1,8 @@
 package com.school.store.base.model;
 
 
+import lombok.Data;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,18 +11,29 @@ public class SqlParams {
 
     public List<SqlParam> params;
 
+    public List<String> values;
+
     public static void main(String[] args){
         SqlParams factory = new SqlParams();
-        factory.put("AND","name","=","maxistar1");
-        factory.put("OR","id",">","1");
+        factory.put("AND","name","=");
+        factory.put("OR","id",">");
         System.out.println(factory.getSql());
     }
 
-    public void put(String relation, String columnName, String keyWord, String value){
+    public void put(String relation, String columnName, String keyWord){
         if(params == null){
             params = new ArrayList<SqlParam>();
         }
-        params.add(new SqlParam(relation, columnName, keyWord, value));
+        params.add(new SqlParam(relation, columnName, keyWord));
+    }
+
+    public void putValue(String... values_input){
+        if(values == null){
+            values = new ArrayList<>();
+        }
+        for(String value : values_input){
+            values.add(value);
+        }
     }
 
     public String getSql(){
@@ -32,11 +45,21 @@ public class SqlParams {
                     // 保证where后面没有关系词
                     builder.append(params.get(i).getRelation()).append(" ");
                 }
-                builder.append(params.get(i).getColumnName())
-                        .append(" ")
-                        .append(params.get(i).getKeyWord())
-                        .append(" ")
-                        .append("?");
+                builder.append(params.get(i).getColumnName()).append(" ");
+                if(params.get(i).getKeyWord().equals("BETWEEN")){
+                    builder.append(params.get(i).getKeyWord())
+                            .append(" ")
+                            .append("?")
+                            .append(" ")
+                            .append("AND")
+                            .append(" ")
+                            .append("?");
+                }else{
+                    builder.append(params.get(i).getKeyWord())
+                            .append(" ")
+                            .append("?");
+                }
+
             }
             return builder.toString();
         }else{
@@ -47,6 +70,7 @@ public class SqlParams {
 
 
     // 这是每个Param
+    @Data
     public class SqlParam {     //内部类
         // 是or还是and
         private String relation;
@@ -54,45 +78,11 @@ public class SqlParams {
         private String columnName;
         // 关系关键词
         private String keyWord;
-        // 字段值
-        private Object value;
 
-        public SqlParam(String relation, String columnName, String keyWord, String value) {
+
+        public SqlParam(String relation, String columnName, String keyWord) {
             this.columnName = columnName;
             this.keyWord = keyWord;
-            this.value = value;
-            this.relation = relation;
-        }
-
-        public String getColumnName() {
-            return columnName;
-        }
-
-        public void setColumnName(String columnName) {
-            this.columnName = columnName;
-        }
-
-        public String getKeyWord() {
-            return keyWord;
-        }
-
-        public void setKeyWord(String keyWord) {
-            this.keyWord = keyWord;
-        }
-
-        public Object getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
-
-        public String getRelation() {
-            return relation;
-        }
-
-        public void setRelation(String relation) {
             this.relation = relation;
         }
     }

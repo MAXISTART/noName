@@ -8,6 +8,7 @@ import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.admin.store.service.StoreOperationItemService;
 import com.school.store.admin.store.service.StoreOperationService;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.base.model.SqlParams;
 import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
 import com.school.store.vo.ResultVo;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 
@@ -39,7 +42,7 @@ public class StoreOperationController extends BaseAdminController {
     private StoreItemService storeItemService;
 
     @PostMapping("/testAddStoreOperations")
-    public ResultVo testAddStoreOperations(@RequestBody List<StoreOperation> storeOperations){
+    public ResultVo testAddStoreOperations(@RequestBody List<StoreOperation> storeOperations) {
         return simpleResult(ResultEnum.SUCCESS, storeOperations);
     }
 
@@ -52,23 +55,23 @@ public class StoreOperationController extends BaseAdminController {
 
         // 保存明细内容，但是要先设置ID
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
-        if(storeOperationItems != null){
-            for(StoreOperationItem storeOperationItem : storeOperationItems){
+        if (storeOperationItems != null) {
+            for (StoreOperationItem storeOperationItem : storeOperationItems) {
                 storeOperationItem.setOrderId(storeOperation.getId());
-                if(storeOperation.getApprovalResult() == 1){
+                if (storeOperation.getApprovalResult() == 1) {
                     // 审核通过是会修改库存的
-                    switch (storeOperation.getType()){
+                    switch (storeOperation.getType()) {
                         case 1:
                             // 如果是带审批的入库类型
                             storeItemController.addNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
                             break;
                         case 2:
                             // 如果是带审批的出库类型
-                            if(storeItemController.reduceNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber())){
+                            if (storeItemController.reduceNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber())) {
                                 // 解放锁住的lockNumber
                                 storeItemController.reduceLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
                                 break;
-                            }else{
+                            } else {
                                 // 事务自动回滚
                                 throw new BaseException(ResultEnum.STORE_UNSATISFY);
                             }
@@ -84,20 +87,20 @@ public class StoreOperationController extends BaseAdminController {
 
 
     /**
-     *  批量生成操作纪录
+     * 批量生成操作纪录
+     *
      * @param storeOperations
      * @param admin
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping("/addStoreOperations")
-    public ResultVo addStoreOperations(@RequestBody List<StoreOperation> storeOperations, @SessionAttribute("admin") Admin admin){
-        for(StoreOperation storeOperation : storeOperations){
+    public ResultVo addStoreOperations(@RequestBody List<StoreOperation> storeOperations, @SessionAttribute("admin") Admin admin) {
+        for (StoreOperation storeOperation : storeOperations) {
             addStoreOperation(storeOperation, admin);
         }
         return simpleResult(ResultEnum.SUCCESS, null);
     }
-
 
 
     @Transactional(readOnly = false)
@@ -106,7 +109,7 @@ public class StoreOperationController extends BaseAdminController {
 
         // 更新明细内容
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
-        if(storeOperationItems != null && !storeOperationItems.isEmpty()){
+        if (storeOperationItems != null && !storeOperationItems.isEmpty()) {
             storeOperationItemService.save(storeOperationItems);
         }
 
@@ -120,7 +123,7 @@ public class StoreOperationController extends BaseAdminController {
 
         // 先删除明细，在删除总单
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
-        if(storeOperationItems != null && !storeOperationItems.isEmpty()){
+        if (storeOperationItems != null && !storeOperationItems.isEmpty()) {
             storeOperationItemService.delete(storeOperationItems);
         }
         storeOperationService.delete(storeOperation);
@@ -134,7 +137,7 @@ public class StoreOperationController extends BaseAdminController {
         // 先删除明细，在删除总单
         storeOperations.forEach(storeOperation -> {
             List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
-            if(storeOperationItems != null && !storeOperationItems.isEmpty()){
+            if (storeOperationItems != null && !storeOperationItems.isEmpty()) {
                 storeOperationItemService.delete(storeOperationItems);
             }
         });
@@ -170,25 +173,79 @@ public class StoreOperationController extends BaseAdminController {
 
         Page<StoreOperation> storeOperations = storeOperationService.findAll(pager);
 
+        storeOperations.forEach(storeOperation -> {
+            setStoreOperations(storeOperation);
+        });
+
         return simpleResult(ResultEnum.SUCCESS, storeOperations);
     }
 
 
     /**
-     *  防止代码重复的工具代码
-     * @param storeOperation
+     * 以表单 form 形式 传递参数
+     *
+     * @param page
+     * @param size
+     * @param direction
+     * @param property
+     * @return
      */
-    public void setStoreOperations(StoreOperation storeOperation){
-        List<StoreOperationItem> storeOperationItems =storeOperationItemService.findByOrderId(storeOperation.getId());
-        if(storeOperationItems != null && !storeOperationItems.isEmpty()){
-            storeOperation.setStoreOperationItems(storeOperationItems);
+    @PostMapping(value = "/findStoreOperationBySearchParams")
+    public ResultVo findStoreOperationBySearchParams(@RequestParam(required = true) Integer page,
+                                                     @RequestParam(required = false, defaultValue = "20") Integer size,
+                                                     @RequestParam(required = false, defaultValue = "DESC") String direction,
+                                                     @RequestParam(required = false, defaultValue = "updateTime") String property,
+                                                     @RequestParam(required = false, defaultValue = "allDepartment") String departmentId,
+                                                     @RequestParam(required = false, defaultValue = "allRequestorId") String requestorId,
+                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") BigDecimal requestTotalPrice_start,
+                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") BigDecimal requestTotalPrice_end,
+                                                     @RequestParam(required = false, defaultValue = "allTime") String requestTime_start,
+                                                     @RequestParam(required = false, defaultValue = "allTime") String requestTime_end
+                                                     ) {
+        SqlParams sqlParams = new SqlParams();
+        if (!departmentId.equals("allDepartment")) {
+            sqlParams.put("AND", "departmentId", "=");
+            sqlParams.putValue(departmentId);
         }
+        if (!requestorId.equals("allRequestorId")) {
+            sqlParams.put("AND", "requestorId", "=");
+            sqlParams.putValue(requestorId);
+        }
+        if(!requestTotalPrice_start.equals("allRequestTotalPrice")){
+            sqlParams.put("AND", "requestTotalPrice", ">=");
+            sqlParams.putValue(requestTotalPrice_start.toString());
+        }
+        if(!requestTotalPrice_end.equals("allRequestTotalPrice")){
+            sqlParams.put("AND", "requestTotalPrice", "<=");
+            sqlParams.putValue(requestTotalPrice_end.toString());
+        }
+        if(!requestTime_start.equals("allTime") && !requestTime_end.equals("allTime")){
+            sqlParams.put("AND", "requestTime", "BETWEEN");
+            sqlParams.putValue(requestTime_start, requestTime_end);
+        }
+
+        // 返回的是真正的List<User>
+        List<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams("store_operations", sqlParams, page, size, StoreOperation.class);
+
+        storeOperations.forEach(storeOperation -> {
+            setStoreOperations(storeOperation);
+        });
+
+        return simpleResult(ResultEnum.SUCCESS, storeOperations);
     }
 
 
-
-
-
+    /**
+     * 防止代码重复的工具代码
+     *
+     * @param storeOperation
+     */
+    public void setStoreOperations(StoreOperation storeOperation) {
+        List<StoreOperationItem> storeOperationItems = storeOperationItemService.findByOrderId(storeOperation.getId());
+        if (storeOperationItems != null && !storeOperationItems.isEmpty()) {
+            storeOperation.setStoreOperationItems(storeOperationItems);
+        }
+    }
 
 
 }

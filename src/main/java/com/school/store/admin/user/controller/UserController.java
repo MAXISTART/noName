@@ -108,10 +108,12 @@ public class UserController extends BaseAdminController{
     ) {
         SqlParams sqlParams = new SqlParams();
         if(!departmentId.equals("allDepartment")){
-            sqlParams.put("AND","departmentId","=",departmentId);
+            sqlParams.put("AND","departmentId","=");
+            sqlParams.putValue(departmentId);
         }
         if(!name.equals("allName")){
-            sqlParams.put("AND","name","LIKE","%"+name+"%");
+            sqlParams.put("AND","name","LIKE");
+            sqlParams.putValue("%"+name+"%");
         }
 
         // 返回的是真正的List<User>

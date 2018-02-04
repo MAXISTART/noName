@@ -230,10 +230,12 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 	public List<T> findByDynamicSqlParams(String tableName, SqlParams sqlParams, int page, int rows, Class clazz) {
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery("SELECT * FROM " + tableName + " " + sqlParams.getSql());
+		System.out.println("SELECT * FROM " + tableName + " " + sqlParams.getSql());
 		List<SqlParams.SqlParam> Ps = sqlParams.params;
+		List<String> values = sqlParams.values;
 		if (Ps != null && !Ps.isEmpty()) {
-			for(int paramIndex=0; paramIndex < Ps.size(); paramIndex++){
-				query.setParameter(paramIndex, Ps.get(paramIndex).getValue());
+			for(int valueIndex=0; valueIndex < values.size(); valueIndex++){
+				query.setParameter(valueIndex, values.get(valueIndex));
 			}
 		}
 		// setResultTransformer 是设置结果集映射到什么地方
