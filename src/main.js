@@ -12,14 +12,17 @@ import Vuex from 'vuex'
 import routes from './routes'
 import Mock from './mock'
 Mock.bootstrap();
+import axios from 'axios';
 import 'font-awesome/css/font-awesome.min.css'
+import $ from 'jquery';
+import VueResource from 'vue-resource';
 
 Vue.use(ElementUI)
 Vue.use(VueRouter)
+Vue.use(VueResource)
 Vue.use(Vuex)
 
 //NProgress.configure({ showSpinner: false });
-
 const router = new VueRouter({
   routes
 })

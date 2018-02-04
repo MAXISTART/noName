@@ -18,4 +18,11 @@ export const addUser = params => { return axios.get(`${base}/user/add`, { params
 
 export const getWarehouseManager = params => { return axios.get(`${base}/warehouseManager/list`, { params: params }); };
 
+// 获取仓库有的东西
 export const getWarehouseThings = params => { return axios.get(`${base}/warehouse/things`, { params: params }); };
+
+// 获取入库记录
+export const getEnterWarehouseRecord = params => { return axios.get(`${base}/warehouse/enterWarehouseRecord`, { params: params }); };
+
+// 获取入库记录(分页)
+export const getEnterWarehouseRecordListpage = params => { return axios.get(`/api/schoolStore/admin/storeOperation/findAllStoreOperations`, { params: params }); };

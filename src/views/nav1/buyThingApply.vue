@@ -52,9 +52,11 @@
         data() {
             // 验证物品名称是否重复
             var checkThingName = (rule, value, callback) => {
+                let params = {page: 0};
                 let things = [];
                 let hasThing = false;
-                getWarehouseThings().then(res => {
+                getWarehouseThings(params).then(res => {
+                    console.log(res.data);return;
                     things = res.data.things;
                     for(var i in things) {
                         if(things[i] === value) {

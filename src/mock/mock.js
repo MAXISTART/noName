@@ -1,9 +1,10 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { LoginUsers, Users, WarehouseManager, Things } from './data/user';
+import { LoginUsers, Users, WarehouseManager, Things, enterWarehouseRecords } from './data/user';
 let _Users = Users;
 let _WareHouseManager = WarehouseManager;
 let _Things = Things;
+let _EnterWarehouseRecords = enterWarehouseRecords;
 
 export default {
   /**
@@ -60,6 +61,125 @@ export default {
         }, 1000);
       });
     });
+
+    // 获取入库记录
+      mock.onGet('/warehouse/enterWarehouseRecord').reply(config => {
+        let bool = false;
+        let enterWarehouseRecordFilter = config.params;
+        for(let key in enterWarehouseRecordFilter) {
+          if(enterWarehouseRecordFilter[key] !== '') {
+            bool = true;
+            break;
+          }
+        }
+        if(bool) {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve([200,{
+                        enterWarehouseRecords: _EnterWarehouseRecords
+                    }]);
+                }, 1000);
+            });
+        }
+      });
+
+      // 获取入库记录(分页)
+      mock.onGet('/warehouse/enterWarehouseRecordListpage').reply(config => {
+          let {tableId, currentPage, pageSize, queryKey} = config.params;
+          let enterWarehouseRecordsList = [];
+          let enterWarehouseKey = [
+              {
+                label: '全部',
+                value: 'all'
+              },
+              {
+                label: '名称',
+                value: 'thingName'
+              },
+              {
+                  label: '种类',
+                  value: 'type'
+              },
+              {
+                  label: '规格',
+                  value: 'size'
+              },
+              {
+                  label: '单位',
+                  value: 'unit'
+              },
+              {
+                  label: '数量',
+                  value: 'total'
+              },
+              {
+                  label: '单价',
+                  value: 'unitPrice'
+              },
+              {
+                  label: '总价',
+                  value: 'totalPrice'
+              },
+              {
+                  label: '负责人',
+                  value: 'personInCharge'
+              },
+              {
+                  label: '入库时间',
+                  value: 'enterTime'
+              },
+              {
+                  label: '更新时间',
+                  value: 'updateTime'
+              },
+              {
+                  label: '提交时间',
+                  value: 'submitTime'
+              },
+              {
+                  label: '提交人',
+                  value: 'submitPerson'
+              }
+          ];
+          let total = 0;
+          if(tableId === 'enterWarehouseRecords') {
+            if(currentPage !== '' && pageSize !== '') {
+                switch (queryKey) {
+                    case 'all': {total = _EnterWarehouseRecords.length;
+                        enterWarehouseRecordsList = _EnterWarehouseRecords.filter((u, index) => index < pageSize * currentPage && index >= pageSize * (currentPage - 1));
+                        break;}
+                    case 'thingName': {
+                        break;}
+                    case 'type': {break;}
+                    case 'size': {break;}
+                    case 'unit': {break;}
+                    case 'total': {break;}
+                    case 'unitPrice': {break;}
+                    case 'totalPrice': {break;}
+                    case 'personInCharge': {break;}
+                    case 'enterTime': {break;}
+                    case 'updateTime': {break;}
+                    case 'submitTime': {break;}
+                    case 'submitPerson': {break;}
+                    default: break;
+                }
+                if(queryKey === 'all') {
+
+                }else if(queryKey === 'thingName') {
+
+                }
+            }
+          }
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                resolve([200, {
+                    enterWarehouseKey: enterWarehouseKey,
+                    total: total,
+                    enterWarehouseRecordsList: enterWarehouseRecordsList
+                }]);
+            }, 1000);
+          });
+      });
 
     //获取用户列表（分页）
     mock.onGet('/user/listpage').reply(config => {
