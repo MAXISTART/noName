@@ -177,9 +177,9 @@
 {
 	"approvalResult":null,
 	"approvalTaskId":null,
-	"approvalTime":"入库时间",
+	"approvalTime":null,
 	"createAdmin":null,
-	"createTime":"提交时间",
+	"createTime":null,
 	"delFlag":false,
 	"departmentId":null,
 	"description":null,
@@ -187,18 +187,12 @@
 	"opinion":null,
 	"requestTime":null,
 	"requestTotalPrice":null,
-	"requestorId":"负责人",
+	"requestorId":null,
 	"responsorId":null,
-	"storeOperationItems.name":"名称",
-	"storeOperationItems.sort":"种类",
-	"storeOperationItems.spec":"规格",
-	"storeOperationItems.unit":"单位",
-	"storeOperationItems.number":"数量",
-	"storeOperationItems.price":"实际单价",
-	"bill":"发票上传"
+	"storeOperationItems":null,
 	"type":null,
-	"updateAdmin":"提交人",
-	"updateTime":"更新时间"
+	"updateAdmin":null,
+	"updateTime":null
 }
 
 
@@ -228,12 +222,6 @@
 	"approvalTime":null,
 	"createAdmin":null,
 	"createTime":null,
-    "takeOrderItem.name":"名称",
-    "takeOrderItem.sort":"种类",
-    "takeOrderItem.spec":"规格",
-    "takeOrderItem.unit":"单位",
-    "takeOrderItem.number":"数量",
-    "takeOrderItem.price":"实际单价",
 	"delFlag":false,
 	"departmentId":null,
 	"description":null,
