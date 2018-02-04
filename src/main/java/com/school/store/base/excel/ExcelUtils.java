@@ -1,5 +1,6 @@
 package com.school.store.base.excel;
 
+import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 
 public class ExcelUtils {
 
@@ -36,11 +38,13 @@ public class ExcelUtils {
     public static void main(String[] args){
         ExcelUtils utils = new ExcelUtils();
         utils.init(null, "test.xlsx");
-        Map<String, Integer> mapper = new HashMap<>();
+/*        Map<String, Integer> mapper = new HashMap<>();
         mapper.put("totalPrice", 9);
         mapper.put("details.name", 3);
-        List<Map> beans = utils.getBeanMaps(mapper, utils.getHeaderSize());
-        System.out.println(beans);
+        List<Map> beans = utils.getBeanMaps(mapper, utils.getHeaderSize());*/
+
+        Map blocks = utils.separate(2, 0);
+        System.out.println(blocks);
 
     }
 
@@ -99,6 +103,7 @@ public class ExcelUtils {
 
 
     // 根据多少个合并单元格判断header是多大
+    // 这种方法不太好，因为可能下面的具体表格就是合并单元格
     public Integer getHeaderSize(){
 
         int count = sheet.getLastRowNum()+1;//总行数
@@ -116,8 +121,52 @@ public class ExcelUtils {
     }
 
 
+    /**
+     *  根据合并单元格来分割行，Map里面存储的是行号, columnIndex用来标识不同的block
+     */
+    public Map<Integer,Block> separate(int headerSize, int columnIndex){
+        Map<Integer,Block> blocks = new HashMap<>();
+
+        int listIndex = 0;
+
+        int count = sheet.getLastRowNum()+1;//总行数
+
+        for(int rowIndex = headerSize;rowIndex < count;rowIndex++){
+            Row row = sheet.getRow(rowIndex);
+            String firstCellValue = getCellValue(row.getCell(columnIndex));
+
+            if(isMergedRegion(sheet,rowIndex,0)){
+
+                if(blocks.get(listIndex) == null){
+                    addBlock(blocks, listIndex, rowIndex, firstCellValue);
+                }else{
+                    if(firstCellValue == blocks.get(listIndex).getFirstCellValue()){
+                        // 属于上一个block的
+                        blocks.get(listIndex).increaseSize();
+                    }else{
+                        // 属于新的block
+                        listIndex++;
+                        addBlock(blocks,listIndex, rowIndex, firstCellValue);
+                    }
+                }
+            }else {
+                // 如果不是合并单元格，就表明只是占一行的block
+                listIndex++;
+                addBlock(blocks, listIndex, rowIndex, firstCellValue);
+            }
+        }
+        return blocks;
+    }
 
 
+
+    public void addBlock(Map<Integer,Block> blocks, Integer listIndex, int rowIndex, String firstCellValue){
+        Block block = new Block();
+        block.setFirstLineNumber(rowIndex);
+        block.increaseSize();
+        block.setFirstCellValue(firstCellValue);
+        blocks.put(listIndex, block);
+    }
 
 
     public void init(String filePath, String fileName){
@@ -387,5 +436,19 @@ public class ExcelUtils {
 
 
 
+}
 
+@Data
+class Block{
+
+    private Integer firstLineNumber;
+
+    private Integer size = 0;
+
+    private String firstCellValue;
+
+
+    public void increaseSize(){
+        size++;
+    }
 }

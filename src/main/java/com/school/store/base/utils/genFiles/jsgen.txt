@@ -192,11 +192,13 @@
 	"storeOperationItems.name":"名称",
 	"storeOperationItems.sort":"种类",
 	"storeOperationItems.spec":"规格",
-	"storeOperationItems.name":"名称",
-	"storeOperationItems.name":"名称",
+	"storeOperationItems.unit":"单位",
+	"storeOperationItems.number":"数量",
+	"storeOperationItems.price":"实际单价",
+	"bill":"发票上传"
 	"type":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"updateAdmin":"提交人",
+	"updateTime":"更新时间"
 }
 
 
@@ -226,6 +228,12 @@
 	"approvalTime":null,
 	"createAdmin":null,
 	"createTime":null,
+    "takeOrderItem.name":"名称",
+    "takeOrderItem.sort":"种类",
+    "takeOrderItem.spec":"规格",
+    "takeOrderItem.unit":"单位",
+    "takeOrderItem.number":"数量",
+    "takeOrderItem.price":"实际单价",
 	"delFlag":false,
 	"departmentId":null,
 	"description":null,
