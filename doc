@@ -157,7 +157,9 @@ name:网
 至此，物品模块的暂时do完，下面是采购表模块的
 
 1. 添加采购表
-也是用弹框模式，内容和简道云的类似，
+也是用弹框模式，格式和内容都和简道云类似
+![image](https://github.com/MAXISTART/noName/blob/doc/入库表图.png)
+
 
 
 
