@@ -2,7 +2,9 @@ package com.school.store.admin.good.controller;
 
 import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.good.entity.GoodItem;
+import com.school.store.admin.good.entity.SortItem;
 import com.school.store.admin.good.service.GoodItemService;
+import com.school.store.admin.good.service.SortItemService;
 import com.school.store.admin.store.controller.StoreItemController;
 import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.service.StoreItemService;
@@ -32,6 +34,9 @@ public class GoodController extends BaseAdminController {
     GoodItemService goodItemService;
 
     @Autowired
+    SortItemService sortItemService;
+
+    @Autowired
     StoreItemController storeItemController;
 
     @Transactional(readOnly = false)
@@ -52,7 +57,6 @@ public class GoodController extends BaseAdminController {
                 return simpleResult(ResultEnum.PARAM_ERROR,null);
         }
         return simpleResult(ResultEnum.UNKNOWN_ERROR, null);
-
 
     }
 
@@ -167,12 +171,74 @@ public class GoodController extends BaseAdminController {
 
 
 
+    @Transactional(readOnly = false)
+    @PostMapping("/addSortItem")
+    public ResultVo addSortItem(@RequestBody SortItem sortItem, @SessionAttribute("admin") Admin admin) {
+
+        // 先检查录入的名字是否有问题
+        int rs_code = checkSortItemName(sortItem);
+        switch (rs_code){
+            case 0:
+                sortItemService.save(entityUtil.updateInfoDefault(sortItem, admin.getId(), admin.getId(), true));
+                return simpleResult(ResultEnum.SUCCESS, null);
+            case 1:
+                return simpleResult(ResultEnum.NAME_REPEAT, null);
+            case 2:
+                return simpleResult(ResultEnum.PARAM_ERROR,null);
+        }
+        return simpleResult(ResultEnum.UNKNOWN_ERROR, null);
+
+
+    }
 
 
 
+    @PostMapping(value = "/updateSortItem")
+    public ResultVo updateSortItem(@RequestBody SortItem sortItem, @SessionAttribute("admin") Admin admin) {
+
+        // 先检查录入的名字是否有问题
+        int rs_code = checkSortItemName(sortItem);
+        switch (rs_code){
+            case 0:
+                sortItemService.save(entityUtil.updateInfoDefault(sortItem, admin.getId(), admin.getId(), false));
+                return simpleResult(ResultEnum.SUCCESS, null);
+            case 1:
+                return simpleResult(ResultEnum.NAME_REPEAT, null);
+            case 2:
+                return simpleResult(ResultEnum.PARAM_ERROR,null);
+        }
+        return simpleResult(ResultEnum.UNKNOWN_ERROR, null);
+    }
 
 
 
+    @PostMapping(value = "/deleteSortItem")
+    public ResultVo deleteSortItem(@RequestBody SortItem sortItem, @SessionAttribute("admin") Admin admin) {
+        // 这里的RequestBody 的 user只需要一个id就行了
+        sortItemService.delete(sortItem);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+
+    /**
+     *  录入物品的时候检查物品名称是否重复 ，0 表示 无重复 ， 1 表示重复 ， 2表示参数错误
+     * @return
+     */
+    private int checkSortItemName(SortItem item) {
+
+        SqlParams sqlParams = new SqlParams();
+        if(item.getName() != null && !item.getName().trim().equals("")){
+            if(sortItemService.findByName(item.getName()).size() > 0){
+                return 1;
+            }else{
+                return 0;
+            }
+        }else{
+            return 2;
+        }
+
+    }
 
 
 

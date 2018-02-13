@@ -17,7 +17,9 @@ public enum ResultEnum {
 
     NAME_SPEC_REPEAT(2, "同样名字和规格的已经重复"),
 
-    STORE_UNSATISFY(3, "库存不足")
+    STORE_UNSATISFY(3, "库存不足"),
+
+    NAME_REPEAT(4, "种类名字已经重复")
 
     ;
 

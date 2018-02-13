@@ -1,17 +1,11 @@
 package com.school.store.base.controller;
 
 
-import com.school.store.admin.admin.entity.Admin;
-import com.school.store.base.model.BaseEntity;
 import com.school.store.enums.ResultEnum;
 import com.school.store.utils.EntityUtil;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 @RestController
 public class BaseAdminController {
