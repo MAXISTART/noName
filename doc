@@ -1,20 +1,23 @@
 物品表用下面的设计板式，同样有查询和新增，以及列表分页
 
-新建物品时访问的路径为 /admin/good/addGoodItem，用的是post的方法，传输的是下面的格式，根据用户填入的修改下面的null值（注释部分略去）。
+1.新建物品时访问的路径为 /admin/good/addGoodItem，用的是post的方法，传输的是下面的格式，根据用户填入的修改下面的null值（注释部分略去）。
 //GoodItem
 {
    "name":null,  // 物品名称 
    "number":null, // 物品第一次入库时的数量，如果用户不填，那么后台默认会为0
    "price":null,  // 物品单价,数字
-   "sort":null, // 物品种类，字符串
+   "sort":null, // 物品种类，字符串，下拉框
    "spec":null, // 规格，字符串
    "unit":null // 单位，字符串
 }
 
-列表显示，访问的路径为 /admin/good/findAllGoodItems ，用get方法，可以传四个参数 page（第几页）, size(每一页多少条数据),
+2.列表显示，访问的路径为 /admin/good/findAllGoodItems ，用get方法，可以传四个参数 page（第几页）, size(每一页多少条数据),
 direction（就是排序的方式，是一个字符串参数，如果是逆序用'DESC', 如果是顺序用 'ASC'）, property（按照某个参数进行排序）
 比如我访问的路径为   /admin/good/findAllGoodItems?page=0&size=20&direction=DESC&property=updateTime
 意思就是  访问第1页，数据量为20，按照更新时间来逆序排列，也就是最近更新的会排列的更前面
 默认情况下只需要传一个 page 的参数，其他参数都有默认值
+
+
+
 
 
