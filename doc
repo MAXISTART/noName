@@ -1,1 +1,14 @@
+物品表用下面的设计板式，同样有查询和新增，以及列表分页
+
+新建物品时访问的路径为 /admin/good/addGoodItem，用的是post的方法，传输的是下面的格式，根据用户填入的修改下面的null值（注释部分略去）。
+//GoodItem
+{
+   "name":null,  // 物品名称
+   "number":null, // 物品第一次入库时的数量，如果用户不填，那么后台默认会为0
+   "price":null,  //
+   "sort":null,
+   "spec":null,
+   "unit":null
+}
+
 
