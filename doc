@@ -1,0 +1,184 @@
+物品表用下面的设计板式，同样有查询和新增，以及列表分页
+
+1.新建物品时访问的路径为 /admin/good/addGoodItem，用的是post的方法，传输的是下面的格式，根据用户填入的修改下面的null值（注释部分略去）。
+//GoodItem
+{
+   "name":null,  // 物品名称 
+   "number":null, // 物品第一次入库时的数量，如果用户不填，那么后台默认会为0，整数
+   "price":null,  // 物品单价，可以不填, 小数只允许两位
+   "sort":null, // 物品种类，字符串，下拉框
+   "spec":null, // 规格，字符串
+   "unit":null // 单位，字符串
+}
+
+访问会返回结果，根据结果来反馈用户，如果返回的code为2表示 已经存在同名字同规格的物品，录入失败，可以直接返回这里的msg提示给用户
+
+{
+    "code": 2,
+    "msg": "同样名字和规格的已经重复",
+    "data": null
+}
+只要code不为0，就表示访问失败，出错，具体错误可以看msg
+
+2.列表显示，访问的路径为 /admin/good/findAllGoodItems ，用get方法，可以传四个参数 page（第几页）, size(每一页多少条数据),
+direction（就是排序的方式，是一个字符串参数，如果是逆序用'DESC', 如果是顺序用 'ASC'）, property（按照某个参数进行排序）
+比如我访问的路径为   /admin/good/findAllGoodItems?page=0&size=20&direction=DESC&property=updateTime
+意思就是  访问第1页，数据量为20，按照更新时间来逆序排列，也就是最近更新的会排列的更前面
+默认情况下只需要传一个 page 的参数，其他参数都有默认值
+
+先判断code是否为0，如果不为0，表示访问数据失败，响应给用户 "数据加载失败"，一般加载成功后会出现下面的数据。
+{
+    "code": 0,  
+    "msg": "成功",
+    "data": {
+        "content": [
+            {
+                "id": "4028fbdf6141dc46016141dde9b90000",  // 物品的id
+                "delFlag": false,                  // 物品的修改标志，这个可以忽略不管
+                "createTime": "2018-01-29 20:21:58",   // 纪录的创建时间
+                "updateTime": "2018-01-29 20:21:58",   // 纪录的更新时间
+                "createAdmin": "4028fbdf6137215b01613723faa80000",  // 纪录的创建者
+                "updateAdmin": "4028fbdf6137215b01613723faa80000",  // 最后更新人
+                "name": "路由器",  // 物品的名称
+                "sort": "办公用品",  // 物品的种类
+                "unit": "个",   // 物品的单位
+                "price": 200.49, // 物品的入库单价
+                "spec": "TP-LINK2",  // 物品的规格
+                "number": 5   // 物品的初始数量
+            },
+            {
+                "id": "4028fbdf6141d4a9016141d83b0b0000",
+                "delFlag": false,
+                "createTime": "2018-01-29 20:15:45",
+                "updateTime": "2018-01-29 20:15:45",
+                "createAdmin": "4028fbdf6137215b01613723faa80000",
+                "updateAdmin": "4028fbdf6137215b01613723faa80000",
+                "name": "路由器",
+                "sort": "办公用品",
+                "unit": "个",
+                "price": 105.49,
+                "spec": "TP-LINK",
+                "number": 10
+            },
+            {
+                "id": "4028fbdf6140dfd3016140e244b60002",
+                "delFlag": false,
+                "createTime": "2018-01-29 15:47:06",
+                "updateTime": "2018-01-29 15:47:06",
+                "createAdmin": "4028fbdf6137215b01613723faa80000",
+                "updateAdmin": "4028fbdf6137215b01613723faa80000",
+                "name": "网线",
+                "sort": "办公用品",
+                "unit": "1m",
+                "price": 20.49,
+                "spec": "10cm宽",
+                "number": 50
+            },
+            {
+                "id": "4028fbdf613774460161377474be0000",
+                "delFlag": false,
+                "createTime": "2018-01-27 19:50:34",
+                "updateTime": "2018-01-27 19:50:34",
+                "createAdmin": "4028fbdf6137215b01613723faa80000",
+                "updateAdmin": "4028fbdf6137215b01613723faa80000",
+                "name": "网线",
+                "sort": "办公用品",
+                "unit": "1m",
+                "price": 20.49,
+                "spec": "5cm宽",
+                "number": 50
+            }
+        ],
+        "last": true, 
+        "totalPages": 1, // 查到的数据总共多少页
+        "totalElements": 4,
+        "number": 0,
+        "size": 20,  // 这一页的纪录数量
+        "sort": [
+            {
+                "direction": "DESC",
+                "property": "updateTime",
+                "ignoreCase": false,
+                "nullHandling": "NATIVE",
+                "ascending": false,
+                "descending": true
+            }
+        ],
+        "first": true,
+        "numberOfElements": 4
+    }
+}
+
+
+3. 物品更新，和物品添加类似，同样会先进行名字检查的（后台完成），
+访问路径为  /admin/good/updateGoodItem ，用post方法，传递的是json数据，比如下面的，id不能为null，无论字段值是否更改了，都要传送他当前的值过来
+{
+    "id": "4028fbdf6141dc46016141dde9b90000",  // 物品的id
+    "name": "路由器",  // 物品的名称
+    "sort": "办公用品",  // 物品的种类
+    "unit": "个",   // 物品的单位
+    "price": 200.49, // 物品的入库单价
+    "spec": "TP-LINK2",  // 物品的规格
+    "number": 5   // 物品的初始数量
+}
+同样，如果后台返回的code不为0，那么就是访问失败，需要根据后台给的msg反馈给用户
+
+
+4. 删除单个物品，只需要传物品id（删除前要询问是否确定要删除）
+  访问路径为 /admin/good/deleteGoodItem ，用post方法，传递数据如下，同样也是会返回code和msg
+{
+	"id": "4028fbdf618dc72f01618dd554650000"
+}
+
+5. 批量删除物品，需要传id的集合
+   访问路径为 /admin/good/deleteGoodItems ,用post方法，传递数据如下 ,要严格按照以下的格式  
+[
+	{"id": "4028fbdf618dc72f01618de597d00002"},
+	{"id": "4028fbdf618dc72f01618de5a6240004"},
+	{"id": "4028fbdf618dc72f01618de5b5620006"}
+]
+
+6. 按照条件搜索物品， 有三个条件， 一个是价格范围，一个是名称匹配，一个是种类，其中种类是下拉框，而且有个默认选项是"全选"
+   传送方式跟前面不同，用form的表格提交方式来post数据，数据如下
+page:0
+price_start:100
+price_end:300
+name:网
+   上面数据表示的是  名字包含"网"这个字同时 价格 大于等于100 小于等于 300 的物品，
+   page是第几页，是必传的参数，而price_start和price_end和name都有默认值，可以不传。前端要进行格式检查，price_start 和 price_end必须是小数
+   成功时返回的code为0，如果返回的data是个空数组，表示没有符合条件的数据，比如这样
+{
+    "code": 0,
+    "msg": "成功",
+    "data": []
+}
+
+
+至此，物品模块的暂时do完，下面是采购表模块的
+
+1. 添加采购表
+也是用弹框模式，内容和简道云的类似，
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
