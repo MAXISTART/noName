@@ -193,12 +193,10 @@ public class StoreOperationController extends BaseAdminController {
     @PostMapping(value = "/findStoreOperationBySearchParams")
     public ResultVo findStoreOperationBySearchParams(@RequestParam(required = true) Integer page,
                                                      @RequestParam(required = false, defaultValue = "20") Integer size,
-                                                     @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                                     @RequestParam(required = false, defaultValue = "updateTime") String property,
                                                      @RequestParam(required = false, defaultValue = "allDepartment") String departmentId,
                                                      @RequestParam(required = false, defaultValue = "allRequestorId") String requestorId,
-                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") BigDecimal requestTotalPrice_start,
-                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") BigDecimal requestTotalPrice_end,
+                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") String requestTotalPrice_start,
+                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") String requestTotalPrice_end,
                                                      @RequestParam(required = false, defaultValue = "allTime") String requestTime_start,
                                                      @RequestParam(required = false, defaultValue = "allTime") String requestTime_end
                                                      ) {
@@ -213,11 +211,11 @@ public class StoreOperationController extends BaseAdminController {
         }
         if(!requestTotalPrice_start.equals("allRequestTotalPrice")){
             sqlParams.put("AND", "requestTotalPrice", ">=");
-            sqlParams.putValue(requestTotalPrice_start.toString());
+            sqlParams.putValue(requestTotalPrice_start);
         }
         if(!requestTotalPrice_end.equals("allRequestTotalPrice")){
             sqlParams.put("AND", "requestTotalPrice", "<=");
-            sqlParams.putValue(requestTotalPrice_end.toString());
+            sqlParams.putValue(requestTotalPrice_end);
         }
         if(!requestTime_start.equals("allTime") && !requestTime_end.equals("allTime")){
             sqlParams.put("AND", "requestTime", "BETWEEN");

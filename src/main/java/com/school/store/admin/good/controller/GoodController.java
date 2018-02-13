@@ -120,6 +120,62 @@ public class GoodController extends BaseAdminController {
     }
 
 
+
+
+
+
+
+    /**
+     * 以表单 form 形式 传递参数
+     *
+     * @param page
+     * @param size
+     * @param price_start
+     * @param price_end
+     * @return
+     */
+    @PostMapping(value = "/findGoodItemsBySearchParams")
+    public ResultVo findGoodItemsBySearchParams(@RequestParam(required = true) Integer page,
+                                                     @RequestParam(required = false, defaultValue = "20") Integer size,
+                                                     @RequestParam(required = false, defaultValue = "allPrice") String price_start,
+                                                     @RequestParam(required = false, defaultValue = "allPrice") String price_end,
+                                                     @RequestParam(required = false, defaultValue = "allName") String name
+    ) {
+        SqlParams sqlParams = new SqlParams();
+        if(!name.equals("allName")){
+            sqlParams.put("AND","name","LIKE");
+            sqlParams.putValue("%"+name+"%");
+        }
+        if(!price_start.equals("allPrice")){
+            sqlParams.put("AND", "price", ">=");
+            sqlParams.putValue(price_start);
+        }
+        if(!price_end.equals("allPrice")){
+            sqlParams.put("AND", "price", "<=");
+            sqlParams.putValue(price_end);
+        }
+
+        // 返回的是真正的List<GoodItem>
+        List<GoodItem> goodItems = goodItemService.findByDynamicSqlParams("good_items", sqlParams, page, size, GoodItem.class);
+
+        return simpleResult(ResultEnum.SUCCESS, goodItems);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     /**
      *  录入物品的时候检查物品名称是否重复 ，0 表示 无重复 ， 1 表示重复 ， 2表示参数错误
      * @return
