@@ -140,15 +140,22 @@ public class BuyOrderController extends BaseAdminController {
     @PostMapping(value = "/updateBuyOrder")
     public ResultVo updateBuyOrder(@RequestBody BuyOrder buyOrder, @SessionAttribute("admin") Admin admin) {
 
-        // 更新明细内容
-        List<BuyOrderItem> buyOrderItems = buyOrder.getBuyOrderItems();
+        // 先删除明细内容，因为明细有可能变少了或者变多了
+        List<BuyOrderItem> buyOrderItems = buyOrderItemService.findByOrderId(buyOrder.getId());
+        buyOrderItemService.delete(buyOrderItems);
+        // 然后再保存新明细
+        buyOrderItems = buyOrder.getBuyOrderItems();
         if(buyOrderItems != null && !buyOrderItems.isEmpty()){
+            buyOrderItems.forEach(buyOrderItem -> {
+                // 置id为null，保证存进去的id是由数据库自增的
+                buyOrderItem.setId(null);
+                buyOrderItem.setOrderId(buyOrder.getId());
+                buyOrderItem = entityUtil.updateInfoDefault(buyOrderItem, admin.getId(), admin.getId(), true);
+            });
             buyOrderItemService.save(buyOrderItems);
         }
-
         // 更新的话不需要更改 创建者和创建时间
         buyOrderService.save(entityUtil.updateInfoDefault(buyOrder, null, admin.getId(), false));
-
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
