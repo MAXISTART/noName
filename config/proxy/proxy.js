@@ -1,7 +1,7 @@
 module.exports =  {
   proxyList: {
           '/api':{
-              target: 'http://y58rni.natappfree.cc',
+              target: 'http://hz6idx.natappfree.cc/schoolStore',
               changeOrigin: true,
               pathRewrite: {
                   '^/api': ''

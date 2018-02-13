@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-let base = '';
+let base = '/api';
 
 export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data); };
 
@@ -14,7 +14,7 @@ export const batchRemoveUser = params => { return axios.get(`${base}/user/batchr
 
 export const editUser = params => { return axios.get(`${base}/user/edit`, { params: params }); };
 
-export const addUser = params => { return axios.get(`${base}/user/add`, { params: params }); };
+export const addNewThing = params => { return axios.post(`/api/admin/good/addGoodItem`, { params: params }); };
 
 export const getWarehouseManager = params => { return axios.get(`${base}/warehouseManager/list`, { params: params }); };
 

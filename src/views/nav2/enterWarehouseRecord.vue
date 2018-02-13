@@ -39,38 +39,36 @@
                     <el-button type="primary">查询</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary">新增</el-button>
+                    <el-button type="primary" @click="handleAdd">新增</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
 
         <!--列表-->
         <el-table :data="enterWarehouseRecords" highlight-current-row v-loading="listLoading" style="width: 100%;">
-            <el-table-column type="selection" width="55">
+            <el-table-column type="selection" width="55" column-key="id" fixed="left">
             </el-table-column>
-            <el-table-column type="index" width="60">
+            <el-table-column type="index" width="60" fixed="left">
             </el-table-column>
             <el-table-column label="入库明细" width="600">
-                <el-table-column prop="thingName" label="名称" width="100"></el-table-column>
-                <el-table-column prop="type" label="种类" width="100"></el-table-column>
-                <el-table-column prop="size" label="规格" width="100"></el-table-column>
+                <el-table-column prop="name" label="名称" width="100" column-key="id"></el-table-column>
+                <el-table-column prop="sort" label="种类" width="100"></el-table-column>
+                <el-table-column prop="spec" label="规格" width="100"></el-table-column>
                 <el-table-column prop="unit" label="单位" width="100"></el-table-column>
-                <el-table-column prop="total" label="数量" width="100" sortable></el-table-column>
-                <el-table-column prop="unitPrice" label="单价" width="100" sortable></el-table-column>
+                <el-table-column prop="number" label="数量" width="100" sortable></el-table-column>
+                <el-table-column prop="price" label="单价" width="100" sortable></el-table-column>
             </el-table-column>
             <el-table-column prop="totalPrice" label="入库总价" min-width="110" sortable>
             </el-table-column>
-            <el-table-column prop="personInCharge" label="负责人" width="100">
+            <el-table-column prop="createAdmin" label=" 创建者" width="100">
             </el-table-column>
-            <el-table-column type="date" prop="enterTime" label="入库时间" width="130" sortable>
+            <el-table-column type="date" prop="createTime" label="创建时间" width="160" sortable>
             </el-table-column>
-            <el-table-column type="date" prop="updateTime" label="更新时间" min-width="130" sortable>
+            <el-table-column type="date" prop="updateTime" label="更新时间" min-width="160" sortable>
             </el-table-column>
-            <el-table-column type="date" prop="submitTime" label="提交时间" min-width="130" sortable>
+            <el-table-column prop="updateAdmin" label="提交人" min-width="130">
             </el-table-column>
-            <el-table-column prop="submitPerson" label="提交人" min-width="130">
-            </el-table-column>
-            <el-table-column label="操作" width="180">
+            <el-table-column label="操作" width="170">
                 <template slot-scope="scope">
                     <el-button size="small">编辑</el-button>
                     <el-button type="danger" size="small">删除</el-button>
@@ -88,7 +86,7 @@
                            :page-sizes="pagenation.pageSizes"
                            :page-size="pagenation.pageSize"
                            layout="total, sizes, prev, pager, next, jumper"
-                           :total="pagenation.total">
+                           :total="pagenation.totalElements">
             </el-pagination>
         </el-col>
 
@@ -121,30 +119,37 @@
         </el-dialog>
 
         <!--新增界面-->
-        <el-dialog title="新增" v-model="addFormVisible" :close-on-click-modal="false">
-            <el-form :model="addForm" label-width="80px" :rules="addFormRules" ref="addForm">
-                <el-form-item label="姓名" prop="name">
-                    <el-input v-model="addForm.name" auto-complete="off"></el-input>
+        <el-dialog title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
+            <el-form :model="newGoodItem" label-width="80px" :rules="addFormRules" ref="addForm">
+                <el-form-item label="物品名称" prop="name">
+                    <el-input v-model="newGoodItem.name" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="性别">
-                    <el-radio-group v-model="addForm.sex">
-                        <el-radio class="radio" :label="1">男</el-radio>
-                        <el-radio class="radio" :label="0">女</el-radio>
-                    </el-radio-group>
+                <el-form-item label="入库数量" prop="number">
+                    <el-input v-model="newGoodItem.number" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="年龄">
-                    <el-input-number v-model="addForm.age" :min="0" :max="200"></el-input-number>
+                <el-form-item label="价格" prop="price">
+                    <el-input v-model="newGoodItem.price" auto-complete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="生日">
-                    <el-date-picker type="date" placeholder="选择日期" v-model="addForm.birth"></el-date-picker>
+                <el-form-item label="种类" prop="sort">
+                    <el-select v-model="newGoodItem.sort" placeholder="请选择">
+                        <el-option
+                                v-for="item in sortNames"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="地址">
-                    <el-input type="textarea" v-model="addForm.addr"></el-input>
+                <el-form-item label="规格" prop="spec">
+                    <el-input v-model="newGoodItem.spec" auto-complete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="单位" prop="unit">
+                    <el-input v-model="newGoodItem.unit" auto-complete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button>取消</el-button>
-                <el-button type="primary" :loading="addLoading">提交</el-button>
+                <el-button type="primary" :loading="addLoading" @click="submitAddForm('addForm')">提交</el-button>
             </div>
         </el-dialog>
     </section>
@@ -155,10 +160,46 @@
     //import NProgress from 'nprogress'
     import axios from 'axios';
     import {getEnterWarehouseRecordListpage } from '../../api/api';
+    import { ERR_OK0, ERR_OK1, ERR_OK2 } from '@/common/config/config';
+    import { addNewThing } from '@/api/api';
 
     export default {
         data() {
+            // 验证数量
+            var checkTotal = (rule, value, callback) => {
+                // if(!value) {
+                //     return callback(new Error('请输入数量！'));
+                // }
+                let  rex = /^[1-9]\d*$/;
+                setTimeout(() => {
+                    if(!rex.test(value)) {
+                        callback("	数量格式不正确！");
+                    }else {
+                        callback();
+                    }
+                }, 1000);
+            };
+
+            // 验证单价
+            var checkUnitPrice = (rule, value, callback) => {
+                if(!value) {
+                    return callback(new Error('请输入单价！'));
+                }
+                let  rex = /^[0-9]+(.[0-9]{1,2})?$/;
+                setTimeout(() => {
+                    if(!rex.test(value)) {
+                        callback("单价格式不正确！");
+                    }else {
+                        callback();
+                    }
+                }, 1000);
+            };
+
             return {
+                //新增界面数据
+                newGoodItem: {},
+                sortDefault: '',
+                sortNames: [],
                 restaurants: [],
                 queryValueSelected: '',
                 /* 自动补充插件参数 */
@@ -179,7 +220,7 @@
                 // 入库记录
                 enterWarehouseRecords: [],
                 pagenation: {
-                    total: 0,
+                    totalElements: 0,
                     currentPage: 1,
                     pageSizes: [10, 20, 50, 100],
                     pageSize: 20
@@ -206,21 +247,29 @@
 
                 addFormVisible: false,//新增界面是否显示
                 addLoading: false,
+                // 物品添加检查
                 addFormRules: {
                     name: [
-                        {required: true, message: '请输入姓名', trigger: 'blur'}
+                        {required: true, message: '请输入物品名称', trigger: 'blur'}
+                    ],
+                    number: [
+                        { validator: checkTotal, trigger: 'blur' }
+                    ],
+                    price: [
+                        { validator: checkUnitPrice, trigger: 'blur' },
+                        {required: true, message: '请输入数量', trigger: 'blur'}
+                    ],
+                    sort: [
+                        {required: true, message: '请输入物品种类', trigger: 'change' }
+                    ],
+                    spec: [
+                        {required: true, message: '请输入物品名称', trigger: 'blur'}
+                    ],
+                    unit: [
+                        {required: true, message: '请输入物品名称', trigger: 'blur'}
                     ]
-                },
-                //新增界面数据
-                addForm: {
-                    name: '',
-                    sex: -1,
-                    age: 0,
-                    birth: '',
-                    addr: ''
                 }
-
-            }
+            };
         },
         methods: {
             selectQueryKey(value) {
@@ -353,7 +402,50 @@
                     let enterWarehouseRecords = res.data.enterWarehouseRecordsList;
                     this.enterWarehouseRecords = enterWarehouseRecords;
                 });
-            }
+            },
+
+            //显示新增界面
+            handleAdd() {
+                this.addFormVisible = true;
+                this.addForm = {
+                    name: '',
+                    number: 0,
+                    price: 0,
+                    sort: '',
+                    spec: '',
+                    unit: ''
+                };
+            },
+
+            // 提交新增加物品
+            submitAddForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.$confirm('确认提交吗？', '提示', {}).then(() => {
+                            this.addLoading = true;
+                            let para = this.newGoodItem;
+                            this.$http.post('/api/admin/good/addGoodItem', para).then(res => {
+                                let code = res.code;
+                                if(code === ERR_OK0) {
+                                    alert("物品添加成功！");
+                                }else {
+                                    alert(res.msg);
+                                }
+                            }, err => {
+                                alert('系统错误，请重新刷新页面！');
+                            });
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+
+            //显示编辑界面
+            handleEdit: function (index, row) {
+                this.editFormVisible = true;
+                this.editForm = Object.assign({}, row);
+            },
             //删除
             // handleDel: function (index, row) {
             //     this.$confirm('确认删除该记录吗?', '提示', {
@@ -375,22 +467,8 @@
             //
             //     });
             // },
-            //显示编辑界面
-            // handleEdit: function (index, row) {
-            //     this.editFormVisible = true;
-            //     this.editForm = Object.assign({}, row);
-            // },
-            // //显示新增界面
-            // handleAdd: function () {
-            //     this.addFormVisible = true;
-            //     this.addForm = {
-            //         name: '',
-            //         sex: -1,
-            //         age: 0,
-            //         birth: '',
-            //         addr: ''
-            //     };
-            // },
+
+
             // //编辑
             // editSubmit: function () {
             //     this.$refs.editForm.validate((valid) => {
@@ -475,8 +553,30 @@
                 page: 0
             };
 
-            this.$http.get('/api/schoolStore/admin/storeOperation/findAllStoreOperations?page=0').then(res => {
-                console.log(res.data);
+            // /admin/config/getInitData
+            this.$http.get('/api/admin/config/getInitData').then(res => {
+                let sortNames = res.data.data.allSorts;
+                for(let i in sortNames) {
+                    let sortObj = {value: sortNames[i].id, label: sortNames[i].name};
+                    this.sortNames.push(sortObj);
+                }
+            }, err => {
+                alert("系统错误，请重新刷新页面！  " + err);
+            });
+            //  /admin/good/findAllGoodItems
+            this.$http.get('/api/admin/good/findAllGoodItems?page=0').then(res => {
+                let code = res.code;
+                let totalElements = res.data.data.totalElements;
+                this.pagenation.totalElements = totalElements;
+                console.log(totalElements);
+                if(code === ERR_OK0) {
+                    let goods = res.data.data.content;
+                    this.enterWarehouseRecords = goods;
+                }
+                if(res.code === 0) {
+                    let enterWarehouseRecords = res.data;
+
+                }
             }, err => {
                 console.log(err);
             });
