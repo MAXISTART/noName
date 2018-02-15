@@ -68,7 +68,7 @@
         </el-col>
 
         <!--列表-->
-        <el-table :data="enterWarehouseRecords" highlight-current-row v-loading="listLoading" style="width: 100%;">
+        <el-table :data="enterWarehouseRecords" highlight-current-row v-loading="listLoading" @selection-change="selsChange" style="width: 100%;">
             <el-table-column type="selection" width="55" column-key="id" fixed="left">
             </el-table-column>
             <el-table-column type="index" width="60" fixed="left">
@@ -99,7 +99,7 @@
 
         <!--工具条-->
         <el-col :span="24" class="toolbar">
-            <el-button type="danger" :disabled="this.sels.length===0">批量删除</el-button>
+            <el-button type="danger" :disabled="this.sels.length === 0" @click="batchRemove">批量删除</el-button>
             <el-pagination class="pagenation"
                            @size-change="handleSizeChange"
                            @current-change="handleCurrentChange"
@@ -564,31 +564,34 @@
                     // });
                 });
             },
-            // selsChange: function (sels) {
-            //     this.sels = sels;
-            // },
+            selsChange: function (sels) {
+                this.sels = sels;
+            },
             //批量删除
-            // batchRemove: function () {
-            //     var ids = this.sels.map(item => item.id).toString();
-            //     this.$confirm('确认删除选中记录吗？', '提示', {
-            //         type: 'warning'
-            //     }).then(() => {
-            //         this.listLoading = true;
-            //         //NProgress.start();
-            //         let para = { ids: ids };
-            //         batchRemoveUser(para).then((res) => {
-            //             this.listLoading = false;
-            //             //NProgress.done();
-            //             this.$message({
-            //                 message: '删除成功',
-            //                 type: 'success'
-            //             });
-            //             this.getUsers();
-            //         });
-            //     }).catch(() => {
-            //
-            //     });
-            // }
+            batchRemove: function () {
+                let para = this.sels.map(item => {
+                    return {id: item.id};
+                });
+                this.$confirm('确认删除选中记录吗？', '提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.listLoading = true;
+                    this.$http.post('/api/admin/good/deleteGoodItems', para).then(res => {
+                        this.listLoading = false;
+                        console.log(res);
+                        let code = res.code;
+                        if(code === ERR_OK0) {
+                            alert('删除成功！');
+                            history.go(0);
+                        }else {
+                            let msg = res.msg;
+                            alert(msg);
+                        }
+                    }, err => {
+                        alert('系统错误，请重新刷新页面   ' + err);
+                    });
+                });
+            }
         },
         mounted() {
             let tableId = 'enterWarehouseRecords';
