@@ -44,7 +44,6 @@ public class ConfigController extends BaseAdminController{
         data.put("allUsers", userService.findAll());
         data.put("allDepartments", departmentService.findAll());
         data.put("allSorts", sortItemService.findAll());
-        data.put("allGoods", goodItemService.findAll());
         return simpleResult(ResultEnum.SUCCESS, data);
     }
 

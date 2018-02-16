@@ -23,7 +23,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/good")
@@ -127,8 +129,6 @@ public class GoodController extends BaseAdminController {
 
 
 
-
-
     /**
      * 以表单 form 形式 传递参数
      *
@@ -168,6 +168,22 @@ public class GoodController extends BaseAdminController {
 
 
 
+    /**
+     *  根据物品种类搜索出所有的物品
+     * @param sortItemName
+     * @return
+     */
+    @PostMapping(value = "/findAllGoodItemsBySort")
+    public ResultVo findAllGoodItemsBySort(@RequestParam String sortItemName) {
+        return simpleResult(ResultEnum.SUCCESS, goodItemService.findBySort(sortItemName));
+    }
+
+
+
+    @GetMapping("/findAllSorts")
+    public ResultVo findAllSorts(){
+        return simpleResult(ResultEnum.SUCCESS, sortItemService.findAll());
+    }
 
 
 
