@@ -78,6 +78,19 @@ public class StoreOperationController extends BaseAdminController {
                     }
 
                 }
+
+                if(storeOperation.getApprovalResult() == 0){
+                    // 如果是审核拒绝通过
+                    switch (storeOperation.getType()) {
+                        case 1:
+                            // 如果是带审批的入库类型, 无任何影响
+                            break;
+                        case 2:
+                            // 如果是带审批的出库类型, 只需要释放申请的数量
+                            storeItemController.reduceLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
+                            break;
+                    }
+                }
             }
             storeOperationItemService.save(storeOperationItems);
         }

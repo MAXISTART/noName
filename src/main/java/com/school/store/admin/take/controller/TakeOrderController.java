@@ -74,7 +74,7 @@ public class TakeOrderController extends BaseAdminController {
             for (TakeOrderItem takeOrderItem : takeOrderItems){
                 if(storeItemController.checkNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber())){
                     takeOrderItem.setOrderId(takeOrder.getId());
-                    // 锁住部分库存先
+                    // 添加申请的数量
                     storeItemController.addLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
                     // 设置returnNumber
                     takeOrderItem.setReturnNumber(0);
@@ -149,21 +149,42 @@ public class TakeOrderController extends BaseAdminController {
     }
 
 
-
+    /**
+     *  这个是用户端的操作
+     * @param takeOrder
+     * @param admin
+     * @return
+     */
     @Transactional(readOnly = false)
     @PostMapping(value = "/updateTakeOrder")
     public ResultVo updateTakeOrder(@RequestBody TakeOrder takeOrder, @SessionAttribute("admin") Admin admin) {
 
-        // 更新明细内容
-        List<TakeOrderItem> takeOrderItems = takeOrder.getTakeOrderItems();
+        // 先将明细中的内容全部释放lockNumber然后删除明细内容，因为明细有可能变少了或者变多了
+        List<TakeOrderItem> takeOrderItems = takeOrderItemService.findByOrderId(takeOrder.getId());
+        for(TakeOrderItem takeOrderItem : takeOrderItems){
+            storeItemController.reduceLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
+        }
+        takeOrderItemService.delete(takeOrderItems);
+
+        // 然后再保存新明细
+        takeOrderItems = takeOrder.getTakeOrderItems();
         if(takeOrderItems != null && !takeOrderItems.isEmpty()){
+            takeOrderItems.forEach(takeOrderItem -> {
+                // 置id为null，保证存进去的id是由数据库自增的
+                takeOrderItem.setId(null);
+                takeOrderItem.setOrderId(takeOrder.getId());
+                // 添库存中的锁定数量（申请数量）
+                storeItemController.addLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
+                takeOrderItem = entityUtil.updateInfoDefault(takeOrderItem, admin.getId(), admin.getId(), true);
+            });
             takeOrderItemService.save(takeOrderItems);
         }
-
         // 更新的话不需要更改 创建者和创建时间
         takeOrderService.save(entityUtil.updateInfoDefault(takeOrder, null, admin.getId(), false));
         return simpleResult(ResultEnum.SUCCESS, null);
     }
+
+
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteTakeOrder")

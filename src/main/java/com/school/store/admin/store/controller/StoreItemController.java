@@ -153,8 +153,8 @@ public class StoreItemController extends BaseAdminController {
     public boolean checkNumber(String goodId, Integer number){
         // 检查库存是否足够
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
-        if((storeItem.getNumber() - storeItem.getLockNumber()) < number){
-            // 如果库存自由的数量小于要减少的数量
+        if(storeItem.getNumber() < number){
+            // 如果库存当前存在的数量小于要减少的数量
             return false;
         }else{
             return true;
