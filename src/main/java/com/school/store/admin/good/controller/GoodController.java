@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/good")
@@ -169,13 +170,37 @@ public class GoodController extends BaseAdminController {
 
 
     /**
-     *  根据物品种类搜索出所有的物品
-     * @param sortItemName
+     *  根据物品种类搜索出所有的物品名称
+     * @param sort
      * @return
      */
-    @PostMapping(value = "/findAllGoodItemsBySort")
-    public ResultVo findAllGoodItemsBySort(@RequestParam String sortItemName) {
-        return simpleResult(ResultEnum.SUCCESS, goodItemService.findBySort(sortItemName));
+    @PostMapping(value = "/findAllGoodItemNamesBySort")
+    public ResultVo findAllGoodItemNamesBySort(@RequestParam String sort) {
+        return simpleResult(ResultEnum.SUCCESS, goodItemService.findBySort(sort).stream().map(T -> T.getName()).collect(Collectors.toList()));
+    }
+
+
+    /**
+     *
+     * @return
+     */
+    @PostMapping(value = "/findAllSpecsByGoodItemName")
+    public ResultVo findAllSpecsByGoodItemName(@RequestParam String goodItemName){
+        return simpleResult(ResultEnum.SUCCESS, goodItemService.findByName(goodItemName).stream().map(T -> T.getSpec()).collect(Collectors.toList()));
+    }
+
+
+    /**
+     *  根据物品名称和规格获取该商品的信息
+     * @param goodItemName
+     * @param spec
+     * @return
+     */
+    @PostMapping(value = "findAllGoodItemsByNameAndSpec")
+    public ResultVo findAllGoodItemsByNameAndSpec(@RequestParam String goodItemName,
+                                                  @RequestParam String spec)
+    {
+        return simpleResult(ResultEnum.SUCCESS, goodItemService.findByNameAndSpec(goodItemName, spec));
     }
 
 
