@@ -140,6 +140,13 @@ public class BuyOrderController extends BaseAdminController {
     @PostMapping(value = "/updateBuyOrder")
     public ResultVo updateBuyOrder(@RequestBody BuyOrder buyOrder, @SessionAttribute("admin") Admin admin) {
 
+        // 如果审核结果已经出来了，那就不能进行修改了
+        int approvalResult = buyOrderService.findById(buyOrder.getId()).getApprovalResult();
+        if(approvalResult != 2){
+            // 如果审核结果不是未审核，那么就不能继续操作
+            return simpleResult(ResultEnum.RESULT_OUT, null);
+        }
+
         // 先删除明细内容，因为明细有可能变少了或者变多了
         List<BuyOrderItem> buyOrderItems = buyOrderItemService.findByOrderId(buyOrder.getId());
         buyOrderItemService.delete(buyOrderItems);

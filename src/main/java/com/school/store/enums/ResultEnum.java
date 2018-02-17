@@ -19,7 +19,9 @@ public enum ResultEnum {
 
     STORE_UNSATISFY(3, "库存不足"),
 
-    NAME_REPEAT(4, "种类名字已经重复")
+    NAME_REPEAT(4, "种类名字已经重复"),
+
+    RESULT_OUT(5, "审核结果已经出了，不能再修改订单")
 
     ;
 

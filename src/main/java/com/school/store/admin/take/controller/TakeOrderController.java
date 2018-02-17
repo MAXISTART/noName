@@ -150,7 +150,7 @@ public class TakeOrderController extends BaseAdminController {
 
 
     /**
-     *  这个是用户端的操作
+     *  这个是用户端的操作，是会影响到库存中的锁存操作的
      * @param takeOrder
      * @param admin
      * @return
@@ -158,6 +158,13 @@ public class TakeOrderController extends BaseAdminController {
     @Transactional(readOnly = false)
     @PostMapping(value = "/updateTakeOrder")
     public ResultVo updateTakeOrder(@RequestBody TakeOrder takeOrder, @SessionAttribute("admin") Admin admin) {
+
+        // 如果审核结果已经出来了，那就不能进行修改了
+        int approvalResult = takeOrderService.findById(takeOrder.getId()).getApprovalResult();
+        if(approvalResult != 2){
+            // 如果审核结果不是未审核，那么就不能继续操作
+            return simpleResult(ResultEnum.RESULT_OUT, null);
+        }
 
         // 先将明细中的内容全部释放lockNumber然后删除明细内容，因为明细有可能变少了或者变多了
         List<TakeOrderItem> takeOrderItems = takeOrderItemService.findByOrderId(takeOrder.getId());
@@ -173,7 +180,7 @@ public class TakeOrderController extends BaseAdminController {
                 // 置id为null，保证存进去的id是由数据库自增的
                 takeOrderItem.setId(null);
                 takeOrderItem.setOrderId(takeOrder.getId());
-                // 添库存中的锁定数量（申请数量）
+                // 添加库存中的锁定数量（申请数量）
                 storeItemController.addLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
                 takeOrderItem = entityUtil.updateInfoDefault(takeOrderItem, admin.getId(), admin.getId(), true);
             });
