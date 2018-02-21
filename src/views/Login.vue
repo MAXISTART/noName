@@ -40,6 +40,49 @@
       };
     },
     methods: {
+      getInitData() {
+          // /admin/config/getInitData
+          let sortGroup = []; // 获得种类参数
+          let goods = []; // 获得物品所有参数
+          let departmentsGroup = [];  // 部门名字参数
+          let usersGroup = []; // 负责人参数
+          this.$http.get('/api/admin/config/getInitData').then(res => {
+              let code = res.data.code;
+              if(code === 0) {
+                  let sortNames = res.data.data.allSorts; // 获得种类参数
+                  console.log(sortNames)
+                  //goods = res.data.data.allGoods; // 获得物品所有参数
+                  let allDepartments = res.data.data.allDepartments;
+                  let allUsers = res.data.data.allUsers;
+                  for(let i in sortNames) {
+                      let sortObj = {value: sortNames[i].name, label: sortNames[i].name};
+                      sortObj = JSON.stringify(sortObj);
+                      sortGroup.push(sortObj);
+                  }
+
+                  allDepartments.forEach(item => {
+                      let obj = JSON.stringify(item);
+                      departmentsGroup.push(obj);
+                  });
+
+                  allUsers.forEach(item => {
+                      let obj = JSON.stringify(item);
+                      usersGroup.push(obj);
+                  });
+
+                  // 把初始数据赋予到sessionLorage中
+                  sessionStorage.sortGroup = sortGroup;
+                  sessionStorage.departmentsGroup = departmentsGroup;
+                  sessionStorage.usersGroup = usersGroup;
+
+              }else {
+                  let msg = res.msg;
+                  alert(msg);
+              }
+          }, err => {
+              alert("系统错误，请重新刷新页面！  " + err);
+          });
+      },
       handleReset2() {
         this.$refs.ruleForm2.resetFields();
       },
@@ -62,6 +105,7 @@
                 });
               } else {
                 sessionStorage.setItem('user', JSON.stringify(user));
+                this.getInitData();
                 this.$router.push({ path: '/table' });
               }
             });

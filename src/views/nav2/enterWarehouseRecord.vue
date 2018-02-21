@@ -241,6 +241,7 @@
                 // 查询字段相关参数
                 queryObj: {
                     page: 0,
+                    size: 20,
                     name: '',
                     price_start: '',
                     price_end: '',
@@ -372,14 +373,16 @@
             },
             // 种类选择后触发
             handleSortSelect(item) {
-                this.queryObj.querySort = item;
+                this.queryObj.sort = item;
             },
             // 点击查询按钮触发
             handleQuery(e) {
               e.preventDefault();
               let queryObj = this.queryObj;
+
               this.$http.post('/api/admin/good/findGoodItemsBySearchParams', queryObj, { emulateJSON: true}).then(res => {
                     let code = res.code;
+                    console.log(res);
                     if(code === ERR_OK0) {
                         let goods = res.data.data;
                         this.enterWarehouseRecords = goods;
@@ -403,6 +406,7 @@
                 let page = this.pagenation.currentPage;
                 let size = this.pagenation.pageSize;
                 let queryObj = this.queryObj;
+                this.queryObj.size = size;
                 let params = { page: page,
                     size: size,
                     name: queryObj.name,
@@ -427,6 +431,7 @@
                 let page = val;
                 let size = this.pagenation.pageSize;
                 let queryObj = this.queryObj;
+                this.queryObj.page = page;
                 let params = { page: page,
                     size: size,
                     name: queryObj.name,
@@ -475,9 +480,7 @@
                                 let code = res.code;
                                 if(code === ERR_OK0) {
                                     alert("物品添加成功！");
-                                    setTimeout(() => {
-                                        history.go(0);
-                                    }, 200);
+                                    history.go(0);
                                 }else {
                                     alert(res.msg);
                                 }
@@ -512,7 +515,6 @@
                             para.price = this.editGoodItem.price;
                             para.spec = this.editGoodItem.spec;
                             para.number = this.editGoodItem.number;
-                            console.log(para);
                             this.$http.post('/api/admin/good/updateGoodItem',para).then(res => {
                                 let code = res.code;
                                 if(ERR_OK0 === code) {
@@ -578,7 +580,6 @@
                     this.listLoading = true;
                     this.$http.post('/api/admin/good/deleteGoodItems', para).then(res => {
                         this.listLoading = false;
-                        console.log(res);
                         let code = res.code;
                         if(code === ERR_OK0) {
                             alert('删除成功！');
@@ -603,29 +604,19 @@
             };
 
             // /admin/config/getInitData
-            this.$http.get('/api/admin/config/getInitData').then(res => {
-                let sortNames = res.data.data.allSorts; // 获得种类参数
-                let goods = res.data.data.allGoods; // 获得物品所有参数
-                for(let i in goods) {
-                    let obj = {};
-                    obj.id = goods[i].id;
-                    obj.value = goods[i].name;
-                    this.goods.push(obj);
-                }
-                for(let i in sortNames) {
-                    let sortObj = {value: sortNames[i].name, label: sortNames[i].name};
-                    this.sortNames.push(sortObj);
-                }
-            }, err => {
-                alert("系统错误，请重新刷新页面！  " + err);
-            });
+            let sortGroup = '[' + sessionStorage.sortGroup + ']';
+            sortGroup = JSON.parse(sortGroup);
+            this.sortNames = sortGroup;
+            console.log(this.sortNames)
 
+            // 一进页面给查询的参数赋值
+            this.queryObj.page = 0;
+            this.queryObj.size = 20;
             //  /admin/good/findAllGoodItems获取表格的东西
             this.$http.get('/api/admin/good/findAllGoodItems?page=0').then(res => {
                 let code = res.code;
                 let totalElements = res.data.data.totalElements;
                 this.pagenation.totalElements = totalElements;
-                console.log(totalElements);
                 if(code === ERR_OK0) {
                     let goods = res.data.data.content;
                     this.enterWarehouseRecords = goods;
