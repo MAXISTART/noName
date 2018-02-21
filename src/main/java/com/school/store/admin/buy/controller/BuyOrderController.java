@@ -251,10 +251,10 @@ public class BuyOrderController extends BaseAdminController {
      *  findById
      */
     @PostMapping("/findBuyOrderById")
-    public ResultVo findBuyOrderById(@RequestParam  String buyOrderId){
+    public BuyOrder findBuyOrderById(@RequestParam  String buyOrderId){
         BuyOrder buyOrder = buyOrderService.findById(buyOrderId);
         setBuyOrderItems(buyOrder);
-        return simpleResult(ResultEnum.SUCCESS, buyOrder);
+        return buyOrder;
     }
 
 
