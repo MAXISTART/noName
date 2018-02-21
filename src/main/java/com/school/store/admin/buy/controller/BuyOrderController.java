@@ -235,8 +235,6 @@ public class BuyOrderController extends BaseAdminController {
 
 
 
-
-
     /**
      *  防止代码重复的工具代码
      * @param buyOrder
@@ -253,10 +251,10 @@ public class BuyOrderController extends BaseAdminController {
      *  findById
      */
     @PostMapping("/findBuyOrderById")
-    public BuyOrder findBuyOrderById(@RequestParam  String buyOrderId){
+    public ResultVo findBuyOrderById(@RequestParam  String buyOrderId){
         BuyOrder buyOrder = buyOrderService.findById(buyOrderId);
         setBuyOrderItems(buyOrder);
-        return buyOrder;
+        return simpleResult(ResultEnum.SUCCESS, buyOrder);
     }
 
 

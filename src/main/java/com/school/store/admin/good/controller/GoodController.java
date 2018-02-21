@@ -159,6 +159,10 @@ public class GoodController extends BaseAdminController {
             sqlParams.put("AND", "price", "<=");
             sqlParams.putValue(price_end);
         }
+        if(!name.equals("allName")){
+            sqlParams.put("AND", "name", "like");
+            sqlParams.putValue("%" + name + "%");
+        }
 
         // 返回的是真正的List<GoodItem>
         List<GoodItem> goodItems = goodItemService.findByDynamicSqlParams("good_items", sqlParams, page, size, GoodItem.class);
