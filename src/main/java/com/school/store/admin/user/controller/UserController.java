@@ -155,7 +155,7 @@ public class UserController extends BaseAdminController{
      * @param departmentId
      * @return
      */
-    @PostMapping(value = "/findUserByUserId")
+    @PostMapping(value = "/findUsersByDepartmentId")
     public List<User> findUsersByDepartmentId(@RequestParam String departmentId){
         List<User> users = userService.findByDepartmentId(departmentId);
         users.forEach(user -> {

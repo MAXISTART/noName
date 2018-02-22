@@ -1,6 +1,5 @@
 package com.school.store.handler;
 
-import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
 import com.school.store.vo.ResultVo;
 import org.springframework.web.bind.annotation.ControllerAdvice;
