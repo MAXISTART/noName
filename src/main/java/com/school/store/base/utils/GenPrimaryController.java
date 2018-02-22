@@ -12,7 +12,7 @@ public class GenPrimaryController {
 
 
         GenPrimaryController gen = new GenPrimaryController();
-        gen.doReplace("storeItem");
+        gen.doReplace("userToPermission");
 
     }
 

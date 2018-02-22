@@ -4,6 +4,10 @@ package com.school.store.admin.user.controller;
 import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.department.entity.Department;
 import com.school.store.admin.department.service.DepartmentService;
+import com.school.store.admin.permission.entity.Permission;
+import com.school.store.admin.permission.entity.UserToPermission;
+import com.school.store.admin.permission.service.PermissionService;
+import com.school.store.admin.permission.service.UserToPermissionService;
 import com.school.store.admin.user.entity.User;
 import com.school.store.admin.user.service.UserService;
 import com.school.store.base.controller.BaseAdminController;
@@ -14,9 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/admin/user")
@@ -24,6 +31,13 @@ public class UserController extends BaseAdminController{
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private PermissionService permissionService;
+
+    @Autowired
+    private UserToPermissionService userToPermissionService;
+
 
     @Autowired
     private DepartmentService departmentService;
@@ -43,17 +57,45 @@ public class UserController extends BaseAdminController{
     }
 
 
+    @Transactional(readOnly = false)
     @PostMapping(value = "/deleteUser")
     public ResultVo deleteUser(@RequestBody User user, @SessionAttribute("admin") Admin admin) {
-        // 这里的RequestBody 的 user只需要一个id就行了
+        // 先删除 用户-权限 键值对
+        userToPermissionService.delete(userToPermissionService.findByUserId(user.getId()));
         userService.delete(user);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
+    @Transactional(readOnly = false)
     @PostMapping(value = "/deleteUsers")
     public ResultVo deleteUsers(@RequestBody List<User> users, @SessionAttribute("admin") Admin admin) {
-        // 这里的RequestBody 的 users 是一个 user的数组
+        // 先删除 用户-权限 键值对
+        users.forEach(user -> {
+            userToPermissionService.delete(userToPermissionService.findByUserId(user.getId()));
+        });
         userService.delete(users);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    /**
+     *  给指定用户添加权限
+     * @param userToPermissions
+     * @param admin
+     * @return
+     */
+
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/addPermissions")
+    public ResultVo addPermissions(@RequestBody List<UserToPermission> userToPermissions, @SessionAttribute("admin") Admin admin) {
+        // 要先验证是否已经存在了该 用户-权限 对。
+        for(int index=0; index < userToPermissions.size(); index++){
+            UserToPermission userToPermission = userToPermissions.get(index);
+            if(userToPermissionService.findByPermissionIdAndUserId(userToPermission.getPermissionId(), userToPermission.getUserId()) != null){
+                userToPermissions.remove(index);
+            }
+        }
+        userToPermissionService.save(userToPermissions);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -85,9 +127,44 @@ public class UserController extends BaseAdminController{
         // 给每个user设置他们对应的departmentName
         users.forEach(user -> {
             setDepartmentName(user);
+            setPermissions(user);
         });
         return simpleResult(ResultEnum.SUCCESS, users);
     }
+
+
+    /**
+     *  根据id传回user
+     * @param userId
+     * @return
+     */
+    @PostMapping(value = "/findUserByUserId")
+    public User findUserByUserId(@RequestParam String userId){
+        User user = userService.findById(userId);
+        setPermissions(user);
+        setDepartmentName(user);
+        return user;
+    }
+
+
+
+
+
+    /**
+     *  根据部门id传回users
+     * @param departmentId
+     * @return
+     */
+    @PostMapping(value = "/findUserByUserId")
+    public List<User> findUsersByDepartmentId(@RequestParam String departmentId){
+        List<User> users = userService.findByDepartmentId(departmentId);
+        users.forEach(user -> {
+            setPermissions(user);
+            setDepartmentName(user);
+        });
+        return users;
+    }
+
 
 
     /**
@@ -121,6 +198,7 @@ public class UserController extends BaseAdminController{
         // 给每个user设置他们对应的departmentName
         users.forEach(user -> {
             setDepartmentName(user);
+            setPermissions(user);
         });
         return simpleResult(ResultEnum.SUCCESS, users);
     }
@@ -135,5 +213,19 @@ public class UserController extends BaseAdminController{
         if(department != null){
             user.setDepartmentName(department.getName());
         }
+    }
+
+    /**
+     *  防止代码重复的工具代码
+     * @param user
+     */
+    @Transactional(readOnly = false)
+    public void setPermissions(User user){
+        Set<Permission> permissions = new HashSet<>();
+        List<UserToPermission> userToPermissions = userToPermissionService.findByUserId(user.getId());
+        userToPermissions.forEach(userToPermission -> {
+            permissions.add(permissionService.findById(userToPermission.getPermissionId()));
+        });
+        user.setPermissions(permissions);
     }
 }

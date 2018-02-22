@@ -46,5 +46,4 @@ public class BaseEntity implements Serializable {
 	@Column(name = "updateAdmin", length = 255)
 	private String updateAdmin;
 
-
 }

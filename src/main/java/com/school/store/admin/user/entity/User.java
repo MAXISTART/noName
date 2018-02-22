@@ -1,12 +1,12 @@
 package com.school.store.admin.user.entity;
 
 
+import com.school.store.admin.permission.entity.Permission;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.util.Set;
 
 
 /**
@@ -22,13 +22,13 @@ public class User extends BaseEntity{
 	@Column(name = "name" , length = 36)
 	private String name;
 
+	// 用户的密码
+	@Column(name = "password", length = 36)
+	private String password;
+
 	// 用户的微信openid
 	@Column(name = "openId" , length = 36)
 	private String openId;
-
-	// 用户的等级id，对应权限等级表中的id
-	@Column(name = "gradeId" , length = 36)
-	private String gradeId;
 
 	// 用户的部门ID，对应部门表中的id
 	@Column(name = "departmentId" , length = 36)
@@ -57,5 +57,9 @@ public class User extends BaseEntity{
 	// 关联的部门名称
 	@Transient
 	private String departmentName;
+
+	// 该用户对应的所有权限
+	@Transient
+	private Set<Permission> permissions;
 }
 

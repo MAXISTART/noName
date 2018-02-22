@@ -6,10 +6,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.io.Serializable;
+import java.util.List;
 
 public interface UserService extends IBaseRepository<User, Serializable> {
 
     public Page<User> findAll(Pageable pageable);
 
     public User findById(String id);
+
+    public List<User> findByDepartmentId(String departmentId);
+
 }

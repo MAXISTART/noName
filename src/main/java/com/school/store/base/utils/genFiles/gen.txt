@@ -1,6 +1,6 @@
 import com.school.store.admin.admin.entity.Admin;
-import com.school.store.admin.storeItem.entity.StoreItem;
-import com.school.store.admin.storeItem.service.StoreItemService;
+import com.school.store.admin.userToPermission.entity.UserToPermission;
+import com.school.store.admin.userToPermission.service.UserToPermissionService;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
@@ -13,39 +13,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/storeItem")
-public class StoreItemController extends BaseAdminController {
+@RequestMapping("/admin/userToPermission")
+public class UserToPermissionController extends BaseAdminController {
 
     @Autowired
-    private StoreItemService storeItemService;
+    private UserToPermissionService userToPermissionService;
 
-    @PostMapping("/addStoreItem")
-    public ResultVo addStoreItem(@RequestBody StoreItem storeItem, @SessionAttribute("admin") Admin admin) {
+    @PostMapping("/addUserToPermission")
+    public ResultVo addUserToPermission(@RequestBody UserToPermission userToPermission, @SessionAttribute("admin") Admin admin) {
 
-        storeItemService.save(entityUtil.updateInfoDefault(storeItem, admin.getId(), admin.getId(), true));
+        userToPermissionService.save(entityUtil.updateInfoDefault(userToPermission, admin.getId(), admin.getId(), true));
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
-    @PostMapping(value = "/updateStoreItem")
-    public ResultVo updateStoreItem(@RequestBody StoreItem storeItem, @SessionAttribute("admin") Admin admin) {
+    @PostMapping(value = "/updateUserToPermission")
+    public ResultVo updateUserToPermission(@RequestBody UserToPermission userToPermission, @SessionAttribute("admin") Admin admin) {
         // 更新的话不需要更改 创建者和创建时间
-        storeItemService.save(entityUtil.updateInfoDefault(storeItem, null, admin.getId(), false));
+        userToPermissionService.save(entityUtil.updateInfoDefault(userToPermission, null, admin.getId(), false));
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
-    @PostMapping(value = "/deleteStoreItem")
-    public ResultVo deleteStoreItem(@RequestBody StoreItem storeItem, @SessionAttribute("admin") Admin admin) {
+    @PostMapping(value = "/deleteUserToPermission")
+    public ResultVo deleteUserToPermission(@RequestBody UserToPermission userToPermission, @SessionAttribute("admin") Admin admin) {
         // 这里的RequestBody 的 user只需要一个id就行了
-        storeItemService.delete(storeItem);
+        userToPermissionService.delete(userToPermission);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
-    @PostMapping(value = "/deleteStoreItems")
-    public ResultVo deleteStoreItems(@RequestBody List<StoreItem> storeItems, @SessionAttribute("admin") Admin admin) {
-        // 这里的RequestBody 的 storeItems 是一个 storeItem 的数组
-        storeItemService.delete(storeItems);
+    @PostMapping(value = "/deleteUserToPermissions")
+    public ResultVo deleteUserToPermissions(@RequestBody List<UserToPermission> userToPermissions, @SessionAttribute("admin") Admin admin) {
+        // 这里的RequestBody 的 userToPermissions 是一个 userToPermission 的数组
+        userToPermissionService.delete(userToPermissions);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -59,8 +59,8 @@ public class StoreItemController extends BaseAdminController {
      * @param property  按照什么排列
      * @return
      */
-    @GetMapping(value = "/findAllStoreItems")
-    public ResultVo findAllStoreItems(@RequestParam(required = true) Integer page,
+    @GetMapping(value = "/findAllUserToPermissions")
+    public ResultVo findAllUserToPermissions(@RequestParam(required = true) Integer page,
                                 @RequestParam(required = false, defaultValue = "20") Integer size,
                                 @RequestParam(required = false, defaultValue = "DESC") String direction,
                                 @RequestParam(required = false, defaultValue = "updateTime") String property) {
@@ -74,17 +74,17 @@ public class StoreItemController extends BaseAdminController {
             pager = new PageRequest(page, size, Sort.Direction.DESC, property);
         }
 
-        Page<StoreItem> storeItems = storeItemService.findAll(pager);
+        Page<UserToPermission> userToPermissions = userToPermissionService.findAll(pager);
 
-        return simpleResult(ResultEnum.SUCCESS, storeItems);
+        return simpleResult(ResultEnum.SUCCESS, userToPermissions);
     }
 
 
     /**
      *  防止代码重复的工具代码
-     * @param storeItem
+     * @param userToPermission
      */
-    public void setStoreItems(StoreItem storeItem){
+    public void setUserToPermissions(UserToPermission userToPermission){
 
     }
 
@@ -96,11 +96,11 @@ public class StoreItemController extends BaseAdminController {
 =============
 
 
-import com.school.store.admin.storeItem.entity.StoreItem;
+import com.school.store.admin.userToPermission.entity.UserToPermission;
 import com.school.store.base.repository.IBaseRepository;
 
 import java.io.Serializable;
 
-public interface StoreItemService extends IBaseRepository<StoreItem, Serializable>{
+public interface UserToPermissionService extends IBaseRepository<UserToPermission, Serializable>{
 
 }

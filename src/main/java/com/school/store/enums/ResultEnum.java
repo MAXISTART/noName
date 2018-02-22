@@ -21,7 +21,9 @@ public enum ResultEnum {
 
     NAME_REPEAT(4, "种类名字已经重复"),
 
-    RESULT_OUT(5, "审核结果已经出了，不能再修改订单")
+    RESULT_OUT(5, "审核结果已经出了，不能再修改订单"),
+
+    PERMISSION_NOT_ALLOWED(6, "用户权限不足")
 
     ;
 

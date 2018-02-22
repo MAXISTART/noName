@@ -1,7 +1,6 @@
 package com.school.store.utils;
 
 
-import com.school.store.admin.girl.entity.Girl;
 import com.school.store.admin.user.entity.User;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
