@@ -53,7 +53,16 @@ export default {
             }
             return null;
         }
+    },
 
+    // 把一个对象置空
+    emptyObj(obj) {
+        for(let i in obj) {
+            if(Array.isArray(obj[i])) {
+                obj[i] = [];
+            }else {
+                obj[i] = '';
+            }
+        }
     }
-
 };

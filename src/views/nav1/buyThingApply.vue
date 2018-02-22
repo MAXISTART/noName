@@ -3,9 +3,9 @@
         <!--工具条-->
         <el-col :span="24" class="toolbar">
             <el-button type="primary" size="small" @click="handleAdd">新增</el-button>
-            <el-button type="primary" size="small" @click="quickAdd">快速入库</el-button>
+            <el-button type="primary" size="small" :disabled="this.sels.length === 0" @click="quickAdd">快速入库</el-button>
         </el-col>
-        <el-table :data="buyOrdersList" ref="buyOrderTable"  :span-method="arraySpanMethod"
+        <el-table :data="buyOrdersList" ref="buyOrderTable" v-loading="listLoading" :span-method="arraySpanMethod"
                   @selection-change="selsChange" style="width: 100%;">
             <el-table-column type="selection"></el-table-column>
             <el-table-column label="创建人" prop="createAdmin"></el-table-column>
@@ -49,7 +49,14 @@
         <!-- 分页 工具条 -->
         <el-col :span="24" class="toolbar">
             <el-button type="danger" :disabled="this.sels.length === 0" @click="batchRemove">批量删除</el-button>
-            <!--<el-button type="primary" :disabled="this.sels.length === 0">批量审核</el-button>-->
+            <el-popover
+                    trigger="click"
+                    ref="batchApprovalPopover"
+                    placement="top-start">
+                    <el-button size="mini" type="primary" @click="batchApproval(0)">批准通过</el-button>
+                    <el-button type="danger" size="mini" style="float: right;" @click="batchApproval(1)">未通过</el-button>
+            </el-popover>
+            <el-button type="primary" :disabled="this.sels.length === 0" v-popover:batchApprovalPopover>批量审核</el-button>
             <el-pagination class="pagenation"
                            @size-change="handleSizeChange"
                            @current-change="handleCurrentChange"
@@ -64,6 +71,26 @@
         <!--编辑界面-->
         <el-dialog fullscreen title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
             <el-form :model="editObj" label-width="80px" :rules="editFormRules" ref="editForm">
+                <el-form-item label="所属部门" prop="departmentId">
+                    <el-select v-model="editObj.departmentId" placeholder="请选择" @change="selectEditDepartment">
+                        <el-option
+                                v-for="item in allDepartments"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="负责人" prop="requestorId">
+                    <el-select v-model="editObj.requestorId" placeholder="请选择">
+                        <el-option
+                                v-for="item in editRequestors"
+                                :key="item.index"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="创建人" prop="createAdmin">
                     <el-input v-model="editObj.createAdmin" auto-complete="off"></el-input>
                 </el-form-item>
@@ -154,7 +181,7 @@
                         {{err_msg}}
                     </div>
                     <el-form-item style="margin-top: 10px;">
-                        <el-button type="primary" size="small" icon="el-icon-plus" @click="handleEditAddGoodItems(editObj.buyOrderItems)"></el-button>
+                        <el-button type="primary" size="small" icon="el-icon-plus" @click="handleEditAddGoodItems"></el-button>
                     </el-form-item>
                 </el-form-item>
                 <el-form-item label="入库总价" prop="requestTotalPrice">
@@ -172,32 +199,52 @@
         <!--新增界面-->
         <el-dialog fullscreen title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
             <el-form :model="addObj" label-width="80px" :rules="addFormRules" ref="addForm">
-                <el-form-item label="创建人" prop="createAdmin">
-                    <el-input v-model="addObj.createAdmin" auto-complete="off"></el-input>
+                <el-form-item label="所属部门" prop="departmentId">
+                    <el-select v-model="addObj.departmentId" placeholder="请选择" @change="selectAddDepartment">
+                        <el-option
+                                v-for="item in allDepartments"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="创建时间" prop="createTime">
-                    <el-date-picker
-                            :editable="false"
-                            v-model="addObj.createTime"
-                            value-format="yyyy-MM-dd HH:mm:ss"
-                            type="datetime"
-                            align="right"
-                            :picker-options="timeOptions">
-                    </el-date-picker>
+                <el-form-item label="负责人" prop="requestorId">
+                    <el-select v-model="addObj.requestorId" placeholder="请选择">
+                        <el-option
+                                v-for="item in addRequestors"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                        </el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="更新人" prop="updateAdmin">
-                    <el-input v-model="addObj.updateAdmin" auto-complete="off"></el-input>
-                </el-form-item>
-                <el-form-item label="更新时间" prop="updateTime">
-                    <el-date-picker
-                            :editable="false"
-                            v-model="addObj.updateTime"
-                            value-format="yyyy-MM-dd HH:mm:ss"
-                            type="datetime"
-                            align="right"
-                            :picker-options="timeOptions">
-                    </el-date-picker>
-                </el-form-item>
+                <!--<el-form-item label="创建人" prop="createAdmin">-->
+                    <!--<el-input v-model="addObj.createAdmin" auto-complete="off"></el-input>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="创建时间" prop="createTime">-->
+                    <!--<el-date-picker-->
+                            <!--:editable="false"-->
+                            <!--v-model="addObj.createTime"-->
+                            <!--value-format="yyyy-MM-dd HH:mm:ss"-->
+                            <!--type="datetime"-->
+                            <!--align="right"-->
+                            <!--:picker-options="timeOptions">-->
+                    <!--</el-date-picker>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="更新人" prop="updateAdmin">-->
+                    <!--<el-input v-model="addObj.updateAdmin" auto-complete="off"></el-input>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="更新时间" prop="updateTime">-->
+                    <!--<el-date-picker-->
+                            <!--:editable="false"-->
+                            <!--v-model="addObj.updateTime"-->
+                            <!--value-format="yyyy-MM-dd HH:mm:ss"-->
+                            <!--type="datetime"-->
+                            <!--align="right"-->
+                            <!--:picker-options="timeOptions">-->
+                    <!--</el-date-picker>-->
+                <!--</el-form-item>-->
                 <el-form-item label="申请时间" prop="requestTime">
                     <el-date-picker
                             :editable="false"
@@ -273,7 +320,7 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button type="primary" :loading="editLoading" @click="handleAddFormSubmit('addForm')">提交</el-button>
+                <el-button type="primary" :loading="addLoading" @click="handleAddFormSubmit('addForm')">提交</el-button>
             </div>
         </el-dialog>
     </div>
@@ -413,14 +460,26 @@
             return {
                 state2: '',
                 visible2: false,
+                // 页面整体加载状态
+                listLoading: false,
+                // 所有部门名称与id
+                allDepartments: [],
+                // 所有user的id和名称
+                allUsers: [],
                 /* 仓库负责人名单 */
                 warehouseManagers: [],
+                // 快速入库时点击快速入库的页面加载状态
+                enterWarehouseLoading: false,
                 // 采购列表显示
                 buyOrdersList: [],
                 orderItemsNum: [],
                 rowIndex1: 0,
+                // 单个审核时提交审核的页面加载状态
+                approvalLoading: false,
                 // 批量删除
                 sels: [],
+                // 点击批量审核按钮时的页面加载状态
+                batchApprovalLoading: false,
                 // 分页
                 pagenation: {
                     totalElements: 0,
@@ -431,8 +490,10 @@
 
                 // 编辑界面相关函数
                 editObj: {},
+                // 所有部门的采购负责人departmentid与id与name
+                editRequestors: [],
                 editFormVisible: false,//编辑界面是否显示
-                editLoading: false,
+                editLoading: false,  // 编辑框提交按钮加载中状态
                 timeOptions: {
                     shortcuts: [{
                         text: '今天',
@@ -459,6 +520,12 @@
                 nameBool: false,
                 err_msg: '',
                 editFormRules: {
+                    departmentId: [
+                        {required: true, message: '请选择部门名称', trigger: 'change'}
+                    ],
+                    requestorId: [
+                        {required: true, message: '请选择部门名称', trigger: 'change'}
+                    ],
                     createAdmin: [
                         {required: true, message: '请输入物品名称', trigger: 'blur'}
                     ],
@@ -495,15 +562,23 @@
 
                 // 新增界面
                 addFormVisible: false,
+                addLoading: false,
                 addObj: {
-                    createAdmin: '',
-                    createTime: '',
-                    updateAdmin: '',
-                    updateTime: '',
+                    departmentId: '',
                     requestTime: '',
+                    requestorId: '',
+                    description: '',
                     buyOrderItems: []
                 },
+                // 所有部门的采购负责人departmentid与id与name
+                addRequestors: [],
                 addFormRules: {
+                    departmentId: [
+                        {required: true, message: '请选择部门名称', trigger: 'change'}
+                    ],
+                    requestorId: [
+                        {required: true, message: '请选择部门名称', trigger: 'change'}
+                    ],
                     createAdmin: [
                         {required: true, message: '请输入物品名称', trigger: 'blur'}
                     ],
@@ -522,48 +597,6 @@
                     buyOrderItems: [
                         {required: true, message: '物品明细不能为空', trigger: 'blur'},
                         { validator: checkAddBuyOrderItems, trigger: 'blur' },
-                    ]
-                },
-                form: {
-                    enterDate: '',
-                    personInCharge: '',
-                    thingName: '',
-                    type: '',
-                    unit: '',
-                    total: '',
-                    totalPrice: '',
-                    unitPrice: '',
-                    resource: ''
-                },
-
-                rules: {
-                    enterDate: [
-                        { type:  'date', required: true, message: "请选择入库日期！", trigger: 'change'}
-                    ],
-                    warehouseManagerName: [
-                        {required: true, message: '请选择负责人', trigger: 'blur'}
-                    ],
-                    thingName: [
-                        {validator: checkThingName, trigger: 'blur'}
-                    ],
-                    type: [
-                        {required: true, message: '请输入类型', trigger: 'blur'}
-                    ],
-                    size: [
-                        {required: true, message: '请输入规格', trigger: 'blur'}
-                    ],
-                    unit: [
-                        {required: true, message: '请输入单位', trigger: 'blur'},
-                        { max: 1, message: '单位格式只能为1个字', trigger: 'blur' }
-                    ],
-                    total: [
-                        {validator: checkTotal, trigger: 'blur'}
-                    ],
-                    unitPrice: [
-                        {validator: checkUnitPrice, trigger: 'blur'}
-                    ],
-                    resource: [
-                        {required: true, message: '请填写来源信息', trigger: 'blur'}
                     ]
                 }
             };
@@ -603,7 +636,11 @@
                             totalPrice += tempPrice;
                         });
                     }
-                    this.addObj.totalPrice = totalPrice;
+                    if(Number.isNaN(totalPrice)) {
+                        this.addObj.totalPrice = 0;
+                    }else {
+                        this.addObj.totalPrice = totalPrice;
+                    }
                     return this.addObj.totalPrice;
                 }
             },
@@ -624,6 +661,24 @@
             // resetForm(formName) {
             //     this.$refs[formName].resetFields();
             // },
+            // 获取采购记录数据
+            getBuyOrderList(page, size) {
+                this.$http.get('/api/admin/buyOrder/findAllBuyOrders?page='+ page + '&size=' + size).then(res => {
+                    let code = res.code;
+                    if(ERR_OK0 === code) {
+                        let buyOrdersList = res.data.data.content;
+                        let numberOfElements = res.data.data.numberOfElements;
+                        this.pagenation.totalElements = numberOfElements;
+                        this.buyOrdersList = getNewDataAndMap("buyOrderItems", buyOrdersList).data;
+                        this.orderItemsNum = getNewDataAndMap("buyOrderItems", buyOrdersList).map;
+                    }else {
+                        let msg = res.msg;
+                        alert(msg);
+                    }
+                }, err => {
+                    alert('系统错误，请重新刷新页面 ' + err);
+                });
+            },
 
             arraySpanMethod({ row, column, rowIndex, columnIndex }) {
                 let orderItemsNum = this.orderItemsNum;
@@ -735,10 +790,32 @@
             // 新增数据
             handleAdd() {
                 this.addFormVisible = true;
+                // 清空addObj
+                util.emptyObj(this.addObj);
+            },
+
+            // 新增框选择部门下拉框触发
+            selectAddDepartment(value) {
+                let para = {
+                    departmentId: value
+                };
+                this.addRequestors = [];
+                this.$http.post('/api/admin/user/findUsersByDepartmentId',para, { emulateJSON: true}).then(res => {
+                    let addRequestors = res.data;
+                    addRequestors.forEach(addRequestor => {
+                        let obj = {
+                            id: addRequestor.id,
+                            name: addRequestor.name
+                        };
+                        this.addRequestors.push(obj);
+                    });
+                }, err => {
+                    alert('系统错误，请重新刷新页面   ' + err);
+                });
             },
 
             // 新增框点击物品明细的移除按钮移除物品明细
-            handleAddFormDelGoodItems(index,buyOrderItems) {
+            handleAddFormDelGoodItems(index) {
                 this.addObj.buyOrderItems.splice(index, 1);
                 this.checkBuyOrderItems(this.addObj.buyOrderItems);
             },
@@ -763,19 +840,17 @@
                         if(this.err_msg === '') {
                             this.$confirm('确认提交吗？', '提示', {}).then(() => {
                                 this.addLoading = true;
-                                let para = {
-                                    departmentId: this.addObj.id,
-                                    requestTime: this.addObj.requestTime,
-                                    requestorId: this.addObj.requestorId,
-                                    description: this.addObj.description,
-                                    buyOrderItems: this.addObj.buyOrderItems
-                                };
-                                // console.log(para);
+                                let para = this.addObj;
+                                console.log(para);
                                 this.$http.post('/api/admin/buyOrder/addBuyOrder', para).then(res => {
                                     let code = res.code;
                                     if(code === ERR_OK0) {
                                         alert("采购单添加成功！");
-                                        history.go(0);
+                                        this.addFormVisible = false;
+                                        this.addLoading = false;
+                                        let page = this.pagenation.currentPage;
+                                        let size = this.pagenation.pageSize;
+                                        this.getBuyOrderList(page, size);
                                     }else {
                                         alert(res.msg);
                                     }
@@ -804,7 +879,7 @@
                     }
                 });
                 if(!bool) {
-                    alert('有部分或全部采购单未审核成功，请重新选择审核成功的采购单！');
+                    alert('有部分或全部采购单未审核通过，请选择审核通过的采购单！');
                     return false;
                 }
                 this.$confirm('确认入库吗？', '提示', {
@@ -812,11 +887,13 @@
                 }).then(() => {
                     this.listLoading = true;
                     this.$http.post('/api/admin/buyOrder/quickInput', para).then(res => {
-                        this.listLoading = false;
                         let code = res.data.code;
                         if(code === 0) {
                             alert('入库成功！');
-                            history.go(0);
+                            this.listLoading = false;
+                            let page = this.pagenation.currentPage;
+                            let size = this.pagenation.pageSize;
+                            this.getBuyOrderList(page, size);
                         }else {
                             let msg = res.msg;
                             alert(msg);
@@ -840,20 +917,23 @@
 
             // 点击批准通过按钮触发
             appoval(id, approvalResult) {
+                let obj = {
+                    id: id,
+                    approvalResult: approvalResult
+                };
+                let para = [];
+                para.push(obj);
+                // console.log(obj);
                 this.$confirm('确认提交吗？', '提示', {}).then(() => {
-                    this.addLoading = true;
-                    let obj = {
-                        id: id,
-                        approvalResult: approvalResult
-                    };
-                    let para = [];
-                    para.push(obj);
-                    console.log(obj);
+                    this.listLoading = true;
                     this.$http.post('/api/admin/buyOrder/approve', para).then(res => {
                         let code = res.data.code;
-                        console.log(res)
                         if (code === 0) {
-                            history.go(0);
+                            alert('审批成功！');
+                            this.listLoading = false;
+                            let page = this.pagenation.currentPage;
+                            let size = this.pagenation.pageSize;
+                            this.getBuyOrderList(page, size);
                         } else {
                             let msg = res.msg;
                             alert(msg);
@@ -880,7 +960,9 @@
                 this.pagenation.pageSize = val;
                 let page = this.pagenation.currentPage;
                 let size = this.pagenation.pageSize;
+                this.listLoading = true;
                 this.$http.get('/api/admin/buyOrder/findAllBuyOrders?page=' + page + '&size=' + size).then(res => {
+                    this.listLoading = false;
                     let code = res.code;
                     if(code === ERR_OK0) {
                         let buyOrdersList = res.data.data.content;
@@ -900,7 +982,9 @@
                 let page = val - 1;
                 this.pagenation.currentPage = page;
                 let size = this.pagenation.pageSize;
+                this.listLoading = true;
                 this.$http.get('/api/admin/buyOrder/findAllBuyOrders?page=' + page + '&size=' + size).then(res => {
+                    this.listLoading = false;
                     let code = res.code;
                     if(ERR_OK0 === code) {
                         let buyOrdersList = res.data.data.content;
@@ -921,30 +1005,51 @@
             },
 
             // 批量审核
-            // batchApproval(){
-            //     let para = this.sels.map(item => {
-            //         return {id: item.id};
-            //     });
-            //     this.$confirm('确认删除选中记录吗？', '提示', {
-            //         type: 'warning'
-            //     }).then(() => {
-            //         this.listLoading = true;
-            //         this.$http.post('/api/admin/buyOrder/deleteBuyOrders', para).then(res => {
-            //             this.listLoading = false;
-            //             // console.log(res);
-            //             let code = res.code;
-            //             if(code === ERR_OK0) {
-            //                 alert('删除成功！');
-            //                 history.go(0);
-            //             }else {
-            //                 let msg = res.msg;
-            //                 alert(msg);
-            //             }
-            //         }, err => {
-            //             alert('系统错误，请重新刷新页面   ' + err);
-            //         });
-            //     });
-            // },
+            batchApproval(approvalResult){
+                let approvalArr = [];
+                let bool = true;
+                this.sels.forEach(item => {
+                    if(item.approvalResult === 2) {
+                        let obj = {
+                            id: item.id,
+                            approvalResult: approvalResult
+                        };
+                        approvalArr.push(obj);
+                    }else {
+                        bool = false;
+                    }
+                });
+                if(bool === false) {
+                    alert('存在已审核的采购记录！');
+                    return false;
+                }
+                let model_msg = '';
+                if(approvalResult === 0) {
+                    model_msg = '确认审核通过？';
+                }else {
+                    model_msg = '确认审核不通过？';
+                }
+                this.$confirm(model_msg, '提示', {
+                    type: 'warning'
+                }).then(() => {
+                    this.listLoading = true;
+                    this.$http.post('/api/admin/buyOrder/approve', approvalArr).then(res => {
+                        let code = res.code;
+                        if(code === ERR_OK0) {
+                            alert('批量审核成功！');
+                            this.listLoading = false;
+                            let page = this.pagenation.currentPage;
+                            let size = this.pagenation.pageSize;
+                            this.getBuyOrderList(page, size);
+                        }else {
+                            let msg = res.msg;
+                            alert(msg);
+                        }
+                    }, err => {
+                        alert('系统错误，请重新刷新页面   ' + err);
+                    });
+                });
+            },
 
             // 批量删除
             batchRemove() {
@@ -956,12 +1061,14 @@
                 }).then(() => {
                     this.listLoading = true;
                     this.$http.post('/api/admin/buyOrder/deleteBuyOrders', para).then(res => {
-                        this.listLoading = false;
                         // console.log(res);
                         let code = res.code;
                         if(code === ERR_OK0) {
-                            alert('删除成功！');
-                            history.go(0);
+                            alert('批量删除成功！');
+                            this.listLoading = false;
+                            let page = this.pagenation.currentPage;
+                            let size = this.pagenation.pageSize;
+                            this.getBuyOrderList(page, size);
                         }else {
                             let msg = res.msg;
                             alert(msg);
@@ -972,6 +1079,7 @@
                 });
             },
 
+            // 检验添加和编辑框的table的数据是否存在错误
             checkBuyOrderItems(buyOrderItems) {
                 var buyOrderItems = buyOrderItems;
                 let  rexPrice = /^[0-9]+(.[0-9]{1,2})?$/;
@@ -1011,6 +1119,23 @@
                 let para = {
                     buyOrderId: row.id
                 };
+                let departmentObj = {
+                    departmentId: row.departmentId
+                };
+                this.editRequestors = [];
+                this.$http.post('/api/admin/user/findUsersByDepartmentId', departmentObj, { emulateJSON: true}).then(res => {
+                    let editRequestors = res.data;
+                    editRequestors.forEach((requestor, index) => {
+                        let obj = {
+                            id: requestor.id,
+                            name: requestor.name
+                        };
+                        this.editRequestors.push(obj);
+                    });
+                }, err => {
+                    alert('系统错误，请重新刷新页面！  ' + err);
+                });
+
                 this.$http.post('/api/admin/buyOrder/findBuyOrderById' ,para, { emulateJSON: true}).then(res => {
                     let status = res.status;
                     if(status === 200) {
@@ -1025,14 +1150,34 @@
                 // this.editObj = Object.assign({}, row);
             },
 
+            // 点击编辑框的部门下拉框触发
+            selectEditDepartment(value) {
+                let para = {
+                    departmentId: value
+                };
+                this.editRequestors = [];
+                this.$http.post('/api/admin/user/findUsersByDepartmentId',para, { emulateJSON: true}).then(res => {
+                    let editRequestors = res.data;
+                    editRequestors.forEach(editRequestor => {
+                        let obj = {
+                            id: editRequestor.id,
+                            name: editRequestor.name
+                        };
+                        this.editRequestors.push(obj);
+                    });
+                }, err => {
+                    alert('系统错误，请重新刷新页面   ' + err);
+                });
+            },
+
             // 点击编辑框的表格删除行
-            handleEditDelGoodItems(index, rows) {
+            handleEditDelGoodItems(index) {
                 this.editObj.buyOrderItems.splice(index, 1);
                 this.checkBuyOrderItems(this.editObj.buyOrderItems);
             },
 
             // 点击编辑框的添加按钮添加行
-            handleEditAddGoodItems(rows) {
+            handleEditAddGoodItems() {
                 let obj = {
                     name: '',
                     sort: '',
@@ -1050,7 +1195,8 @@
                     if (valid) {
                         if(this.err_msg === '') {
                             this.$confirm('确认提交吗？', '提示', {}).then(() => {
-                                this.addLoading = true;
+                                this.listLoading = false;
+                                this.editLoading = true;
                                 let para = {
                                     id: this.editObj.id,
                                     departmentId: this.editObj.departmentId,
@@ -1069,10 +1215,15 @@
                                     buyOrderItems: this.editObj.buyOrderItems
                                 };
                                 this.$http.post('/api/admin/buyOrder/updateBuyOrder', para).then(res => {
+                                    this.editLoading = false;
                                     let code = res.code;
                                     if(code === ERR_OK0) {
+                                        this.editFormVisible = false;
                                         alert("采购单修改成功！");
-                                            history.go(0);
+                                        this.listLoading = false;
+                                        let page = this.pagenation.currentPage;
+                                        let size = this.pagenation.pageSize;
+                                        this.getBuyOrderList(page, size);
                                     }else {
                                         alert(res.msg);
                                     }
@@ -1097,12 +1248,13 @@
                     this.listLoading = true;
                     let para = { id: row.id };
                     this.$http.post('/api/admin/buyOrder/deleteBuyOrder',para).then(res => {
+                        this.listLoading = false;
                         let code = res.code;
                         if(ERR_OK0 === code) {
                             alert('删除成功！');
-                            setTimeout(() => {
-                                history.go(0);
-                            }, 200);
+                            let page = this.pagenation.currentPage;
+                            let size = this.pagenation.pageSize;
+                            this.getBuyOrderList(page, size);
                         }else {
                             let msg = res.msg;
                             alert(msg);
@@ -1132,8 +1284,27 @@
 
         created() {
             let sortGroup = '[' + sessionStorage.sortGroup + ']';
-            // console.log(sortGroup)
+            let allDepartments = '[' + sessionStorage.departmentsGroup + ']';
+            // let allUsers = '[' + sessionStorage.usersGroup + ']';
             sortGroup = JSON.parse(sortGroup);
+            allDepartments = JSON.parse(allDepartments);
+            // allUsers = JSON.parse(allUsers);
+            allDepartments.forEach(item => {
+               let obj = {
+                   id: item.id,
+                   name: item.name
+               };
+               this.allDepartments.push(obj);
+            });
+
+            // allUsers.forEach(item => {
+            //     let obj = {
+            //         departmentId: item.departmentId,
+            //         id: item.id,
+            //         name: item.name
+            //     };
+            //     this.allUsers.push(obj);
+            // });
             this.sortGroup = sortGroup;
             // this.$http.get('/api/admin/config/getInitData').then(res => {
             //     let code = res.data.code;
@@ -1154,6 +1325,14 @@
                     let buyOrdersList = res.data.data.content;
                     let numberOfElements = res.data.data.numberOfElements;
                     this.pagenation.totalElements = numberOfElements;
+                    console.log(buyOrdersList)
+                    // buyOrdersList.forEach(item => {
+                    //     for(let i = 0;i < this.allDepartments.length;i++) {
+                    //         if(item.departmentId === this.allDepartments[i].departmentId) {
+                    //             item.departmentName = this.allDepartments[i].name;
+                    //         }
+                    //     }
+                    // });
                     // buyOrdersList.forEach((buyOrdersListItem) => {
                     //     let obj = {};
                     //     let buyOrderItem = buyOrdersListItem.buyOrderItems;
@@ -1200,7 +1379,7 @@
         float: right;
     }
 
-    .el-table__body-wrapper.is-scroll-right, .el-table__body-wrapper.is-scroll-left {
+    .el-table__body-wrapper, .el-table__body-wrapper.is-scroll-right, .el-table__body-wrapper.is-scroll-left {
         overflow-y: hidden;
     }
 </style>

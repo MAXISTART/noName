@@ -50,7 +50,6 @@
               let code = res.data.code;
               if(code === 0) {
                   let sortNames = res.data.data.allSorts; // 获得种类参数
-                  console.log(sortNames)
                   //goods = res.data.data.allGoods; // 获得物品所有参数
                   let allDepartments = res.data.data.allDepartments;
                   let allUsers = res.data.data.allUsers;
@@ -69,12 +68,10 @@
                       let obj = JSON.stringify(item);
                       usersGroup.push(obj);
                   });
-
                   // 把初始数据赋予到sessionLorage中
                   sessionStorage.sortGroup = sortGroup;
                   sessionStorage.departmentsGroup = departmentsGroup;
                   sessionStorage.usersGroup = usersGroup;
-
               }else {
                   let msg = res.msg;
                   alert(msg);
