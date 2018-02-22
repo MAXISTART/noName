@@ -66,5 +66,9 @@ public class BuyOrder extends BaseEntity {
 	@Transient
 	private List<BuyOrderItem> buyOrderItems;
 
+	// 部门名称
+	@Transient
+	private String departmentName;
+
 }
 

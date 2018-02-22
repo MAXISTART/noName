@@ -40,42 +40,47 @@ public class PermissionAspect {
 
     @Before("annotationPointCut()")
     public void permissionVerify(JoinPoint joinPoint){
-        System.out.println("in before");
-        MethodSignature sign =  (MethodSignature)joinPoint.getSignature();
-        // 先获取类上面的Permission注解
-        Permission[] classPermissions = (Permission[]) sign.getDeclaringType().getAnnotationsByType(Permission.class);
-        // 获取方法上面的permission注解
-        Permission[] methodPermissions = sign.getMethod().getAnnotationsByType(Permission.class);
 
-        // 所有的permission获取完后就要进行分类了, and分一堆，or的分一堆，表达式的分一堆
-        Set<String> ands = new HashSet<>();
-        Set<String> ors = new HashSet<>();
-        Set<String> expressions = new HashSet<>();
+        boolean active = false;
 
-        sortPermission(classPermissions, ands, ors, expressions);
-        sortPermission(methodPermissions, ands, ors, expressions);
+        if(active){
+            System.out.println("in before");
+            MethodSignature sign =  (MethodSignature)joinPoint.getSignature();
+            // 先获取类上面的Permission注解
+            Permission[] classPermissions = (Permission[]) sign.getDeclaringType().getAnnotationsByType(Permission.class);
+            // 获取方法上面的permission注解
+            Permission[] methodPermissions = sign.getMethod().getAnnotationsByType(Permission.class);
 
-        // 获取 request 对象
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
+            // 所有的permission获取完后就要进行分类了, and分一堆，or的分一堆，表达式的分一堆
+            Set<String> ands = new HashSet<>();
+            Set<String> ors = new HashSet<>();
+            Set<String> expressions = new HashSet<>();
 
-        // 获取 cookie
-        Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
-        if (cookie == null) {
-            // 有异常就交给全局处理器去处理
-            log.warn("【登录校验】Cookie中查不到token");
-            throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+            sortPermission(classPermissions, ands, ors, expressions);
+            sortPermission(methodPermissions, ands, ors, expressions);
+
+            // 获取 request 对象
+            ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+            HttpServletRequest request = attributes.getRequest();
+
+            // 获取 cookie
+            Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
+            if (cookie == null) {
+                // 有异常就交给全局处理器去处理
+                log.warn("【登录校验】Cookie中查不到token");
+                throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+            }
+
+
+            // 去redis里查询
+            String tokenValue = redisTemplate.opsForValue().get(String.format(RedisConstant.TOKEN_PREFIX, cookie.getValue()));
+            if (StringUtils.isEmpty(tokenValue)) {
+                log.warn("【登录校验】Redis中查不到token");
+                throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+            }
+
+            // 检测权限
         }
-
-
-        // 去redis里查询
-        String tokenValue = redisTemplate.opsForValue().get(String.format(RedisConstant.TOKEN_PREFIX, cookie.getValue()));
-        if (StringUtils.isEmpty(tokenValue)) {
-            log.warn("【登录校验】Redis中查不到token");
-            throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
-        }
-
-        // 检测权限
 
     }
 

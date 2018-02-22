@@ -4,6 +4,8 @@ import com.school.store.admin.buy.entity.BuyOrder;
 import com.school.store.admin.buy.entity.BuyOrderItem;
 import com.school.store.admin.buy.service.BuyOrderItemService;
 import com.school.store.admin.buy.service.BuyOrderService;
+import com.school.store.admin.department.entity.Department;
+import com.school.store.admin.department.service.DepartmentService;
 import com.school.store.admin.store.controller.StoreOperationController;
 import com.school.store.admin.store.entity.StoreOperation;
 import com.school.store.admin.store.entity.StoreOperationItem;
@@ -39,6 +41,9 @@ public class BuyOrderController extends BaseAdminController {
 
     @Autowired
     private StoreOperationController storeOperationController;
+
+    @Autowired
+    private DepartmentService departmentService;
 
     @GetMapping("/testChangeBuyOrder2StoreOperation")
     public StoreOperation testChangeBuyOrder2StoreOperation(){
@@ -228,6 +233,7 @@ public class BuyOrderController extends BaseAdminController {
 
         buyOrders.forEach(buyOrder -> {
             setBuyOrderItems(buyOrder);
+            setDepartmentName(buyOrder);
         });
 
         return simpleResult(ResultEnum.SUCCESS, buyOrders);
@@ -248,12 +254,24 @@ public class BuyOrderController extends BaseAdminController {
 
 
     /**
+     *  防止代码重复的工具代码
+     * @param buyOrder
+     */
+    public void setDepartmentName(BuyOrder buyOrder){
+        Department department = departmentService.findById(buyOrder.getDepartmentId());
+        if(department != null){
+            buyOrder.setDepartmentName(department.getName());
+        }
+    }
+
+    /**
      *  findById
      */
     @PostMapping("/findBuyOrderById")
     public BuyOrder findBuyOrderById(@RequestParam  String buyOrderId){
         BuyOrder buyOrder = buyOrderService.findById(buyOrderId);
         setBuyOrderItems(buyOrder);
+        setDepartmentName(buyOrder);
         return buyOrder;
     }
 
