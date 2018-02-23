@@ -69,7 +69,7 @@
         </el-col>
 
         <!--编辑界面-->
-        <el-dialog fullscreen title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false">
+        <el-dialog fullscreen title="编辑" :visible.sync="editFormVisible" :close-on-click-modal="false" @close="clearValidate('editForm')">
             <el-form :model="editObj" label-width="80px" :rules="editFormRules" ref="editForm">
                 <el-form-item label="所属部门" prop="departmentId">
                     <el-select v-model="editObj.departmentId" placeholder="请选择" @change="selectEditDepartment">
@@ -197,7 +197,7 @@
         </el-dialog>
 
         <!--新增界面-->
-        <el-dialog fullscreen title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false">
+        <el-dialog fullscreen title="新增" :visible.sync="addFormVisible" :close-on-click-modal="false" @close="clearValidate('addForm')">
             <el-form :model="addObj" label-width="80px" :rules="addFormRules" ref="addForm">
                 <el-form-item label="所属部门" prop="departmentId">
                     <el-select v-model="addObj.departmentId" placeholder="请选择" @change="selectAddDepartment">
@@ -664,7 +664,7 @@
             // 获取采购记录数据
             getBuyOrderList(page, size) {
                 this.$http.get('/api/admin/buyOrder/findAllBuyOrders?page='+ page + '&size=' + size).then(res => {
-                    let code = res.code;
+                    let code = res.data.code;
                     if(ERR_OK0 === code) {
                         let buyOrdersList = res.data.data.content;
                         let numberOfElements = res.data.data.numberOfElements;
@@ -678,6 +678,12 @@
                 }, err => {
                     alert('系统错误，请重新刷新页面 ' + err);
                 });
+            },
+
+            // 清除验证提示
+            clearValidate(formName) {
+                this.$refs[formName].clearValidate();
+                this.err_msg = '';
             },
 
             arraySpanMethod({ row, column, rowIndex, columnIndex }) {
@@ -843,7 +849,7 @@
                                 let para = this.addObj;
                                 console.log(para);
                                 this.$http.post('/api/admin/buyOrder/addBuyOrder', para).then(res => {
-                                    let code = res.code;
+                                    let code = res.data.code;
                                     if(code === ERR_OK0) {
                                         alert("采购单添加成功！");
                                         this.addFormVisible = false;
@@ -888,7 +894,7 @@
                     this.listLoading = true;
                     this.$http.post('/api/admin/buyOrder/quickInput', para).then(res => {
                         let code = res.data.code;
-                        if(code === 0) {
+                        if(code === ERR_OK0) {
                             alert('入库成功！');
                             this.listLoading = false;
                             let page = this.pagenation.currentPage;
@@ -928,7 +934,7 @@
                     this.listLoading = true;
                     this.$http.post('/api/admin/buyOrder/approve', para).then(res => {
                         let code = res.data.code;
-                        if (code === 0) {
+                        if (code === ERR_OK0) {
                             alert('审批成功！');
                             this.listLoading = false;
                             let page = this.pagenation.currentPage;
@@ -963,7 +969,7 @@
                 this.listLoading = true;
                 this.$http.get('/api/admin/buyOrder/findAllBuyOrders?page=' + page + '&size=' + size).then(res => {
                     this.listLoading = false;
-                    let code = res.code;
+                    let code = res.data.code;
                     if(code === ERR_OK0) {
                         let buyOrdersList = res.data.data.content;
                         this.buyOrdersList = getNewDataAndMap("buyOrderItems", buyOrdersList).data;
@@ -985,7 +991,7 @@
                 this.listLoading = true;
                 this.$http.get('/api/admin/buyOrder/findAllBuyOrders?page=' + page + '&size=' + size).then(res => {
                     this.listLoading = false;
-                    let code = res.code;
+                    let code = res.data.code;
                     if(ERR_OK0 === code) {
                         let buyOrdersList = res.data.data.content;
                         this.buyOrdersList = getNewDataAndMap("buyOrderItems", buyOrdersList).data;
@@ -999,7 +1005,7 @@
                 });
             },
 
-            // 批量删除相关函数
+            // 批量选择相关函数
             selsChange: function (sels) {
                 this.sels = sels;
             },
@@ -1034,7 +1040,7 @@
                 }).then(() => {
                     this.listLoading = true;
                     this.$http.post('/api/admin/buyOrder/approve', approvalArr).then(res => {
-                        let code = res.code;
+                        let code = res.data.code;
                         if(code === ERR_OK0) {
                             alert('批量审核成功！');
                             this.listLoading = false;
@@ -1062,7 +1068,7 @@
                     this.listLoading = true;
                     this.$http.post('/api/admin/buyOrder/deleteBuyOrders', para).then(res => {
                         // console.log(res);
-                        let code = res.code;
+                        let code = res.data.code;
                         if(code === ERR_OK0) {
                             alert('批量删除成功！');
                             this.listLoading = false;
@@ -1125,7 +1131,7 @@
                 this.editRequestors = [];
                 this.$http.post('/api/admin/user/findUsersByDepartmentId', departmentObj, { emulateJSON: true}).then(res => {
                     let editRequestors = res.data;
-                    editRequestors.forEach((requestor, index) => {
+                    editRequestors.forEach(requestor => {
                         let obj = {
                             id: requestor.id,
                             name: requestor.name
@@ -1216,7 +1222,7 @@
                                 };
                                 this.$http.post('/api/admin/buyOrder/updateBuyOrder', para).then(res => {
                                     this.editLoading = false;
-                                    let code = res.code;
+                                    let code = res.data.code;
                                     if(code === ERR_OK0) {
                                         this.editFormVisible = false;
                                         alert("采购单修改成功！");
@@ -1249,7 +1255,7 @@
                     let para = { id: row.id };
                     this.$http.post('/api/admin/buyOrder/deleteBuyOrder',para).then(res => {
                         this.listLoading = false;
-                        let code = res.code;
+                        let code = res.data.code;
                         if(ERR_OK0 === code) {
                             alert('删除成功！');
                             let page = this.pagenation.currentPage;
@@ -1320,7 +1326,7 @@
             //     alert("系统错误，请重新刷新页面！  " + err);
             // });
             this.$http.get('/api/admin/buyOrder/findAllBuyOrders?page=0&size=20').then(res => {
-                let code = res.code;
+                let code = res.data.code;
                 if(ERR_OK0 === code) {
                     let buyOrdersList = res.data.data.content;
                     let numberOfElements = res.data.data.numberOfElements;

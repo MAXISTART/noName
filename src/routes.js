@@ -9,7 +9,7 @@ import user from './views/nav1/user.vue'
 import enterWarehouseRecord from './views/nav2/enterWarehouseRecord.vue'
 import Page5 from './views/nav2/Page5.vue'
 import Page6 from './views/nav3/Page6.vue'
-import echarts from './views/charts/echarts.vue'
+import sorts from './views/charts/sorts.vue'
 
 let routes = [
     {
@@ -60,10 +60,10 @@ let routes = [
     {
         path: '/',
         component: Home,
-        name: 'Charts',
+        name: '附录',
         iconCls: 'fa fa-bar-chart',
         children: [
-            { path: '/echarts', component: echarts, name: 'echarts' }
+            { path: '/sorts', component: sorts, name: '种类管理' }
         ]
     },
     {

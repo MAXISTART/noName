@@ -89,7 +89,6 @@
           if (valid) {
             //_this.$router.replace('/table');
             this.logining = true;
-            //NProgress.start();
             var loginParams = { username: this.ruleForm2.account, password: this.ruleForm2.checkPass };
             requestLogin(loginParams).then(data => {
               this.logining = false;
@@ -103,7 +102,7 @@
               } else {
                 sessionStorage.setItem('user', JSON.stringify(user));
                 this.getInitData();
-                this.$router.push({ path: '/table' });
+                this.$router.push({ path: '/buyThingApply' });
               }
             });
           } else {
