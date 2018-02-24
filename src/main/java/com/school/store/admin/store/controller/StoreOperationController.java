@@ -1,7 +1,5 @@
 package com.school.store.admin.store.controller;
 
-import com.school.store.admin.admin.entity.Admin;
-import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.entity.StoreOperation;
 import com.school.store.admin.store.entity.StoreOperationItem;
 import com.school.store.admin.store.service.StoreItemService;
@@ -17,11 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 
 
@@ -49,9 +44,10 @@ public class StoreOperationController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping("/addStoreOperation")
-    public ResultVo addStoreOperation(@RequestBody StoreOperation storeOperation, @SessionAttribute("admin") Admin admin) {
+    public ResultVo addStoreOperation(@RequestBody StoreOperation storeOperation) {
 
-        storeOperationService.save(entityUtil.updateInfoDefault(storeOperation, admin.getId(), admin.getId(), true));
+        storeOperation.setId(null);
+        storeOperationService.save(storeOperation);
 
         // 保存明细内容，但是要先设置ID
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
@@ -103,14 +99,13 @@ public class StoreOperationController extends BaseAdminController {
      * 批量生成操作纪录
      *
      * @param storeOperations
-     * @param admin
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping("/addStoreOperations")
-    public ResultVo addStoreOperations(@RequestBody List<StoreOperation> storeOperations, @SessionAttribute("admin") Admin admin) {
+    public ResultVo addStoreOperations(@RequestBody List<StoreOperation> storeOperations) {
         for (StoreOperation storeOperation : storeOperations) {
-            addStoreOperation(storeOperation, admin);
+            addStoreOperation(storeOperation);
         }
         return simpleResult(ResultEnum.SUCCESS, null);
     }
@@ -118,7 +113,7 @@ public class StoreOperationController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/updateStoreOperation")
-    public ResultVo updateStoreOperation(@RequestBody StoreOperation storeOperation, @SessionAttribute("admin") Admin admin) {
+    public ResultVo updateStoreOperation(@RequestBody StoreOperation storeOperation) {
 
         // 更新明细内容
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
@@ -126,13 +121,13 @@ public class StoreOperationController extends BaseAdminController {
             storeOperationItemService.save(storeOperationItems);
         }
 
-        storeOperationService.save(entityUtil.updateInfoDefault(storeOperation, null, admin.getId(), false));
+        storeOperationService.dynamicUpdate(storeOperation);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteStoreOperation")
-    public ResultVo deleteStoreOperation(@RequestBody StoreOperation storeOperation, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteStoreOperation(@RequestBody StoreOperation storeOperation) {
 
         // 先删除明细，在删除总单
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
@@ -145,7 +140,7 @@ public class StoreOperationController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteStoreOperations")
-    public ResultVo deleteStoreOperations(@RequestBody List<StoreOperation> storeOperations, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteStoreOperations(@RequestBody List<StoreOperation> storeOperations) {
 
         // 先删除明细，在删除总单
         storeOperations.forEach(storeOperation -> {
@@ -173,7 +168,7 @@ public class StoreOperationController extends BaseAdminController {
     public ResultVo findAllStoreOperations(@RequestParam(required = true) Integer page,
                                            @RequestParam(required = false, defaultValue = "20") Integer size,
                                            @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                           @RequestParam(required = false, defaultValue = "updateTime") String property) {
+                                           @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property) {
 
         // 配置分页信息
         PageRequest pager = null;
@@ -199,8 +194,6 @@ public class StoreOperationController extends BaseAdminController {
      *
      * @param page
      * @param size
-     * @param direction
-     * @param property
      * @return
      */
     @PostMapping(value = "/findStoreOperationBySearchParams")
@@ -236,7 +229,7 @@ public class StoreOperationController extends BaseAdminController {
         }
 
         // 返回的是真正的List<User>
-        List<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams("store_operations", sqlParams, page, size, StoreOperation.class);
+        List<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams(sqlParams, page, size, StoreOperation.class);
 
         storeOperations.forEach(storeOperation -> {
             setStoreOperations(storeOperation);

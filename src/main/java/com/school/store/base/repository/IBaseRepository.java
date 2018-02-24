@@ -252,6 +252,29 @@ public interface IBaseRepository<T,ID extends Serializable> extends PagingAndSor
     public void batchSave(List<T> entitys) throws SQLException;
 
 
+    /**
+     *  动态搜索
+     * @param sqlParams
+     * @param page
+     * @param rows
+     * @param clazz
+     * @return
+     */
+    public List<T> findByDynamicSqlParams(SqlParams sqlParams, int page, int rows, Class clazz);
 
-    public List<T> findByDynamicSqlParams(String tableName, SqlParams sqlParams, int page, int rows, Class clazz);
+
+    /**
+     * 动态更新 ，只更新不为null的字段值
+     * @param entity
+     * @throws Exception
+     */
+    public void dynamicUpdate(T entity);
+
+
+    /**
+     * 级联删除 ，删除主体外还会删除他所级联的实体
+     * @param entity
+     * @throws Exception
+     */
+    public void cascadeDelete(Object entity);
 }

@@ -1,6 +1,9 @@
 package com.school.store.admin.take.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.school.store.admin.refine.Refine;
+import com.school.store.admin.refine.RefineMethod;
+import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
 
@@ -18,6 +21,7 @@ import java.util.List;
 @Entity
 @Table(name = "take_orders")
 @Data
+@CascadeDelete(value = TakeOrderItem.class, filter = "orderId=?", args = {"id"})
 public class TakeOrder extends BaseEntity{
 
     // 申领人员所属部门ID
@@ -58,7 +62,16 @@ public class TakeOrder extends BaseEntity{
 
     // 明细内容
     @Transient
+    @Refine(value = RefineMethod.setTakeOrderItems, argNames= {"id"})
     private List<TakeOrderItem> takeOrderItems;
 
+    // 部门名称
+    @Transient
+    @Refine(value = RefineMethod.setDepartmentName, argNames= {"departmentId"})
+    private String departmentName;
+
+    @Transient
+    @Refine(value = RefineMethod.setUserName, argNames= {"requestorId"})
+    private String requestorName;
 }
 

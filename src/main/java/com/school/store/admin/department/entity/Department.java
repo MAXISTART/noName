@@ -1,6 +1,10 @@
 package com.school.store.admin.department.entity;
 
 
+import com.school.store.admin.buy.entity.BuyOrder;
+import com.school.store.admin.take.entity.TakeOrder;
+import com.school.store.admin.user.entity.User;
+import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
 
@@ -15,6 +19,10 @@ import javax.persistence.*;
 @Entity
 @Table(name = "departments")
 @Data
+// 如果这个部门被删除了，要先删了部门下的所有user，条件是filter（有时候删除是有多个条件的），参数是这个部门的id
+@CascadeDelete(value = User.class, filter = "departmentId=?", args = {"id"})
+@CascadeDelete(value = BuyOrder.class, filter = "departmentId=?", args = {"id"})
+@CascadeDelete(value = TakeOrder.class, filter = "departmentId=?", args = {"id"})
 public class Department extends BaseEntity{
 
 	// 部门名称

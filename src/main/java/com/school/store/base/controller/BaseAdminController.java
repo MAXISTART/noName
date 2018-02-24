@@ -2,20 +2,12 @@ package com.school.store.base.controller;
 
 
 import com.school.store.enums.ResultEnum;
-import com.school.store.utils.EntityUtil;
 import com.school.store.vo.ResultVo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class BaseAdminController {
 
-
-    /**
-     *  导入 entity 的工具类
-     */
-    @Autowired
-    public EntityUtil entityUtil;
 
     /**
      *  返回 固定的 信息

@@ -1,5 +1,4 @@
 package com.school.store.admin.store.controller;
-import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.base.controller.BaseAdminController;
@@ -34,30 +33,30 @@ public class StoreItemController extends BaseAdminController {
 
 
     @PostMapping("/addStoreItem")
-    public ResultVo addStoreItem(@RequestBody StoreItem storeItem, @SessionAttribute("admin") Admin admin) {
-
-        storeItemService.save(entityUtil.updateInfoDefault(storeItem, admin.getId(), admin.getId(), true));
+    public ResultVo addStoreItem(@RequestBody StoreItem storeItem) {
+        storeItem.setId(null);
+        storeItemService.save(storeItem);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @PostMapping(value = "/updateStoreItem")
-    public ResultVo updateStoreItem(@RequestBody StoreItem storeItem, @SessionAttribute("admin") Admin admin) {
+    public ResultVo updateStoreItem(@RequestBody StoreItem storeItem) {
         // 更新的话不需要更改 创建者和创建时间
-        storeItemService.save(entityUtil.updateInfoDefault(storeItem, null, admin.getId(), false));
+        storeItemService.dynamicUpdate(storeItem);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @PostMapping(value = "/deleteStoreItem")
-    public ResultVo deleteStoreItem(@RequestBody StoreItem storeItem, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteStoreItem(@RequestBody StoreItem storeItem) {
         // 这里的RequestBody 的 user只需要一个id就行了
         storeItemService.delete(storeItem);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
     @PostMapping(value = "/deleteStoreItems")
-    public ResultVo deleteStoreItems(@RequestBody List<StoreItem> storeItems, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteStoreItems(@RequestBody List<StoreItem> storeItems) {
         // 这里的RequestBody 的 storeItems 是一个 storeItem 的数组
         storeItemService.delete(storeItems);
         return simpleResult(ResultEnum.SUCCESS, null);
@@ -77,7 +76,7 @@ public class StoreItemController extends BaseAdminController {
     public ResultVo findAllStoreItems(@RequestParam(required = true) Integer page,
                                       @RequestParam(required = false, defaultValue = "20") Integer size,
                                       @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                      @RequestParam(required = false, defaultValue = "updateTime") String property) {
+                                      @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property) {
 
         // 配置分页信息
         PageRequest pager = null;

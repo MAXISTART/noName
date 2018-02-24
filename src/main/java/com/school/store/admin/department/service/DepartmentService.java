@@ -1,6 +1,5 @@
 package com.school.store.admin.department.service;
 
-import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.department.entity.Department;
 import com.school.store.base.repository.IBaseRepository;
 import org.springframework.beans.factory.annotation.Qualifier;

@@ -1,18 +1,14 @@
 package com.school.store.admin.good.controller;
 
-import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.good.entity.GoodItem;
 import com.school.store.admin.good.entity.SortItem;
 import com.school.store.admin.good.service.GoodItemService;
 import com.school.store.admin.good.service.SortItemService;
 import com.school.store.admin.store.controller.StoreItemController;
 import com.school.store.admin.store.entity.StoreItem;
-import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.base.model.SqlParams;
 import com.school.store.enums.ResultEnum;
-import com.school.store.utils.EntityUtil;
-import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,10 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -44,15 +37,14 @@ public class GoodController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping("/addGoodItem")
-    public ResultVo addGoodItem(@RequestBody GoodItem goodItem, @SessionAttribute("admin") Admin admin) {
-
-        // 先检查录入的名字是否有问题
+    public ResultVo addGoodItem(@RequestBody GoodItem goodItem) {
+        System.out.println("1111");
         int rs_code = checkGoodItemNameAndSpec(goodItem);
         switch (rs_code){
             case 0:
-                goodItemService.save(entityUtil.updateInfoDefault(goodItem, admin.getId(), admin.getId(), true));
+                goodItemService.save(goodItem);
                 // 同时还存进仓库表中
-                storeItemController.addStoreItem(changeGoodItem2StoreItem(goodItem), admin);
+                storeItemController.addStoreItem(changeGoodItem2StoreItem(goodItem));
                 return simpleResult(ResultEnum.SUCCESS, null);
             case 1:
                 return simpleResult(ResultEnum.NAME_SPEC_REPEAT, null);
@@ -65,13 +57,13 @@ public class GoodController extends BaseAdminController {
 
 
     @PostMapping(value = "/updateGoodItem")
-    public ResultVo updateGoodItem(@RequestBody GoodItem goodItem, @SessionAttribute("admin") Admin admin) {
+    public ResultVo updateGoodItem(@RequestBody GoodItem goodItem) {
 
         // 先检查录入的名字是否有问题
         int rs_code = checkGoodItemNameAndSpec(goodItem);
         switch (rs_code){
             case 0:
-                goodItemService.save(entityUtil.updateInfoDefault(goodItem, admin.getId(), admin.getId(), false));
+                goodItemService.dynamicUpdate(goodItem);
                 return simpleResult(ResultEnum.SUCCESS, null);
             case 1:
                 return simpleResult(ResultEnum.NAME_SPEC_REPEAT, null);
@@ -83,14 +75,14 @@ public class GoodController extends BaseAdminController {
 
 
     @PostMapping(value = "/deleteGoodItem")
-    public ResultVo deleteGoodItem(@RequestBody GoodItem goodItem, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteGoodItem(@RequestBody GoodItem goodItem) {
         // 这里的RequestBody 的 user只需要一个id就行了
         goodItemService.delete(goodItem);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
     @PostMapping(value = "/deleteGoodItems")
-    public ResultVo deleteGoodItems(@RequestBody List<GoodItem> goodItems, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteGoodItems(@RequestBody List<GoodItem> goodItems) {
         // 这里的RequestBody 的 goodItems 是一个 goodItem 的数组
         goodItemService.delete(goodItems);
         return simpleResult(ResultEnum.SUCCESS, null);
@@ -110,7 +102,7 @@ public class GoodController extends BaseAdminController {
     public ResultVo findAllGoodItems(@RequestParam(required = true) Integer page,
                                      @RequestParam(required = false, defaultValue = "20") Integer size,
                                      @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                     @RequestParam(required = false, defaultValue = "updateTime") String property) {
+                                     @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property) {
 
         // 配置分页信息
         PageRequest pager = null;
@@ -165,7 +157,7 @@ public class GoodController extends BaseAdminController {
         }
 
         // 返回的是真正的List<GoodItem>
-        List<GoodItem> goodItems = goodItemService.findByDynamicSqlParams("good_items", sqlParams, page, size, GoodItem.class);
+        List<GoodItem> goodItems = goodItemService.findByDynamicSqlParams( sqlParams, page, size, GoodItem.class);
 
         return simpleResult(ResultEnum.SUCCESS, goodItems);
     }
@@ -218,13 +210,13 @@ public class GoodController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping("/addSortItem")
-    public ResultVo addSortItem(@RequestBody SortItem sortItem, @SessionAttribute("admin") Admin admin) {
+    public ResultVo addSortItem(@RequestBody SortItem sortItem) {
 
         // 先检查录入的名字是否有问题
         int rs_code = checkSortItemName(sortItem);
         switch (rs_code){
             case 0:
-                sortItemService.save(entityUtil.updateInfoDefault(sortItem, admin.getId(), admin.getId(), true));
+                sortItemService.save(sortItem);
                 return simpleResult(ResultEnum.SUCCESS, null);
             case 1:
                 return simpleResult(ResultEnum.NAME_REPEAT, null);
@@ -239,13 +231,13 @@ public class GoodController extends BaseAdminController {
 
 
     @PostMapping(value = "/updateSortItem")
-    public ResultVo updateSortItem(@RequestBody SortItem sortItem, @SessionAttribute("admin") Admin admin) {
+    public ResultVo updateSortItem(@RequestBody SortItem sortItem) {
 
         // 先检查录入的名字是否有问题
         int rs_code = checkSortItemName(sortItem);
         switch (rs_code){
             case 0:
-                sortItemService.save(entityUtil.updateInfoDefault(sortItem, admin.getId(), admin.getId(), false));
+                sortItemService.dynamicUpdate(sortItem);
                 return simpleResult(ResultEnum.SUCCESS, null);
             case 1:
                 return simpleResult(ResultEnum.NAME_REPEAT, null);
@@ -258,7 +250,7 @@ public class GoodController extends BaseAdminController {
 
 
     @PostMapping(value = "/deleteSortItem")
-    public ResultVo deleteSortItem(@RequestBody SortItem sortItem, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteSortItem(@RequestBody SortItem sortItem) {
         // 这里的RequestBody 的 user只需要一个id就行了
         sortItemService.delete(sortItem);
         return simpleResult(ResultEnum.SUCCESS, null);
@@ -315,7 +307,7 @@ public class GoodController extends BaseAdminController {
         storeItem.setNumber(goodItem.getNumber());
         storeItem.setGoodId(goodItem.getId());
         storeItem.setLockNumber(0);
-        storeItem.setInputTime(EntityUtil.getNowDate());
+        storeItem.setInputTime(new Date());
         storeItem.setTotalPrice(goodItem.getPrice().multiply(new BigDecimal(goodItem.getNumber())));
         return storeItem;
     }

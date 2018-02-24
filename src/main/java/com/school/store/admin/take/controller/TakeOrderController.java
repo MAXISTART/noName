@@ -1,13 +1,12 @@
 package com.school.store.admin.take.controller;
 
-import com.school.store.admin.admin.entity.Admin;
-import com.school.store.admin.buy.entity.BuyOrderItem;
+import com.school.store.admin.department.entity.Department;
+import com.school.store.admin.department.service.DepartmentService;
+import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.controller.StoreItemController;
 import com.school.store.admin.store.controller.StoreOperationController;
-import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.entity.StoreOperation;
 import com.school.store.admin.store.entity.StoreOperationItem;
-import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.admin.take.entity.TakeOrder;
 import com.school.store.admin.take.entity.TakeOrderItem;
 import com.school.store.admin.take.service.TakeOrderItemService;
@@ -26,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -44,19 +44,26 @@ public class TakeOrderController extends BaseAdminController {
     @Autowired
     private StoreOperationController storeOperationController;
 
+    @Autowired
+    private EntityRefineService entityRefineService;
+
+    @Autowired
+    private DepartmentService departmentService;
+
     /**
      *  这是提供给用户的接口，并不是给管理员用的，用户通过这个进行申领表的创建,requestorId要前台传过来
      * @param takeOrder
-     * @param admin
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping("/addTakeOrder")
-    public ResultVo addTakeOrder(@RequestBody TakeOrder takeOrder, @SessionAttribute("admin") Admin admin) {
+    public ResultVo addTakeOrder(@RequestBody TakeOrder takeOrder) {
+
+        takeOrder.setId(null);
 
         // 默认用户提交的是未审核的申领表
         takeOrder.setApprovalResult(2);
-        takeOrder.setRequestTime(entityUtil.getNowDate());
+        takeOrder.setRequestTime(new Date());
         // 计算总价
         List<TakeOrderItem> takeOrderItems = takeOrder.getTakeOrderItems();
         BigDecimal totalPrice = new BigDecimal("0");
@@ -67,7 +74,7 @@ public class TakeOrderController extends BaseAdminController {
         }
         takeOrder.setRequestTotalPrice(totalPrice);
 
-        takeOrderService.save(entityUtil.updateInfoDefault(takeOrder, admin.getId(), admin.getId(), true));
+        takeOrderService.save(takeOrder);
 
 
         if(takeOrderItems != null && !takeOrderItems.isEmpty()){
@@ -78,8 +85,6 @@ public class TakeOrderController extends BaseAdminController {
                     storeItemController.addLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
                     // 设置returnNumber
                     takeOrderItem.setReturnNumber(0);
-                    // 更新创建时间
-                    entityUtil.updateInfoDefault(takeOrderItem, admin.getId(), admin.getId(), true);
                 }else{
                     // 事务自动回滚
                     throw new BaseException(ResultEnum.STORE_UNSATISFY);
@@ -106,21 +111,17 @@ public class TakeOrderController extends BaseAdminController {
      *      {...},
      *  ]
      * @param takeOrders
-     * @param admin
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping(value = "/approve")
-    public ResultVo approve(@RequestBody List<TakeOrder> takeOrders, @SessionAttribute("admin") Admin admin) {
-        List<TakeOrder> takeOrdersForSql = new ArrayList<>();
+    public ResultVo approve(@RequestBody List<TakeOrder> takeOrders) {
         takeOrders.forEach(takeOrder -> {
             TakeOrder takeOrderForSql = takeOrderService.findById(takeOrder.getId());
             takeOrderForSql.setApprovalResult(takeOrder.getApprovalResult());
-            takeOrderForSql.setApprovalTime(entityUtil.getNowDate());
-            takeOrderForSql = entityUtil.updateInfoDefault(takeOrderForSql, admin.getId(), admin.getId(), true);
-            takeOrdersForSql.add(takeOrderForSql);
+            takeOrderForSql.setApprovalTime(new Date());
+            takeOrderService.dynamicUpdate(takeOrderForSql);
         });
-        takeOrderService.save(takeOrdersForSql);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -137,7 +138,7 @@ public class TakeOrderController extends BaseAdminController {
      */
     @Transactional(readOnly = false)
     @PostMapping(value = "/quickOutput")
-    public ResultVo quickOutput( @RequestBody List<String> takeOrderIds, @SessionAttribute("admin") Admin admin) {
+    public ResultVo quickOutput( @RequestBody List<String> takeOrderIds) {
 
         List<StoreOperation> storeOperations = new ArrayList<>();
         for(String takeOrderId : takeOrderIds){
@@ -145,19 +146,18 @@ public class TakeOrderController extends BaseAdminController {
         }
         // 测试用的
         //return storeOperationController.testAddStoreOperations(storeOperations);
-        return storeOperationController.addStoreOperations(storeOperations, admin);
+        return storeOperationController.addStoreOperations(storeOperations);
     }
 
 
     /**
      *  这个是用户端的操作，是会影响到库存中的锁存操作的
      * @param takeOrder
-     * @param admin
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping(value = "/updateTakeOrder")
-    public ResultVo updateTakeOrder(@RequestBody TakeOrder takeOrder, @SessionAttribute("admin") Admin admin) {
+    public ResultVo updateTakeOrder(@RequestBody TakeOrder takeOrder) {
 
         // 如果审核结果已经出来了，那就不能进行修改了
         int approvalResult = takeOrderService.findById(takeOrder.getId()).getApprovalResult();
@@ -182,12 +182,11 @@ public class TakeOrderController extends BaseAdminController {
                 takeOrderItem.setOrderId(takeOrder.getId());
                 // 添加库存中的锁定数量（申请数量）
                 storeItemController.addLockNumber(takeOrderItem.getGoodId(), takeOrderItem.getNumber());
-                takeOrderItem = entityUtil.updateInfoDefault(takeOrderItem, admin.getId(), admin.getId(), true);
             });
             takeOrderItemService.save(takeOrderItems);
         }
         // 更新的话不需要更改 创建者和创建时间
-        takeOrderService.save(entityUtil.updateInfoDefault(takeOrder, null, admin.getId(), false));
+        takeOrderService.dynamicUpdate(takeOrder);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -195,31 +194,21 @@ public class TakeOrderController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteTakeOrder")
-    public ResultVo deleteTakeOrder(@RequestBody TakeOrder takeOrder, @SessionAttribute("admin") Admin admin) {
-
-        // 先删除明细，在删除总单
-        List<TakeOrderItem> takeOrderItems = takeOrder.getTakeOrderItems();
-        if(takeOrderItems != null && !takeOrderItems.isEmpty()){
-            takeOrderItemService.delete(takeOrderItems);
-        }
-
-        takeOrderService.delete(takeOrder);
+    public ResultVo deleteTakeOrder(@RequestBody TakeOrder takeOrder) {
+        // 级联删除
+        takeOrderService.cascadeDelete(takeOrder);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteTakeOrders")
-    public ResultVo deleteTakeOrders(@RequestBody List<TakeOrder> takeOrders, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteTakeOrders(@RequestBody List<TakeOrder> takeOrders) {
 
-        // 先删除明细，在删除总单
         takeOrders.forEach(takeOrder -> {
-            List<TakeOrderItem> takeOrderItems = takeOrder.getTakeOrderItems();
-            if(takeOrderItems != null && !takeOrderItems.isEmpty()){
-                takeOrderItemService.delete(takeOrderItems);
-            }
+            // 级联删除
+            takeOrderService.cascadeDelete(takeOrder);
         });
 
-        takeOrderService.delete(takeOrders);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -237,7 +226,7 @@ public class TakeOrderController extends BaseAdminController {
     public ResultVo findAllTakeOrders(@RequestParam(required = true) Integer page,
                                       @RequestParam(required = false, defaultValue = "20") Integer size,
                                       @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                      @RequestParam(required = false, defaultValue = "updateTime") String property) {
+                                      @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property) {
 
         // 配置分页信息
         PageRequest pager = null;
@@ -250,23 +239,9 @@ public class TakeOrderController extends BaseAdminController {
 
         Page<TakeOrder> takeOrders = takeOrderService.findAll(pager);
 
-        takeOrders.forEach(takeOrder -> {
-            setTakeOrders(takeOrder);
-        });
+        entityRefineService.refinePage(takeOrders);
 
         return simpleResult(ResultEnum.SUCCESS, takeOrders);
-    }
-
-
-    /**
-     *  防止代码重复的工具代码
-     * @param takeOrder
-     */
-    public void setTakeOrders(TakeOrder takeOrder){
-        List<TakeOrderItem> takeOrderItems =takeOrderItemService.findByOrderId(takeOrder.getId());
-        if(takeOrderItems != null && !takeOrderItems.isEmpty()){
-            takeOrder.setTakeOrderItems(takeOrderItems);
-        }
     }
 
 
@@ -278,7 +253,7 @@ public class TakeOrderController extends BaseAdminController {
     @PostMapping("/findTakeOrderById")
     public TakeOrder findTakeOrderById(@RequestParam  String takeOrderId){
         TakeOrder takeOrder = takeOrderService.findById(takeOrderId);
-        setTakeOrders(takeOrder);
+        entityRefineService.refine(takeOrder);
         return takeOrder;
     }
 

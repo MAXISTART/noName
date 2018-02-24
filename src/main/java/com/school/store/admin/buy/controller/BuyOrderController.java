@@ -1,17 +1,16 @@
 package com.school.store.admin.buy.controller;
-import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.buy.entity.BuyOrder;
 import com.school.store.admin.buy.entity.BuyOrderItem;
 import com.school.store.admin.buy.service.BuyOrderItemService;
 import com.school.store.admin.buy.service.BuyOrderService;
-import com.school.store.admin.department.entity.Department;
-import com.school.store.admin.department.service.DepartmentService;
+import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.controller.StoreOperationController;
 import com.school.store.admin.store.entity.StoreOperation;
 import com.school.store.admin.store.entity.StoreOperationItem;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
-import com.school.store.utils.EntityUtil;
 import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,17 +19,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/admin/buyOrder")
+@Permiss(and = {Permit.ADMIN})
 public class BuyOrderController extends BaseAdminController {
 
     @Autowired
@@ -42,8 +38,10 @@ public class BuyOrderController extends BaseAdminController {
     @Autowired
     private StoreOperationController storeOperationController;
 
+
     @Autowired
-    private DepartmentService departmentService;
+    private EntityRefineService entityRefineService;
+
 
     @GetMapping("/testChangeBuyOrder2StoreOperation")
     public StoreOperation testChangeBuyOrder2StoreOperation(){
@@ -51,19 +49,32 @@ public class BuyOrderController extends BaseAdminController {
     }
 
 
+    @Transactional(readOnly = false)
+    @PostMapping("/testPermission")
+    @Permiss(and = {Permit.USER} )
+    public String testPermission(@RequestBody BuyOrder buyOrder){
+        return null;
+    }
+
+    @GetMapping("/testPermission2")
+    public String testPermission2(){
+        return null;
+    }
+
     /**
      *  这是提供给用户的接口，并不是给管理员用的，requestorId要前台传过来的
      * @param buyOrder
-     * @param admin
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping("/addBuyOrder")
-    public ResultVo addBuyOrder(@RequestBody BuyOrder buyOrder, @SessionAttribute("admin") Admin admin) {
+    @Permiss(and = {Permit.USER} )
+    public ResultVo addBuyOrder(@RequestBody BuyOrder buyOrder) {
 
+        buyOrder.setId(null);
         // 默认用户提交的是未审核的采购表
         buyOrder.setApprovalResult(2);
-        buyOrder.setRequestTime(entityUtil.getNowDate());
+        buyOrder.setRequestTime(new Date());
         // 计算总价
         List<BuyOrderItem> buyOrderItems = buyOrder.getBuyOrderItems();
         BigDecimal totalPrice = new BigDecimal("0");
@@ -74,13 +85,12 @@ public class BuyOrderController extends BaseAdminController {
         }
         buyOrder.setRequestTotalPrice(totalPrice);
 
-        buyOrderService.save(entityUtil.updateInfoDefault(buyOrder, admin.getId(), admin.getId(), true));
+        buyOrderService.save(buyOrder);
 
         // 保存明细内容，但是要先设置ID
         if(buyOrderItems != null && !buyOrderItems.isEmpty()){
             buyOrder.getBuyOrderItems().forEach(buyOrderItem -> {
                 buyOrderItem.setOrderId(buyOrder.getId());
-                buyOrderItem = entityUtil.updateInfoDefault(buyOrderItem, admin.getId(), admin.getId(), true);
             });
             buyOrderItemService.save(buyOrderItems);
         }
@@ -99,21 +109,18 @@ public class BuyOrderController extends BaseAdminController {
      *      {...},
      *  ]
      * @param buyOrders
-     * @param admin
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping(value = "/approve")
-    public ResultVo approve(@RequestBody List<BuyOrder> buyOrders, @SessionAttribute("admin") Admin admin) {
-        List<BuyOrder> buyOrdersForSql = new ArrayList<>();
+    @Permiss(newAnd = { Permit.TEST })
+    public ResultVo approve(@RequestBody List<BuyOrder> buyOrders) {
         buyOrders.forEach(buyOrder -> {
             BuyOrder buyOrderForSql = buyOrderService.findById(buyOrder.getId());
             buyOrderForSql.setApprovalResult(buyOrder.getApprovalResult());
-            buyOrderForSql.setApprovalTime(entityUtil.getNowDate());
-            buyOrderForSql = entityUtil.updateInfoDefault(buyOrderForSql, admin.getId(), admin.getId(), true);
-            buyOrdersForSql.add(buyOrderForSql);
+            buyOrderForSql.setApprovalTime(new Date());
+            buyOrderService.dynamicUpdate(buyOrderForSql);
         });
-        buyOrderService.save(buyOrdersForSql);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -127,7 +134,7 @@ public class BuyOrderController extends BaseAdminController {
      */
     @Transactional(readOnly = false)
     @PostMapping(value = "/quickInput")
-    public ResultVo quickInput( @RequestBody List<String> buyOrderIds, @SessionAttribute("admin") Admin admin) {
+    public ResultVo quickInput( @RequestBody List<String> buyOrderIds) {
 
         List<StoreOperation> storeOperations = new ArrayList<>();
         for(String buyOrderId : buyOrderIds){
@@ -135,7 +142,7 @@ public class BuyOrderController extends BaseAdminController {
         }
         // 测试用的
         //return storeOperationController.testAddStoreOperations(storeOperations);
-        return storeOperationController.addStoreOperations(storeOperations, admin);
+        return storeOperationController.addStoreOperations(storeOperations);
     }
 
 
@@ -143,7 +150,7 @@ public class BuyOrderController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/updateBuyOrder")
-    public ResultVo updateBuyOrder(@RequestBody BuyOrder buyOrder, @SessionAttribute("admin") Admin admin) {
+    public ResultVo updateBuyOrder(@RequestBody BuyOrder buyOrder) {
 
         // 如果审核结果已经出来了，那就不能进行修改了
         int approvalResult = buyOrderService.findById(buyOrder.getId()).getApprovalResult();
@@ -162,44 +169,32 @@ public class BuyOrderController extends BaseAdminController {
                 // 置id为null，保证存进去的id是由数据库自增的
                 buyOrderItem.setId(null);
                 buyOrderItem.setOrderId(buyOrder.getId());
-                buyOrderItem = entityUtil.updateInfoDefault(buyOrderItem, admin.getId(), admin.getId(), true);
             });
             buyOrderItemService.save(buyOrderItems);
         }
         // 更新的话不需要更改 创建者和创建时间
-        buyOrderService.save(entityUtil.updateInfoDefault(buyOrder, null, admin.getId(), false));
+        buyOrderService.dynamicUpdate(buyOrder);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteBuyOrder")
-    public ResultVo deleteBuyOrder(@RequestBody BuyOrder buyOrder, @SessionAttribute("admin") Admin admin) {
-
-        // 先删除明细，在删除总单
-        List<BuyOrderItem> buyOrderItems = buyOrder.getBuyOrderItems();
-        if(buyOrderItems != null && !buyOrderItems.isEmpty()){
-            buyOrderItemService.delete(buyOrderItems);
-        }
-
-        buyOrderService.delete(buyOrder);
+    public ResultVo deleteBuyOrder(@RequestBody BuyOrder buyOrder) {
+        // 级联删除
+        buyOrderService.cascadeDelete(buyOrder);
 
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteBuyOrders")
-    public ResultVo deleteBuyOrders(@RequestBody List<BuyOrder> buyOrders, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteBuyOrders(@RequestBody List<BuyOrder> buyOrders) {
 
-        // 先删除明细，在删除总单
+        // 级联删除
         buyOrders.forEach(buyOrder -> {
-            List<BuyOrderItem> buyOrderItems = buyOrder.getBuyOrderItems();
-            if(buyOrderItems != null && !buyOrderItems.isEmpty()){
-                buyOrderItemService.delete(buyOrderItems);
-            }
+            buyOrderService.cascadeDelete(buyOrder);
         });
-
-        buyOrderService.delete(buyOrders);
 
         return simpleResult(ResultEnum.SUCCESS, null);
     }
@@ -218,7 +213,7 @@ public class BuyOrderController extends BaseAdminController {
     public ResultVo findAllBuyOrders(@RequestParam(required = true) Integer page,
                                      @RequestParam(required = false, defaultValue = "20") Integer size,
                                      @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                     @RequestParam(required = false, defaultValue = "updateTime") String property) {
+                                     @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property) {
 
         // 配置分页信息
         PageRequest pager = null;
@@ -231,10 +226,7 @@ public class BuyOrderController extends BaseAdminController {
 
         Page<BuyOrder> buyOrders = buyOrderService.findAll(pager);
 
-        buyOrders.forEach(buyOrder -> {
-            setBuyOrderItems(buyOrder);
-            setDepartmentName(buyOrder);
-        });
+        entityRefineService.refinePage(buyOrders);
 
         return simpleResult(ResultEnum.SUCCESS, buyOrders);
     }
@@ -242,36 +234,12 @@ public class BuyOrderController extends BaseAdminController {
 
 
     /**
-     *  防止代码重复的工具代码
-     * @param buyOrder
-     */
-    public void setBuyOrderItems(BuyOrder buyOrder){
-        List<BuyOrderItem> buyOrderItems =buyOrderItemService.findByOrderId(buyOrder.getId());
-        if(buyOrderItems != null && !buyOrderItems.isEmpty()){
-            buyOrder.setBuyOrderItems(buyOrderItems);
-        }
-    }
-
-
-    /**
-     *  防止代码重复的工具代码
-     * @param buyOrder
-     */
-    public void setDepartmentName(BuyOrder buyOrder){
-        Department department = departmentService.findById(buyOrder.getDepartmentId());
-        if(department != null){
-            buyOrder.setDepartmentName(department.getName());
-        }
-    }
-
-    /**
      *  findById
      */
     @PostMapping("/findBuyOrderById")
     public BuyOrder findBuyOrderById(@RequestParam  String buyOrderId){
         BuyOrder buyOrder = buyOrderService.findById(buyOrderId);
-        setBuyOrderItems(buyOrder);
-        setDepartmentName(buyOrder);
+        entityRefineService.refine(buyOrder);
         return buyOrder;
     }
 

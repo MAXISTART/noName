@@ -1,5 +1,6 @@
 package com.school.store.admin.permission.entity;
 
+import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "permissions")
 @Data
+@CascadeDelete(value = UserToPermission.class, filter = "permissionId=?", args = {"id"})
 public class Permission extends BaseEntity {
 
     // 权限名称

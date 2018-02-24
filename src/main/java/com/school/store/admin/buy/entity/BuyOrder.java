@@ -5,6 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.school.store.admin.refine.Refine;
+import com.school.store.admin.refine.RefineMethod;
+import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
 import org.hibernate.annotations.DynamicUpdate;
@@ -20,6 +23,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "buy_orders")
 @Data
+@CascadeDelete(value = BuyOrderItem.class, filter = "orderId=?", args = {"id"})
 public class BuyOrder extends BaseEntity {
 
 	// 采购人员所属部门ID
@@ -64,11 +68,17 @@ public class BuyOrder extends BaseEntity {
 
 	// 明细说明
 	@Transient
+	@Refine(value = RefineMethod.setBuyOrderItems, argNames= {"id"})
 	private List<BuyOrderItem> buyOrderItems;
 
 	// 部门名称
 	@Transient
+	@Refine(value = RefineMethod.setDepartmentName, argNames= {"departmentId"})
 	private String departmentName;
+
+	@Transient
+	@Refine(value = RefineMethod.setUserName, argNames= {"requestorId"})
+	private String requestorName;
 
 }
 

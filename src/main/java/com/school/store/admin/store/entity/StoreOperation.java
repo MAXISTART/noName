@@ -1,6 +1,9 @@
 package com.school.store.admin.store.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.school.store.admin.refine.Refine;
+import com.school.store.admin.refine.RefineMethod;
+import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
 
@@ -18,6 +21,7 @@ import java.util.List;
 @Entity
 @Table(name = "store_operations")
 @Data
+@CascadeDelete(value = StoreOperationItem.class, filter = "orderId=?", args = "id")
 public class StoreOperation extends BaseEntity {
 
     // 操作类型(比如1表示入库,2表示出库, 不同类型对应不同的业务逻辑)，详见业务设定表
@@ -71,5 +75,14 @@ public class StoreOperation extends BaseEntity {
     // 明细内容
     @Transient
     private List<StoreOperationItem> storeOperationItems;
+
+    // 部门名称
+    @Transient
+    @Refine(value = RefineMethod.setDepartmentName, argNames= {"departmentId"})
+    private String departmentName;
+
+    @Transient
+    @Refine(value = RefineMethod.setUserName, argNames= {"requestorId"})
+    private String requestorName;
 }
 

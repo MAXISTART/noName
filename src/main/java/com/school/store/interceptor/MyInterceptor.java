@@ -1,6 +1,5 @@
 package com.school.store.interceptor;
 
-import com.school.store.admin.admin.entity.Admin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -28,15 +27,6 @@ public class MyInterceptor implements HandlerInterceptor {
 
         //获取session
         HttpSession session = request.getSession(true);
-
-        // 这里仅仅是用来测试的session用的
-        if(session.getAttribute("admin") == null){
-            Admin admin = new Admin();
-            admin.setId("4028fbdf6137215b01613723faa80000");
-            admin.setName("智老板");
-            admin.setPhoneNumber("15603004842");
-            session.setAttribute("admin", admin);
-        }
 
 
         //判断用户ID是否存在，不存在就跳转到登录界面

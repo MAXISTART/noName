@@ -1,6 +1,5 @@
 package com.school.store.admin.department.controller;
 
-import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.department.entity.Department;
 import com.school.store.admin.department.service.DepartmentService;
 import com.school.store.admin.user.entity.User;
@@ -27,30 +26,30 @@ public class DepartmentController extends BaseAdminController{
     private UserService userService;
 
     @PostMapping("/addDepartment")
-    public ResultVo addUser(@RequestBody Department department, @SessionAttribute("admin") Admin admin) {
+    public ResultVo addUser(@RequestBody Department department) {
 
-        departmentService.save(entityUtil.updateInfoDefault(department, admin.getId(), admin.getId(), true));
+        department.setId(null);
+        departmentService.save(department);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @PostMapping(value = "/updateDepartment")
-    public ResultVo updateDepartment(@RequestBody Department department, @SessionAttribute("admin") Admin admin) {
-        // 更新的话不需要更改 创建者和创建时间
-        departmentService.save(entityUtil.updateInfoDefault(department, null, admin.getId(), false));
+    public ResultVo updateDepartment(@RequestBody Department department) {
+        departmentService.dynamicUpdate(department);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @PostMapping(value = "/deleteDepartment")
-    public ResultVo deleteDepartment(@RequestBody Department department, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteDepartment(@RequestBody Department department) {
         // 这里的RequestBody 的 user只需要一个id就行了
-        departmentService.delete(department);
+        departmentService.cascadeDelete(department);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
     @PostMapping(value = "/deleteDepartments")
-    public ResultVo deleteDepartments(@RequestBody List<Department> departments, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deleteDepartments(@RequestBody List<Department> departments) {
         // 这里的RequestBody 的 users 是一个 user的数组
         departmentService.delete(departments);
         return simpleResult(ResultEnum.SUCCESS, null);
@@ -70,7 +69,7 @@ public class DepartmentController extends BaseAdminController{
     public ResultVo findAllDepartments(@RequestParam(required = true) Integer page,
                                 @RequestParam(required = false, defaultValue = "20") Integer size,
                                 @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                @RequestParam(required = false, defaultValue = "updateTime") String property) {
+                                @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property) {
 
         // 配置分页信息
         PageRequest pager = null;

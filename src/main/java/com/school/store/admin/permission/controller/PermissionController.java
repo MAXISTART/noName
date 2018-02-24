@@ -1,5 +1,4 @@
 package com.school.store.admin.permission.controller;
-import com.school.store.admin.admin.entity.Admin;
 import com.school.store.admin.permission.entity.Permission;
 import com.school.store.admin.permission.service.PermissionService;
 import com.school.store.admin.permission.service.UserToPermissionService;
@@ -26,40 +25,37 @@ public class PermissionController extends BaseAdminController {
     private UserToPermissionService userToPermissionService;
 
     @PostMapping("/addPermission")
-    public ResultVo addPermission(@RequestBody Permission permission, @SessionAttribute("admin") Admin admin) {
+    public ResultVo addPermission(@RequestBody Permission permission) {
 
-        permissionService.save(entityUtil.updateInfoDefault(permission, admin.getId(), admin.getId(), true));
+        permission.setId(null);
+        permissionService.save(permission);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @PostMapping(value = "/updatePermission")
-    public ResultVo updatePermission(@RequestBody Permission permission, @SessionAttribute("admin") Admin admin) {
-        // 更新的话不需要更改 创建者和创建时间
-        permissionService.save(entityUtil.updateInfoDefault(permission, null, admin.getId(), false));
+    public ResultVo updatePermission(@RequestBody Permission permission) {
+
+        permissionService.dynamicUpdate(permission);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deletePermission")
-    public ResultVo deletePermission(@RequestBody Permission permission, @SessionAttribute("admin") Admin admin) {
-        // 先删除permission在userToPermission的所有记录
-        userToPermissionService.delete(userToPermissionService.findByPermissionId(permission.getId()));
-        // 再删除permission表里面的
-        permissionService.delete(permission);
+    public ResultVo deletePermission(@RequestBody Permission permission) {
+        // 级联删除
+        permissionService.cascadeDelete(permission);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     @PostMapping(value = "/deletePermissions")
-    public ResultVo deletePermissions(@RequestBody List<Permission> permissions, @SessionAttribute("admin") Admin admin) {
+    public ResultVo deletePermissions(@RequestBody List<Permission> permissions) {
         // 这里的RequestBody 的 permissions 是一个 permission 的数组
         permissions.forEach(permission -> {
-            // 先删除permission在userToPermission的所有记录
-            userToPermissionService.delete(userToPermissionService.findByPermissionId(permission.getId()));
+            permissionService.cascadeDelete(permission);
         });
-        permissionService.delete(permissions);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -77,7 +73,7 @@ public class PermissionController extends BaseAdminController {
     public ResultVo findAllPermissions(@RequestParam(required = true) Integer page,
                                        @RequestParam(required = false, defaultValue = "20") Integer size,
                                        @RequestParam(required = false, defaultValue = "DESC") String direction,
-                                       @RequestParam(required = false, defaultValue = "updateTime") String property) {
+                                       @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property) {
 
         // 配置分页信息
         PageRequest pager = null;

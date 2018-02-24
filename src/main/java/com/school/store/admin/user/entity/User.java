@@ -1,7 +1,13 @@
 package com.school.store.admin.user.entity;
 
 
+import com.school.store.admin.buy.entity.BuyOrder;
 import com.school.store.admin.permission.entity.Permission;
+import com.school.store.admin.permission.entity.UserToPermission;
+import com.school.store.admin.refine.Refine;
+import com.school.store.admin.refine.RefineMethod;
+import com.school.store.admin.take.entity.TakeOrder;
+import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
 
@@ -16,6 +22,9 @@ import java.util.Set;
 @Entity
 @Table(name = "users")
 @Data
+@CascadeDelete(value = UserToPermission.class, filter = "userId=?", args = {"id"})
+@CascadeDelete(value = BuyOrder.class, filter = "requestorId=?", args = {"id"})
+@CascadeDelete(value = TakeOrder.class, filter = "requestorId=?", args = {"id"})
 public class User extends BaseEntity{
 
 	// 用户的昵称
@@ -54,12 +63,15 @@ public class User extends BaseEntity{
 	@Column(name = "description" , columnDefinition = "TEXT")
 	private String description;
 
-	// 关联的部门名称
 	@Transient
+	@Refine(value = RefineMethod.setDepartmentName, argNames= {"departmentId"})
+	// 填充方法是 setDepartmentName ， 需要传递的属性的名称为 departmentId，
+	// 任何实体，只要这样标注，调用refine的方法后，这个departmentName属性就会根据setDepartmentName的方法被填充数据
 	private String departmentName;
 
 	// 该用户对应的所有权限
 	@Transient
+	@Refine(value = RefineMethod.setPermissions, argNames= {"id"})
 	private Set<Permission> permissions;
 }
 

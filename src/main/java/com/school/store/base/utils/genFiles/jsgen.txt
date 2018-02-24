@@ -1,24 +1,12 @@
-//Admin
-{
-	"createAdmin":null,
-	"createTime":null,
-	"delFlag":false,
-	"description":null,
-	"id":null,
-	"name":null,
-	"phoneNumber":null,
-	"updateAdmin":null,
-	"updateTime":null
-}
-
-
 //ApprovalTask
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"description":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"requestorId":null,
 	"requestorTime":null,
 	"taskCompleteTime":null,
@@ -27,18 +15,18 @@
 	"taskNodeIds":null,
 	"taskResult":null,
 	"taskStageIndex":null,
-	"taskState":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"taskState":null
 }
 
 
 //ApprovalTaskNode
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"nextNodeId":null,
 	"opinion":null,
 	"previousNodeId":null,
@@ -48,24 +36,7 @@
 	"response":null,
 	"responsor":null,
 	"taskId":null,
-	"taskNodeState":null,
-	"updateAdmin":null,
-	"updateTime":null
-}
-
-
-//Boy
-{
-	"age":null,
-	"aid":null,
-	"createAdmin":null,
-	"createTime":null,
-	"cupSize":null,
-	"delFlag":false,
-	"girls":null,
-	"id":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"taskNodeState":null
 }
 
 
@@ -76,100 +47,124 @@
 	"approvalTime":null,
 	"bills":null,
 	"buyOrderItems":null,
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"departmentId":null,
+	"departmentName":null,
 	"description":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"requestTime":null,
 	"requestTotalPrice":null,
-	"requestorId":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"requestorId":null
 }
 
 
 //BuyOrderItem
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"goodId":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"name":null,
 	"number":null,
 	"orderId":null,
 	"price":null,
 	"sort":null,
 	"spec":null,
-	"unit":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"unit":null
 }
 
 
 //Department
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"description":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"name":null,
 	"responsorId":null,
-	"responsorName":null,
-	"updateAdmin":null,
-	"updateTime":null
-}
-
-
-//Girl
-{
-	"age":null,
-	"aid":null,
-	"boy":null,
-	"createAdmin":null,
-	"createTime":null,
-	"cupSize":null,
-	"delFlag":false,
-	"id":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"responsorName":null
 }
 
 
 //GoodItem
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"name":null,
 	"number":null,
 	"price":null,
 	"sort":null,
 	"spec":null,
-	"unit":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"unit":null
+}
+
+
+//SortItem
+{
+	"createBy":null,
+	"createTime":null,
+	"delFlag":false,
+	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
+	"name":null
+}
+
+
+//Permission
+{
+	"createBy":null,
+	"createTime":null,
+	"delFlag":false,
+	"description":null,
+	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
+	"name":null
+}
+
+
+//UserToPermission
+{
+	"createBy":null,
+	"createTime":null,
+	"delFlag":false,
+	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
+	"permissionId":null,
+	"userId":null
 }
 
 
 //StoreItem
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"goodId":null,
 	"goodItem":null,
 	"id":null,
 	"inputTime":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"lockNumber":null,
 	"number":null,
-	"totalPrice":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"totalPrice":null
 }
 
 
@@ -178,40 +173,40 @@
 	"approvalResult":null,
 	"approvalTaskId":null,
 	"approvalTime":null,
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"departmentId":null,
 	"description":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"opinion":null,
 	"requestTime":null,
 	"requestTotalPrice":null,
 	"requestorId":null,
 	"responsorId":null,
 	"storeOperationItems":null,
-	"type":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"type":null
 }
 
 
 //StoreOperationItem
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"goodId":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"name":null,
 	"number":null,
 	"orderId":null,
 	"price":null,
 	"sort":null,
 	"spec":null,
-	"unit":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"unit":null
 }
 
 
@@ -220,28 +215,31 @@
 	"approvalResult":null,
 	"approvalTaskId":null,
 	"approvalTime":null,
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"departmentId":null,
+	"departmentName":null,
 	"description":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"requestTime":null,
 	"requestTotalPrice":null,
 	"requestorId":null,
-	"takeOrderItems":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"takeOrderItems":null
 }
 
 
 //TakeOrderItem
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"goodId":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"name":null,
 	"number":null,
 	"orderId":null,
@@ -249,29 +247,28 @@
 	"returnNumber":null,
 	"sort":null,
 	"spec":null,
-	"unit":null,
-	"updateAdmin":null,
-	"updateTime":null
+	"unit":null
 }
 
 
 //User
 {
-	"createAdmin":null,
+	"createBy":null,
 	"createTime":null,
 	"delFlag":false,
 	"departmentId":null,
 	"departmentName":null,
 	"description":null,
-	"gradeId":null,
 	"id":null,
+	"lastmodifiedBy":null,
+	"lastmodifiedTime":null,
 	"mailbox":null,
 	"name":null,
 	"openId":null,
+	"password":null,
+	"permissions":null,
 	"phoneNumber":null,
 	"qqNumber":null,
-	"updateAdmin":null,
-	"updateTime":null,
 	"weixin":null
 }
 
