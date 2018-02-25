@@ -133,6 +133,14 @@
                             <template slot-scope="scope">
                                 <el-input v-model="scope.row.name"></el-input>
                             </template>
+                            <!--<template slot-scope="scope">-->
+                                <!--<el-popover trigger="manual" v-model="scope.row.flag" placement="top">-->
+                                    <!--<p>法撒旦</p>-->
+                                    <!--<div slot="reference">-->
+                                        <!--<el-input v-model="scope.row.name" @blur="checkName(scope.row.name)"></el-input>-->
+                                    <!--</div>-->
+                                <!--</el-popover>-->
+                            <!--</template>-->
                         </el-table-column>
                         <el-table-column label="种类" prop="sort">
                             <template slot-scope="scope">
@@ -559,6 +567,8 @@
                         {required: true, message: '请输入物品名称', trigger: 'blur'}
                     ]
                 },
+                errMsg: false,
+                errMsg1: false,
 
                 // 新增界面
                 addFormVisible: false,
@@ -647,6 +657,16 @@
         },
 
         methods: {
+            // 验证编辑框的名字是否为空
+            // checkName(scope) {
+            //     let name = scope.row.name;
+            //     let bool = true;
+            //     if(name === '') {
+            //         scope.row.flag = true;
+            //     }else {
+            //         scope.row.flag = false;
+            //     }
+            // },
             // onSubmit(formName) {
             //     this.$refs[formName].validate((valid) => {
             //         if(valid) {
