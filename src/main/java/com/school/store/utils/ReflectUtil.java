@@ -1,5 +1,8 @@
 package com.school.store.utils;
 
+import com.school.store.enums.ResultEnum;
+import com.school.store.exception.BaseException;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +42,9 @@ public class ReflectUtil {
     }
 
     public static Field[] getAllFields(Object object){
+        if(object == null){
+            return null;
+        }
         Class clazz = object.getClass();
         List<Field> fieldList = new ArrayList<>();
         while (clazz != null){

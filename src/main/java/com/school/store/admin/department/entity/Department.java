@@ -2,6 +2,8 @@ package com.school.store.admin.department.entity;
 
 
 import com.school.store.admin.buy.entity.BuyOrder;
+import com.school.store.admin.refine.Refine;
+import com.school.store.admin.refine.RefineMethod;
 import com.school.store.admin.take.entity.TakeOrder;
 import com.school.store.admin.user.entity.User;
 import com.school.store.annotation.CascadeDelete;
@@ -39,6 +41,7 @@ public class Department extends BaseEntity{
 
 	// 部门的主要负责人的name，与user表关联
 	@Transient
+	@Refine(value = RefineMethod.setUserName, argNames = {"responsorId"})
 	private String responsorName;
 
 }

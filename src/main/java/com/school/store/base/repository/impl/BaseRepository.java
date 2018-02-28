@@ -21,6 +21,7 @@ import org.hibernate.SQLQuery;
 import org.hibernate.Session;
 import org.hibernate.transform.AliasToBeanResultTransformer;
 import org.hibernate.transform.Transformers;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -256,6 +257,9 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 	@Override
 	public void dynamicUpdate(T entity) {
 		System.out.println("in dynamicUpdate");
+		if (entity == null){
+			return;
+		}
 		try {
 			// 根据注解来获取entity的表名 和 列名
 			String tableName = entity.getClass().getName();
@@ -283,7 +287,7 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 				}
 			}
 			params.put("lastmodifiedTime", new Date());
-			params.put("lastmodifiedBy", HttpUtil.getSessionUser().getId());
+			params.put("lastmodifiedBy", HttpUtil.getSessionUserId());
 
 			StringBuilder sqlBuidler = new StringBuilder("");
 			sqlBuidler.append("UPDATE ").append(tableName).append(" t ").append("SET");
@@ -308,6 +312,9 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 	@Transactional(readOnly=false) //这句话必不可少，不然就会造成事务出错，因为默认事务是readOnly = true
 	@Override
 	public void cascadeDelete(Object entity){
+    	if(entity == null){
+    		return;
+		}
 		// 先删除下级
 		deleteCascade(entity);
 		// 再删除自己
@@ -321,6 +328,9 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 	@Transactional(readOnly=false) //这句话必不可少，不然就会造成事务出错，因为默认事务是readOnly = true
 
 	public void deleteCascade(Object entity) {
+    	if(entity == null){
+    		return;
+		}
 		try {
 
 			for(CascadeDelete cascade : entity.getClass().getAnnotationsByType(CascadeDelete.class)){

@@ -23,8 +23,27 @@ public enum ResultEnum {
 
     RESULT_OUT(5, "审核结果已经出了，不能再修改订单"),
 
-    PERMISSION_NOT_ALLOWED(6, "用户权限不足")
+    PERMISSION_NOT_ALLOWED(6, "用户权限不足"),
 
+    NAME_FORMAT_ERROR(7, "用户名格式不符"),
+
+    USER_NOT_FOUND(8, "用户不存在或者密码错误"),
+
+    USER_LOGIN_SUCCESS(9, "用户登录成功，当前用户为:普通用户"),
+
+    ADMIN_LOGIN_SUCCESS(10, "用户登录成功，当前用户为:管理员"),
+
+    NOT_LOGIN(11, "用户尚未登录或者登录已经过期"),
+
+    LOGIN_OUT_SUCCESS(12, "用户登出成功"),
+
+    MAIL_FORMAT_ERROR(13, "邮箱格式错误"),
+
+    MOBILE_FORMAT_ERROR(14, "手机号格式错误"),
+
+    REGISTER_SUCCESS(15, "注册成功"),
+
+    USER_AREADLY_IN_SESSION_BEFORE_REGISTER(16, "当前已经有用户登录，请先登出用户再注册")
     ;
 
     private Integer code;

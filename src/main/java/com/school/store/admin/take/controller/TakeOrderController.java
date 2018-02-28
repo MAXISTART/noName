@@ -11,7 +11,9 @@ import com.school.store.admin.take.entity.TakeOrder;
 import com.school.store.admin.take.entity.TakeOrderItem;
 import com.school.store.admin.take.service.TakeOrderItemService;
 import com.school.store.admin.take.service.TakeOrderService;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
 import com.school.store.utils.MyBeanUtil;
@@ -30,6 +32,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/takeOrder")
+@Permiss(and = Permit.ADMIN)
 public class TakeOrderController extends BaseAdminController {
 
     @Autowired

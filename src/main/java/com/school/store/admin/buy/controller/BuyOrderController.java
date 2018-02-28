@@ -3,16 +3,25 @@ import com.school.store.admin.buy.entity.BuyOrder;
 import com.school.store.admin.buy.entity.BuyOrderItem;
 import com.school.store.admin.buy.service.BuyOrderItemService;
 import com.school.store.admin.buy.service.BuyOrderService;
+import com.school.store.admin.department.entity.Department;
+import com.school.store.admin.department.service.DepartmentService;
+import com.school.store.admin.good.controller.GoodController;
+import com.school.store.admin.good.entity.GoodItem;
+import com.school.store.admin.good.service.GoodItemService;
 import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.controller.StoreOperationController;
 import com.school.store.admin.store.entity.StoreOperation;
 import com.school.store.admin.store.entity.StoreOperationItem;
+import com.school.store.admin.user.entity.User;
 import com.school.store.annotation.Permiss;
+import com.school.store.aspect.PermissionAspect;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
+import com.school.store.utils.HttpUtil;
 import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +36,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin/buyOrder")
 @Permiss(and = {Permit.ADMIN})
+@Slf4j
 public class BuyOrderController extends BaseAdminController {
 
     @Autowired
@@ -43,6 +53,18 @@ public class BuyOrderController extends BaseAdminController {
     private EntityRefineService entityRefineService;
 
 
+    @Autowired
+    private DepartmentService departmentService;
+
+    @Autowired
+    private GoodItemService goodItemService;
+
+    @Autowired
+    private GoodController goodController;
+
+    @Autowired
+    PermissionAspect permissionAspect;
+
     @GetMapping("/testChangeBuyOrder2StoreOperation")
     public StoreOperation testChangeBuyOrder2StoreOperation(){
         return changeBuyOrder2StoreOperation(findBuyOrderById("4028fbdf6140fc96016140fcc9f30000"));
@@ -50,6 +72,60 @@ public class BuyOrderController extends BaseAdminController {
 
 
     @Transactional(readOnly = false)
+    @PostMapping("/testAll")
+    @Permiss(need = false)
+    public ResultVo testAll(){
+        Department department = new Department();
+        department.setName("第一个部门");
+        departmentService.save(department);
+        User user = new User();
+        user.setName("第一个用户");
+        user.setDepartmentId(department.getId());
+        department.setResponsorId(user.getId());
+        departmentService.save(department);
+
+
+        GoodItem goodItem = new GoodItem();
+        goodItem.setName("网线");
+        goodItem.setNumber(0);
+        goodItem.setSpec("就这规格");
+        goodItem.setPrice(new BigDecimal(10));
+        goodItem.setUnit("条");
+
+        goodController.addGoodItem(goodItem);
+
+        BuyOrder buyOrder = new BuyOrder();
+        buyOrder.setRequestorId(user.getId());
+        buyOrder.setApprovalResult(1);
+        buyOrder.setDepartmentId(department.getId());
+
+        BuyOrderItem buyOrderItem = new BuyOrderItem();
+        buyOrderItem.setGoodId(goodItem.getId());
+        buyOrderItem.setName("网线");
+        buyOrderItem.setNumber(10);
+        buyOrderItem.setSpec("就这规格");
+        buyOrderItem.setPrice(new BigDecimal(10));
+        buyOrderItem.setUnit("条");
+
+        List<BuyOrderItem> buyOrderItems = new ArrayList<>();
+        buyOrderItems.add(buyOrderItem);
+        buyOrder.setBuyOrderItems(buyOrderItems);
+
+        addBuyOrder(buyOrder);
+        List<BuyOrder> buyOrderList = new ArrayList<>();
+        buyOrder.setApprovalResult(1);
+        buyOrderList.add(buyOrder);
+        approve(buyOrderList);
+
+        List<String> arg = new ArrayList<>();
+        arg.add(buyOrder.getId());
+
+
+        return quickInput(arg);
+    }
+
+
+/*    @Transactional(readOnly = false)
     @PostMapping("/testPermission")
     @Permiss(and = {Permit.USER} )
     public String testPermission(@RequestBody BuyOrder buyOrder){
@@ -58,17 +134,23 @@ public class BuyOrderController extends BaseAdminController {
 
     @GetMapping("/testPermission2")
     public String testPermission2(){
+        // 当你要调用一个 有权限 的方法，但是又不想要权限认证时，就可以关闭了权限认证，调用结束后再开启
+        // postman相当于一个用户，浏览器又相当于一个用户，两个用户的sessionId是不同，但是对应的 permissionAspect 是相同的实例，所以要有redis来缓存不同用户的属性
+        permissionAspect.closePermit();
+        deleteBuyOrder(null);
+        permissionAspect.activePermit();
         return null;
-    }
+    }*/
 
     /**
      *  这是提供给用户的接口，并不是给管理员用的，requestorId要前台传过来的
+     *  虽然是提供给用户，但是也是允许管理员来申请的。
      * @param buyOrder
      * @return
      */
     @Transactional(readOnly = false)
     @PostMapping("/addBuyOrder")
-    @Permiss(and = {Permit.USER} )
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo addBuyOrder(@RequestBody BuyOrder buyOrder) {
 
         buyOrder.setId(null);
@@ -84,7 +166,7 @@ public class BuyOrderController extends BaseAdminController {
             totalPrice = totalPrice.add(temp);
         }
         buyOrder.setRequestTotalPrice(totalPrice);
-
+        buyOrder.setRequestorId(HttpUtil.getSessionUserId());
         buyOrderService.save(buyOrder);
 
         // 保存明细内容，但是要先设置ID
@@ -113,13 +195,9 @@ public class BuyOrderController extends BaseAdminController {
      */
     @Transactional(readOnly = false)
     @PostMapping(value = "/approve")
-    @Permiss(newAnd = { Permit.TEST })
     public ResultVo approve(@RequestBody List<BuyOrder> buyOrders) {
         buyOrders.forEach(buyOrder -> {
-            BuyOrder buyOrderForSql = buyOrderService.findById(buyOrder.getId());
-            buyOrderForSql.setApprovalResult(buyOrder.getApprovalResult());
-            buyOrderForSql.setApprovalTime(new Date());
-            buyOrderService.dynamicUpdate(buyOrderForSql);
+            buyOrderService.dynamicUpdate(buyOrder);
         });
         return simpleResult(ResultEnum.SUCCESS, null);
     }
@@ -150,7 +228,9 @@ public class BuyOrderController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/updateBuyOrder")
+    @Permiss(need = false)
     public ResultVo updateBuyOrder(@RequestBody BuyOrder buyOrder) {
+
 
         // 如果审核结果已经出来了，那就不能进行修改了
         int approvalResult = buyOrderService.findById(buyOrder.getId()).getApprovalResult();

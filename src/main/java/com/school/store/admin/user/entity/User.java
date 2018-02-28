@@ -73,5 +73,6 @@ public class User extends BaseEntity{
 	@Transient
 	@Refine(value = RefineMethod.setPermissions, argNames= {"id"})
 	private Set<Permission> permissions;
+
 }
 

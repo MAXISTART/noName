@@ -1,5 +1,6 @@
 package com.school.store.aspect;
 
+import com.school.store.admin.cache.CacheUtil;
 import com.school.store.admin.permission.entity.Permission;
 import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.user.entity.User;
@@ -10,6 +11,7 @@ import com.school.store.constant.RedisConstant;
 import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
 import com.school.store.utils.CookieUtil;
+import com.school.store.utils.HttpUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -20,20 +22,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Aspect
 @Component
 @Slf4j
 public class PermissionAspect {
 
-    private boolean permissionActive = true;
 
     @Autowired
     private StringRedisTemplate redisTemplate;
@@ -45,6 +42,9 @@ public class PermissionAspect {
     @Autowired
     private EntityRefineService entityRefineService;
 
+    @Autowired
+    private CacheUtil permissionUtil;
+
 
     // admin文件夹下的所有文件夹下的所有controller都会受到切点影响
     @Pointcut("execution(public * com.school.store.admin.*.controller.*.*(..))")
@@ -55,17 +55,6 @@ public class PermissionAspect {
     @Before("annotationPointCut()")
     public void permissionVerify(JoinPoint joinPoint){
 
-        log.warn("permissionActive is " + permissionActive);
-
-
-        if(!permissionActive){
-            // 权限未开启，直接结束
-            return;
-        }
-
-        // 获取 request 对象,测试用的
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attributes.getRequest();
 
 
 
@@ -73,33 +62,37 @@ public class PermissionAspect {
         log.warn("in before");
 
         MethodSignature sign =  (MethodSignature)joinPoint.getSignature();
+
+
         // 先获取类上面的Permission注解
-        Permiss[] classPermissions = (Permiss[]) sign.getDeclaringType().getAnnotationsByType(Permiss.class);
+        Permiss classPermission = (Permiss) sign.getDeclaringType().getAnnotation(Permiss.class);
         // 获取方法上面的permission注解
-        Permiss[] methodPermissions = sign.getMethod().getAnnotationsByType(Permiss.class);
+        Permiss methodPermission = sign.getMethod().getAnnotation(Permiss.class);
 
-
-        if(classPermissions.length == 0 && methodPermissions.length == 0){
-            // 如果没有，则权限不足
-            throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+        // 先获取need，查看该方法是否需要权限认证
+        if(methodPermission!= null && !methodPermission.need()){
+            // 权限不需要，直接通过本方法
+            log.warn("no need");
+            return;
         }
 
-        // 所有的permission获取完后就要进行分类了, and分一堆，or的分一堆，表达式的分一堆
-        Set<String> ands = new HashSet<>();
-        Set<String> ors = new HashSet<>();
-        Set<String> newAnds = new HashSet<>();
-        Set<String> newOrs = new HashSet<>();
 
-        sortPermission(classPermissions, ands, ors, newAnds, newOrs);
-        sortPermission(methodPermissions, ands, ors, newAnds, newOrs);
+        if(classPermission == null && methodPermission == null){
+            // 如果没有注解，则表示完全无需权限认证
+            return;
+        }
 
 
-/*        // 获取 cookie
-        Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
+        /**
+         *  先解决注释的问题，再去解决token的验证
+         */
+
+        // 获取 cookie
+        Cookie cookie = CookieUtil.get(HttpUtil.getRequest(), CookieConstant.TOKEN);
         if (cookie == null) {
             // 有异常就交给全局处理器去处理
             log.warn("【登录校验】Cookie中查不到token");
-            //throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+            throw new BaseException(ResultEnum.NOT_LOGIN);
         }
 
 
@@ -107,16 +100,53 @@ public class PermissionAspect {
         String tokenValue = redisTemplate.opsForValue().get(String.format(RedisConstant.TOKEN_PREFIX, cookie.getValue()));
         if (StringUtils.isEmpty(tokenValue)) {
             log.warn("【登录校验】Redis中查不到token");
-            //throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
-        }*/
+            throw new BaseException(ResultEnum.NOT_LOGIN);
+        }
+
+
 
         // 解析token中的userId出来
-        String userId = "1";
+        String userId = tokenValue;
 
-        // 先根据userId从数据库中得到user的权限
+        // 设置当前的userId放进session，供controller调用
+        HttpUtil.getSession().setAttribute("userId", userId);
+
+        /**
+         *  用redis来缓存权限开启功能，为每一个session都配置各自的权限开关，同时，定时清理，比如 判断当前时间是凌晨四点了，就删除这些数据。
+         */
+        String sessionId = HttpUtil.getSessionId();
+        String turn = redisTemplate.opsForValue().get(String.format(RedisConstant.SESSIONID_PREFIX,sessionId));
+
+        if(turn == null){
+            // 如果这个session是新的，则给他配置权限开关，默认权限拦截是开启的
+            turn = RedisConstant.PERMIT_ON;
+            redisTemplate.opsForValue().set(String.format(RedisConstant.SESSIONID_PREFIX,sessionId), turn);
+        }
+
+        if(turn.equals(RedisConstant.PERMIT_OFF)){
+            // 权限未开启，直接通过本方法
+            return;
+        }
+
+
+
+        // 所有的permission获取完后就要进行分类了, and分一堆，or的分一堆，表达式的分一堆
+        Set<String> ands = new HashSet<>();
+        Set<String> ors = new HashSet<>();
+        Set<String> newAnds = new HashSet<>();
+        Set<String> newOrs = new HashSet<>();
+
+        sortPermission(classPermission, ands, ors, newAnds, newOrs);
+        sortPermission(methodPermission, ands, ors, newAnds, newOrs);
+
+
+
+        // 先根据userId从缓存或者数据库中得到user的权限
         User user = userService.findById(userId);
-        entityRefineService.refine(user);
-        Set<Permission> permissions = user.getPermissions();
+        if(user == null){
+            throw new BaseException(ResultEnum.USER_NOT_FOUND);
+        }
+        Set<Permission> permissions = permissionUtil.getUserPermissionByIdWithCache(user);
 
         log.warn("ands : " + ands);
         log.warn("ors : " + ors);
@@ -155,31 +185,54 @@ public class PermissionAspect {
     }
 
 
-    public void sortPermission(Permiss[] permissions, Set<String> ands, Set<String> ors, Set<String> newAnds, Set<String> newOrs){
 
-        for(Permiss permission : permissions){
-            if(permission.and().length > 0){
-                putInSet(permission.and(), ands);
-            }
-            if(permission.or().length > 0){
-                putInSet(permission.or(), ors);
-            }
-            if(permission.newAnd().length > 0){
-                putInSet(permission.newAnd(), newAnds);
-            }
-            if(permission.newOr().length > 0){
-                putInSet(permission.newOr(), newOrs);
-            }
+
+
+
+    /**
+     *  关闭权限登录功能，供controller以及系统调用
+     */
+    public void closePermit(){
+        String sessionId = HttpUtil.getSessionId();
+        redisTemplate.opsForValue().set(String.format(RedisConstant.SESSIONID_PREFIX,sessionId), RedisConstant.PERMIT_OFF);
+        log.warn("权限认证已经关闭");
+    }
+    /**
+     *  开启权限登录功能，供controller以及系统调用
+     */
+    public void activePermit(){
+        String sessionId = HttpUtil.getSessionId();
+        redisTemplate.opsForValue().set(String.format(RedisConstant.SESSIONID_PREFIX,sessionId), RedisConstant.PERMIT_ON);
+        log.warn("权限认证已经开启");
+    }
+
+
+
+
+
+
+    public void sortPermission(Permiss permission, Set<String> ands, Set<String> ors, Set<String> newAnds, Set<String> newOrs){
+        if(permission == null){
+            return;
+        }
+        if(permission.and().length > 0){
+            putInSet(permission.and(), ands);
+        }
+        if(permission.or().length > 0){
+            putInSet(permission.or(), ors);
+        }
+        if(permission.newAnd().length > 0){
+            putInSet(permission.newAnd(), newAnds);
+        }
+        if(permission.newOr().length > 0){
+            putInSet(permission.newOr(), newOrs);
         }
 
-        if(newAnds.size() > 0){
+        if(newAnds.size() > 0 || newOrs.size() > 0){
             // 覆盖原来的and
             ands.clear();
             Union(ands, newAnds);
-        }
-
-        if(newOrs.size() > 0){
-            // 覆盖原来的and
+            // 覆盖原来的or
             ors.clear();
             Union(ors, newOrs);
         }

@@ -7,6 +7,7 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 /**
  * permissions 权限的表，用来定义所有权限的
@@ -17,6 +18,9 @@ import javax.persistence.Table;
 @Data
 @CascadeDelete(value = UserToPermission.class, filter = "permissionId=?", args = {"id"})
 public class Permission extends BaseEntity {
+
+    @Transient
+    private static final long serialVersionUID = 268075760018187388L;
 
     // 权限名称
     @Column(name = "name" , length = 36)

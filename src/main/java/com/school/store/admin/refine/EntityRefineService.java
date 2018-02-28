@@ -4,15 +4,21 @@ import com.school.store.admin.buy.entity.BuyOrderItem;
 import com.school.store.admin.buy.service.BuyOrderItemService;
 import com.school.store.admin.department.entity.Department;
 import com.school.store.admin.department.service.DepartmentService;
+import com.school.store.admin.good.entity.GoodItem;
+import com.school.store.admin.good.service.GoodItemService;
 import com.school.store.admin.permission.entity.Permission;
 import com.school.store.admin.permission.entity.UserToPermission;
 import com.school.store.admin.permission.service.PermissionService;
 import com.school.store.admin.permission.service.UserToPermissionService;
+import com.school.store.admin.store.entity.StoreOperation;
+import com.school.store.admin.store.entity.StoreOperationItem;
+import com.school.store.admin.store.service.StoreOperationItemService;
 import com.school.store.admin.take.entity.TakeOrderItem;
 import com.school.store.admin.take.service.TakeOrderItemService;
 import com.school.store.admin.user.entity.User;
 import com.school.store.admin.user.service.UserService;
 import com.school.store.utils.ReflectUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
@@ -24,6 +30,7 @@ import java.util.Set;
 
 // 提供 entity 的修整功能，主要应用是在外键上
 @Component
+@Slf4j
 public class EntityRefineService {
 
     @Autowired
@@ -44,6 +51,12 @@ public class EntityRefineService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private GoodItemService goodItemService;
+
+    @Autowired
+    private StoreOperationItemService storeOperationItemService;
+
     private Object entity;
     private Field field;
 
@@ -59,7 +72,9 @@ public class EntityRefineService {
             // 找出对应的department
             Department department = departmentService.findById(ReflectUtil.getFieldValueByName(entity, argNames[0]) + "");
 
-
+            if(department == null){
+                return;
+            }
             // 设置department的名字进去
             field.set(entity, department.getName());
             System.out.println(entity.toString());
@@ -156,10 +171,11 @@ public class EntityRefineService {
             // 找出对应的department
             User user = userService.findById(ReflectUtil.getFieldValueByName(entity, argNames[0]) + "");
 
-
+            if(user == null){
+                return;
+            }
             // 设置department的名字进去
             field.set(entity, user.getName());
-            System.out.println(entity.toString());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -168,12 +184,60 @@ public class EntityRefineService {
 
 
 
+    /**
+     *  这个方法不对外使用，只能对内，对外只有refine的方法
+     *
+     */
+    private void setGoodItem(String[] argNames){
+
+        try {
+            field.setAccessible(true);
+
+            // 找出对应的goodItem
+            GoodItem goodItem = goodItemService.findOne(ReflectUtil.getFieldValueByName(entity, argNames[0]) + "");
+
+            // 设置department的名字进去
+            field.set(entity, goodItem);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+
+    /**
+     *  这个方法不对外使用，只能对内，对外只有refine的方法
+     *
+     */
+    public void setStoreOperations(String[] argNames) {
+
+        try {
+            field.setAccessible(true);
+            // 找到 storeOperationId 的属性，然后修改
+
+            List<StoreOperationItem> storeOperationItems = storeOperationItemService
+                    .findByOrderId(ReflectUtil.getFieldValueByName(entity, argNames[0]) + "");
+
+
+            field.set(entity, storeOperationItems);
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+
 
     public void refine(Object entity){
         this.entity = entity;
         try {
             // 1. 获取所有field
-            for(Field field : ReflectUtil.getAllFields(entity)){
+            Field[] fields = ReflectUtil.getAllFields(entity);
+            if(fields == null || fields.length == 0){
+                return;
+            }
+            for(Field field : fields){
                 if(field.isAnnotationPresent(Refine.class)){
                     this.field = field;
                     // 2. 获取包含 Refine 注解的field 提取出来，并且获取他的value，

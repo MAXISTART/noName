@@ -10,23 +10,42 @@ import com.school.store.admin.permission.service.UserToPermissionService;
 import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.user.entity.User;
 import com.school.store.admin.user.service.UserService;
+import com.school.store.annotation.Permiss;
+import com.school.store.aspect.PermissionAspect;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.base.model.SqlParams;
+import com.school.store.constant.CookieConstant;
+import com.school.store.constant.Permit;
+import com.school.store.constant.RedisConstant;
 import com.school.store.enums.ResultEnum;
+import com.school.store.exception.BaseException;
+import com.school.store.utils.CookieUtil;
+import com.school.store.utils.HttpUtil;
+import com.school.store.utils.RegexUtil;
 import com.school.store.vo.ResultVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping(value = "/admin/user")
+@Permiss(and = { Permit.ADMIN })
+@Slf4j
 public class UserController extends BaseAdminController{
 
     @Autowired
@@ -41,6 +60,12 @@ public class UserController extends BaseAdminController{
 
     @Autowired
     private EntityRefineService entityRefineService;
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
+
+    @Autowired
+    private PermissionAspect permissionAspect;
 
     @PostMapping(value = "/addUser")
     public ResultVo addUser(@RequestBody User user) {
@@ -69,11 +94,9 @@ public class UserController extends BaseAdminController{
     @Transactional(readOnly = false)
     @PostMapping(value = "/deleteUsers")
     public ResultVo deleteUsers(@RequestBody List<User> users) {
-        // 先删除 用户-权限 键值对
         users.forEach(user -> {
-            userToPermissionService.delete(userToPermissionService.findByUserId(user.getId()));
+            deleteUser(user);
         });
-        userService.delete(users);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -86,6 +109,7 @@ public class UserController extends BaseAdminController{
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/addPermissions")
+    @CacheEvict(value = "userWithPermission", allEntries = true)
     public ResultVo addPermissions(@RequestBody List<UserToPermission> userToPermissions) {
         // 要先验证是否已经存在了该 用户-权限 对。
         for(int index=0; index < userToPermissions.size(); index++){
@@ -107,6 +131,7 @@ public class UserController extends BaseAdminController{
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deletePermissions")
+    @CacheEvict(value = "userWithPermission", allEntries = true)
     public ResultVo removePermissions(@RequestBody List<UserToPermission> userToPermissions) {
         userToPermissionService.delete(userToPermissions);
         return simpleResult(ResultEnum.SUCCESS, null);
@@ -189,6 +214,107 @@ public class UserController extends BaseAdminController{
         entityRefineService.refineList(users);
         return simpleResult(ResultEnum.SUCCESS, users);
     }
+
+
+
+
+    @PostMapping("/login")
+    @Permiss(need = false)
+    public ResultVo login(@RequestBody User userInput, HttpServletResponse response)
+    {
+        User userInfo = null;
+        //1. 先从 userName 里面解析出是什么格式，是邮箱还是电话还是用户名
+        if(RegexUtil.checkEmail(userInput.getName())){
+            userInfo = userService.findByMailboxAndPassword(userInput.getName(), userInput.getPassword());
+        }
+        if(RegexUtil.checkMobile(userInput.getName())){
+            userInfo = userService.findByPhoneNumberAndPassword(userInput.getName(), userInput.getPassword());
+        }
+        if(!RegexUtil.checkEmail(userInput.getName()) && !RegexUtil.checkMobile(userInput.getName())){
+            throw new BaseException(ResultEnum.NAME_FORMAT_ERROR);
+        }
+        if(userInfo == null){
+            throw new BaseException(ResultEnum.USER_NOT_FOUND);
+        }
+
+        log.warn("userInfo : " + userInfo);
+
+        //2. 设置token至redis
+        String token = UUID.randomUUID().toString();
+        Integer expire = RedisConstant.EXPIRE;
+
+        log.warn("before redis");
+        redisTemplate.opsForValue().set(String.format(RedisConstant.TOKEN_PREFIX, token), userInfo.getId(), expire, TimeUnit.SECONDS);
+        log.warn("after redis");
+
+        //3. 设置token至cookie
+        CookieUtil.set(response, CookieConstant.TOKEN, token, expire);
+
+        // 4. 设置用户到session中
+        HttpUtil.getSession().setAttribute("userId", userInfo.getId());
+
+        // 获取用户的权限，根据权指定用户为管理员还是用户，前端根据这个得知应该跳转 管理员页面 还是 用户页面
+        // 这里面的 管理员权限 并不是包含 用户权限的，而是并列的关系
+        entityRefineService.refine(userInfo);
+        Set<Permission> permissions = userInfo.getPermissions();
+        if(permissionAspect.hasPermission(permissions, Permit.ADMIN)){
+            return simpleResult(ResultEnum.ADMIN_LOGIN_SUCCESS, null);
+        }
+        if(permissionAspect.hasPermission(permissions, Permit.USER)){
+            return simpleResult(ResultEnum.USER_LOGIN_SUCCESS, null);
+        }
+        return simpleResult(ResultEnum.USER_LOGIN_SUCCESS, null);
+
+    }
+
+
+
+
+    @PostMapping("/logout")
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
+    public ResultVo logout(HttpServletRequest request, HttpServletResponse response)
+    {
+
+        Cookie cookie = CookieUtil.get(request, CookieConstant.TOKEN);
+        if (cookie != null) {
+            //1. 清除redis
+            redisTemplate.opsForValue().getOperations().delete(String.format(RedisConstant.TOKEN_PREFIX, cookie.getValue()));
+
+            //2. 清除userId
+            HttpUtil.getSession().setAttribute("userId", null);
+
+            //3. 清除cookie
+            CookieUtil.set(response, CookieConstant.TOKEN, null, 0);
+        }
+        return simpleResult(ResultEnum.LOGIN_OUT_SUCCESS, null);
+    }
+
+
+    @PostMapping("/register")
+    @Permiss(need = false)
+    public ResultVo register(@RequestBody User userInput, HttpServletResponse response){
+        userInput.setId(null);
+        // 邮箱和手机是一定要的，而且格式要正确
+        if(!RegexUtil.checkEmail(userInput.getMailbox())){
+            throw new BaseException(ResultEnum.MAIL_FORMAT_ERROR);
+        }
+        if(!RegexUtil.checkMobile(userInput.getPhoneNumber())){
+            throw new BaseException(ResultEnum.MOBILE_FORMAT_ERROR);
+        }
+        if(userInput == null){
+            throw new BaseException(ResultEnum.PARAM_ERROR);
+        }
+        userService.save(userInput);
+        // 默认是user权限
+        Permission userPermission = permissionService.findByName(Permit.USER);
+        UserToPermission userToPermission = new UserToPermission();
+        userToPermission.setPermissionId(userPermission.getId());
+        userToPermission.setUserId(userInput.getId());
+        userToPermissionService.save(userToPermission);
+
+        return simpleResult(ResultEnum.REGISTER_SUCCESS, null);
+    }
+
 
 
 }

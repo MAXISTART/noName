@@ -1,15 +1,24 @@
 package com.school.store.admin.store.controller;
 
+import com.school.store.admin.refine.EntityRefineService;
+import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.entity.StoreOperation;
 import com.school.store.admin.store.entity.StoreOperationItem;
 import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.admin.store.service.StoreOperationItemService;
 import com.school.store.admin.store.service.StoreOperationService;
+import com.school.store.admin.user.entity.User;
+import com.school.store.admin.user.service.UserService;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.base.model.SqlParams;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
+import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.Store;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,11 +26,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
 @RestController
 @RequestMapping("/admin/storeOperation")
+@Permiss(and = Permit.ADMIN)
+@Slf4j
 public class StoreOperationController extends BaseAdminController {
 
     @Autowired
@@ -34,12 +46,13 @@ public class StoreOperationController extends BaseAdminController {
     private StoreItemController storeItemController;
 
     @Autowired
-    private StoreItemService storeItemService;
+    private EntityRefineService entityRefineService;
 
-    @PostMapping("/testAddStoreOperations")
-    public ResultVo testAddStoreOperations(@RequestBody List<StoreOperation> storeOperations) {
-        return simpleResult(ResultEnum.SUCCESS, storeOperations);
+    @PostMapping("/testAddStoreOperation")
+    public ResultVo testAddStoreOperation(@RequestBody StoreOperation storeOperation) {
+        return simpleResult(ResultEnum.SUCCESS, null);
     }
+
 
 
     @Transactional(readOnly = false)
@@ -53,12 +66,15 @@ public class StoreOperationController extends BaseAdminController {
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
         if (storeOperationItems != null) {
             for (StoreOperationItem storeOperationItem : storeOperationItems) {
+
                 storeOperationItem.setOrderId(storeOperation.getId());
+
                 if (storeOperation.getApprovalResult() == 1) {
                     // 审核通过是会修改库存的
                     switch (storeOperation.getType()) {
                         case 1:
                             // 如果是带审批的入库类型
+
                             storeItemController.addNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
                             break;
                         case 2:
@@ -87,6 +103,7 @@ public class StoreOperationController extends BaseAdminController {
                             break;
                     }
                 }
+
             }
             storeOperationItemService.save(storeOperationItems);
         }
@@ -129,12 +146,8 @@ public class StoreOperationController extends BaseAdminController {
     @PostMapping(value = "/deleteStoreOperation")
     public ResultVo deleteStoreOperation(@RequestBody StoreOperation storeOperation) {
 
-        // 先删除明细，在删除总单
-        List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
-        if (storeOperationItems != null && !storeOperationItems.isEmpty()) {
-            storeOperationItemService.delete(storeOperationItems);
-        }
-        storeOperationService.delete(storeOperation);
+        // 级联删除
+        storeOperationService.cascadeDelete(storeOperation);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -144,13 +157,9 @@ public class StoreOperationController extends BaseAdminController {
 
         // 先删除明细，在删除总单
         storeOperations.forEach(storeOperation -> {
-            List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
-            if (storeOperationItems != null && !storeOperationItems.isEmpty()) {
-                storeOperationItemService.delete(storeOperationItems);
-            }
+            storeOperationService.cascadeDelete(storeOperation);
         });
 
-        storeOperationService.delete(storeOperations);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -180,10 +189,7 @@ public class StoreOperationController extends BaseAdminController {
         }
 
         Page<StoreOperation> storeOperations = storeOperationService.findAll(pager);
-
-        storeOperations.forEach(storeOperation -> {
-            setStoreOperations(storeOperation);
-        });
+        entityRefineService.refinePage(storeOperations);
 
         return simpleResult(ResultEnum.SUCCESS, storeOperations);
     }
@@ -231,25 +237,13 @@ public class StoreOperationController extends BaseAdminController {
         // 返回的是真正的List<User>
         List<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams(sqlParams, page, size, StoreOperation.class);
 
-        storeOperations.forEach(storeOperation -> {
-            setStoreOperations(storeOperation);
-        });
+        entityRefineService.refineList(storeOperations);
 
         return simpleResult(ResultEnum.SUCCESS, storeOperations);
     }
 
 
-    /**
-     * 防止代码重复的工具代码
-     *
-     * @param storeOperation
-     */
-    public void setStoreOperations(StoreOperation storeOperation) {
-        List<StoreOperationItem> storeOperationItems = storeOperationItemService.findByOrderId(storeOperation.getId());
-        if (storeOperationItems != null && !storeOperationItems.isEmpty()) {
-            storeOperation.setStoreOperationItems(storeOperationItems);
-        }
-    }
+
 
 
 }

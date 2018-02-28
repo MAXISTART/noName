@@ -74,6 +74,7 @@ public class StoreOperation extends BaseEntity {
 
     // 明细内容
     @Transient
+    @Refine(value = RefineMethod.setStoreOperationItems, argNames= {"id"})
     private List<StoreOperationItem> storeOperationItems;
 
     // 部门名称

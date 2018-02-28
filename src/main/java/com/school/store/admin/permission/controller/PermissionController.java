@@ -2,10 +2,13 @@ package com.school.store.admin.permission.controller;
 import com.school.store.admin.permission.entity.Permission;
 import com.school.store.admin.permission.service.PermissionService;
 import com.school.store.admin.permission.service.UserToPermissionService;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -16,6 +19,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/permission")
+@Permiss(and = Permit.ADMIN)
 public class PermissionController extends BaseAdminController {
 
     @Autowired
@@ -34,6 +38,7 @@ public class PermissionController extends BaseAdminController {
 
 
     @PostMapping(value = "/updatePermission")
+    @CacheEvict(value = "userWithPermission", allEntries = true)
     public ResultVo updatePermission(@RequestBody Permission permission) {
 
         permissionService.dynamicUpdate(permission);
@@ -43,6 +48,7 @@ public class PermissionController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping(value = "/deletePermission")
+    @CacheEvict(value = "userWithPermission", allEntries = true)
     public ResultVo deletePermission(@RequestBody Permission permission) {
         // 级联删除
         permissionService.cascadeDelete(permission);
@@ -51,6 +57,7 @@ public class PermissionController extends BaseAdminController {
 
 
     @PostMapping(value = "/deletePermissions")
+    @CacheEvict(value = "userWithPermission", allEntries = true)
     public ResultVo deletePermissions(@RequestBody List<Permission> permissions) {
         // 这里的RequestBody 的 permissions 是一个 permission 的数组
         permissions.forEach(permission -> {

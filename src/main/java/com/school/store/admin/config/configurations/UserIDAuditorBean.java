@@ -10,6 +10,6 @@ public class UserIDAuditorBean implements AuditorAware<String> {
 
     @Override
     public String getCurrentAuditor() {
-        return HttpUtil.getSessionUser().getId();
+        return HttpUtil.getSessionUserId();
     }
 }

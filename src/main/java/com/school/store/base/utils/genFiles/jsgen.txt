@@ -2,7 +2,6 @@
 {
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"description":null,
 	"id":null,
 	"lastmodifiedBy":null,
@@ -23,7 +22,6 @@
 {
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"id":null,
 	"lastmodifiedBy":null,
 	"lastmodifiedTime":null,
@@ -42,35 +40,17 @@
 
 //BuyOrder
 {
-	"approvalResult":null,
-	"approvalTaskId":null,
-	"approvalTime":null,
 	"bills":null,
 	"buyOrderItems":null,
-	"createBy":null,
-	"createTime":null,
-	"delFlag":false,
 	"departmentId":null,
-	"departmentName":null,
 	"description":null,
-	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
-	"requestTime":null,
-	"requestTotalPrice":null,
 	"requestorId":null
 }
 
 
 //BuyOrderItem
 {
-	"createBy":null,
-	"createTime":null,
-	"delFlag":false,
 	"goodId":null,
-	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
 	"name":null,
 	"number":null,
 	"orderId":null,
@@ -83,13 +63,7 @@
 
 //Department
 {
-	"createBy":null,
-	"createTime":null,
-	"delFlag":false,
 	"description":null,
-	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
 	"name":null,
 	"responsorId":null,
 	"responsorName":null
@@ -98,12 +72,6 @@
 
 //GoodItem
 {
-	"createBy":null,
-	"createTime":null,
-	"delFlag":false,
-	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
 	"name":null,
 	"number":null,
 	"price":null,
@@ -115,12 +83,6 @@
 
 //SortItem
 {
-	"createBy":null,
-	"createTime":null,
-	"delFlag":false,
-	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
 	"name":null
 }
 
@@ -129,7 +91,6 @@
 {
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"description":null,
 	"id":null,
 	"lastmodifiedBy":null,
@@ -142,7 +103,6 @@
 {
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"id":null,
 	"lastmodifiedBy":null,
 	"lastmodifiedTime":null,
@@ -155,7 +115,6 @@
 {
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"goodId":null,
 	"goodItem":null,
 	"id":null,
@@ -175,8 +134,8 @@
 	"approvalTime":null,
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"departmentId":null,
+	"departmentName":null,
 	"description":null,
 	"id":null,
 	"lastmodifiedBy":null,
@@ -185,6 +144,7 @@
 	"requestTime":null,
 	"requestTotalPrice":null,
 	"requestorId":null,
+	"requestorName":null,
 	"responsorId":null,
 	"storeOperationItems":null,
 	"type":null
@@ -195,7 +155,6 @@
 {
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"goodId":null,
 	"id":null,
 	"lastmodifiedBy":null,
@@ -217,7 +176,6 @@
 	"approvalTime":null,
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"departmentId":null,
 	"departmentName":null,
 	"description":null,
@@ -227,6 +185,7 @@
 	"requestTime":null,
 	"requestTotalPrice":null,
 	"requestorId":null,
+	"requestorName":null,
 	"takeOrderItems":null
 }
 
@@ -235,7 +194,6 @@
 {
 	"createBy":null,
 	"createTime":null,
-	"delFlag":false,
 	"goodId":null,
 	"id":null,
 	"lastmodifiedBy":null,
@@ -253,15 +211,8 @@
 
 //User
 {
-	"createBy":null,
-	"createTime":null,
-	"delFlag":false,
 	"departmentId":null,
-	"departmentName":null,
 	"description":null,
-	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
 	"mailbox":null,
 	"name":null,
 	"openId":null,

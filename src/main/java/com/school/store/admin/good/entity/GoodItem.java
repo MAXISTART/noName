@@ -2,6 +2,8 @@ package com.school.store.admin.good.entity;
 
 import java.math.BigDecimal;
 
+import com.school.store.admin.buy.entity.BuyOrder;
+import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
 

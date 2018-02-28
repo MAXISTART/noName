@@ -5,7 +5,9 @@ import com.school.store.admin.department.service.DepartmentService;
 import com.school.store.admin.good.service.GoodItemService;
 import com.school.store.admin.good.service.SortItemService;
 import com.school.store.admin.user.service.UserService;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/admin/config")
+@Permiss(and = Permit.ADMIN)
 public class ConfigController extends BaseAdminController{
 
 

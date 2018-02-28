@@ -4,10 +4,13 @@ import com.school.store.admin.good.entity.GoodItem;
 import com.school.store.admin.good.entity.SortItem;
 import com.school.store.admin.good.service.GoodItemService;
 import com.school.store.admin.good.service.SortItemService;
+import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.controller.StoreItemController;
 import com.school.store.admin.store.entity.StoreItem;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.base.model.SqlParams;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,22 +26,31 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/admin/good")
+@Permiss(and = Permit.ADMIN)
 public class GoodController extends BaseAdminController {
 
 
     @Autowired
-    GoodItemService goodItemService;
+    private GoodItemService goodItemService;
 
     @Autowired
-    SortItemService sortItemService;
+    private SortItemService sortItemService;
 
     @Autowired
-    StoreItemController storeItemController;
+    private StoreItemController storeItemController;
 
+    @Autowired
+    private EntityRefineService entityRefineService;
+
+    /**
+     *  這是管理員的操作，並不是用戶的，正因為是管理員，所以管理員並不需要建立采购表，也不需要审核。
+     *  但是采购得申请可以不需要管理员权限，普通用户也能申请
+     * @param goodItem
+     * @return
+     */
     @Transactional(readOnly = false)
     @PostMapping("/addGoodItem")
     public ResultVo addGoodItem(@RequestBody GoodItem goodItem) {
-        System.out.println("1111");
         int rs_code = checkGoodItemNameAndSpec(goodItem);
         switch (rs_code){
             case 0:
@@ -75,6 +87,7 @@ public class GoodController extends BaseAdminController {
 
 
     @PostMapping(value = "/deleteGoodItem")
+    @Transactional(readOnly = false)
     public ResultVo deleteGoodItem(@RequestBody GoodItem goodItem) {
         // 这里的RequestBody 的 user只需要一个id就行了
         goodItemService.delete(goodItem);
@@ -82,6 +95,7 @@ public class GoodController extends BaseAdminController {
     }
 
     @PostMapping(value = "/deleteGoodItems")
+    @Transactional(readOnly = false)
     public ResultVo deleteGoodItems(@RequestBody List<GoodItem> goodItems) {
         // 这里的RequestBody 的 goodItems 是一个 goodItem 的数组
         goodItemService.delete(goodItems);
@@ -114,6 +128,8 @@ public class GoodController extends BaseAdminController {
         }
 
         Page<GoodItem> goodItems = goodItemService.findAll(pager);
+
+
 
         return simpleResult(ResultEnum.SUCCESS, goodItems);
     }

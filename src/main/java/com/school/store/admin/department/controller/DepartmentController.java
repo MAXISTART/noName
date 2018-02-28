@@ -2,9 +2,12 @@ package com.school.store.admin.department.controller;
 
 import com.school.store.admin.department.entity.Department;
 import com.school.store.admin.department.service.DepartmentService;
+import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.user.entity.User;
 import com.school.store.admin.user.service.UserService;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +20,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/admin/department")
+@Permiss(and = Permit.ADMIN)
 public class DepartmentController extends BaseAdminController{
 
     @Autowired
     private DepartmentService departmentService;
 
     @Autowired
+    private EntityRefineService entityRefineService;
+
+    @Autowired
     private UserService userService;
 
     @PostMapping("/addDepartment")
-    public ResultVo addUser(@RequestBody Department department) {
+    public ResultVo addDepartment(@RequestBody Department department) {
 
         department.setId(null);
         departmentService.save(department);
@@ -51,7 +58,9 @@ public class DepartmentController extends BaseAdminController{
     @PostMapping(value = "/deleteDepartments")
     public ResultVo deleteDepartments(@RequestBody List<Department> departments) {
         // 这里的RequestBody 的 users 是一个 user的数组
-        departmentService.delete(departments);
+        departments.forEach(department -> {
+            departmentService.cascadeDelete(department);
+        });
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -81,24 +90,9 @@ public class DepartmentController extends BaseAdminController{
         }
 
         Page<Department> departments = departmentService.findAll(pager);
-        // 给每个user设置他们对应的departmentName
-        departments.forEach(department -> {
-            setResponsorName(department);
-        });
+        entityRefineService.refinePage(departments);
         return simpleResult(ResultEnum.SUCCESS, departments);
     }
 
 
-
-
-    /**
-     *  防止代码重复的工具代码
-     * @param department
-     */
-    public void setResponsorName(Department department){
-        User user = userService.findById(department.getResponsorId());
-        if(user != null){
-            department.setResponsorName(user.getName());
-        }
-    }
 }

@@ -18,4 +18,7 @@ public @interface Permiss {
     String[] newAnd() default {};
 
     String[] newOr() default {};
+
+    // 这个属性表示这个方法是否 需要权限认证，默认是需要的
+    boolean need() default true;
 }

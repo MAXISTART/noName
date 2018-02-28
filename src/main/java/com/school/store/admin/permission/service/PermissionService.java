@@ -6,4 +6,5 @@ import java.io.Serializable;
 
 public interface PermissionService extends IBaseRepository<Permission, Serializable>{
     public Permission findById(String id);
+    public Permission findByName(String name);
 }

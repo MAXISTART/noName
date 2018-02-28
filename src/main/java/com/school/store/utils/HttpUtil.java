@@ -1,18 +1,37 @@
 package com.school.store.utils;
 
-import com.school.store.admin.user.entity.User;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 public class HttpUtil {
 
 
-    public static User getSessionUser(){
+    public static String getSessionUserId(){
         // 获取 request 对象
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
-        return (User)request.getSession().getAttribute("user");
+        return (String)request.getSession().getAttribute("userId");
+    }
+
+    public static String getSessionId(){
+
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        return request.getSession().getId();
+    }
+
+    public static HttpSession getSession(){
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        return request.getSession();
+    }
+
+    public static HttpServletRequest getRequest(){
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes.getRequest();
+        return request;
     }
 }

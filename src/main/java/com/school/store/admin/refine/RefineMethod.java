@@ -8,7 +8,9 @@ public enum RefineMethod {
     setPermissions,
     setBuyOrderItems,
     setTakeOrderItems,
-    setUserName
+    setUserName,
+    setGoodItem,
+    setStoreOperationItems
 
 
 }

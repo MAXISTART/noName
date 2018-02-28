@@ -1,9 +1,13 @@
 package com.school.store.admin.store.controller;
+import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.service.StoreItemService;
+import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,10 +19,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/admin/store")
+@Permiss(and = Permit.ADMIN)
+@Slf4j
 public class StoreItemController extends BaseAdminController {
 
     @Autowired
     private StoreItemService storeItemService;
+
+    @Autowired
+    private EntityRefineService entityRefineService;
 
     // 测试添加和删除
     @GetMapping("/testAdd")
@@ -88,6 +97,7 @@ public class StoreItemController extends BaseAdminController {
         }
 
         Page<StoreItem> storeItems = storeItemService.findAll(pager);
+        entityRefineService.refinePage(storeItems);
 
         return simpleResult(ResultEnum.SUCCESS, storeItems);
     }
@@ -95,14 +105,19 @@ public class StoreItemController extends BaseAdminController {
 
 
     @Transactional(readOnly = false)
+    @Permiss(need = false)
+    // 这是系统级别的方法，不提供给任何用户，只是系统调用
     public boolean addNumber(String goodId, Integer number){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
         storeItem.setNumber(storeItem.getNumber() + number);
-        storeItemService.save(storeItem);
+        // 这里因为持久化了，必须用merge，而不能用sql或者save
+        storeItemService.saveOrUpdate(storeItem);
         return true;
     }
 
     @Transactional(readOnly = false)
+    @Permiss(need = false)
+    // 这是系统级别的方法，不提供给任何用户，只是系统调用
     public boolean reduceNumber(String goodId, Integer number){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
         if(storeItem.getNumber() < number){
@@ -110,7 +125,8 @@ public class StoreItemController extends BaseAdminController {
             return false;
         }
         storeItem.setNumber(storeItem.getNumber() - number);
-        storeItemService.save(storeItem);
+        // 这里因为持久化了，必须用merge，而不能用sql或者save
+        storeItemService.saveOrUpdate(storeItem);
         return true;
     }
 
@@ -121,10 +137,13 @@ public class StoreItemController extends BaseAdminController {
      * @return
      */
     @Transactional(readOnly = false)
+    @Permiss(need = false)
+    // 这是系统级别的方法，不提供给任何用户，只是系统调用
     public boolean addLockNumber(String goodId, Integer lockNumber){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
         storeItem.setLockNumber(storeItem.getLockNumber() + lockNumber);
-        storeItemService.save(storeItem);
+        // 这里因为持久化了，必须用merge，而不能用sql或者save
+        storeItemService.saveOrUpdate(storeItem);
         return true;
     }
 
@@ -135,10 +154,13 @@ public class StoreItemController extends BaseAdminController {
      * @return
      */
     @Transactional(readOnly = false)
+    @Permiss(need = false)
+    // 这是系统级别的方法，不提供给任何用户，只是系统调用
     public boolean reduceLockNumber(String goodId, Integer lockNumber){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
         storeItem.setLockNumber(storeItem.getLockNumber() - lockNumber);
-        storeItemService.save(storeItem);
+        // 这里因为持久化了，必须用merge，而不能用sql或者save
+        storeItemService.saveOrUpdate(storeItem);
         return true;
     }
 
@@ -149,6 +171,8 @@ public class StoreItemController extends BaseAdminController {
      * @return
      */
     @Transactional(readOnly = false)
+    @Permiss(need = false)
+    // 这是系统级别的方法，不提供给任何用户，只是系统调用
     public boolean checkNumber(String goodId, Integer number){
         // 检查库存是否足够
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
