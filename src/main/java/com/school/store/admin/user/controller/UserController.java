@@ -1,8 +1,6 @@
 package com.school.store.admin.user.controller;
 
 
-import com.school.store.admin.department.entity.Department;
-import com.school.store.admin.department.service.DepartmentService;
 import com.school.store.admin.permission.entity.Permission;
 import com.school.store.admin.permission.entity.UserToPermission;
 import com.school.store.admin.permission.service.PermissionService;
@@ -25,16 +23,13 @@ import com.school.store.utils.RegexUtil;
 import com.school.store.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -222,19 +217,23 @@ public class UserController extends BaseAdminController{
     @Permiss(need = false)
     public ResultVo login(@RequestBody User userInput, HttpServletResponse response)
     {
-        User userInfo = null;
-        //1. 先从 userName 里面解析出是什么格式，是邮箱还是电话还是用户名
-        if(RegexUtil.checkEmail(userInput.getName())){
-            userInfo = userService.findByMailboxAndPassword(userInput.getName(), userInput.getPassword());
-        }
-        if(RegexUtil.checkMobile(userInput.getName())){
-            userInfo = userService.findByPhoneNumberAndPassword(userInput.getName(), userInput.getPassword());
-        }
-        if(!RegexUtil.checkEmail(userInput.getName()) && !RegexUtil.checkMobile(userInput.getName())){
-            throw new BaseException(ResultEnum.NAME_FORMAT_ERROR);
-        }
+        // 先按照名字查找,如果没有，再按照手机和邮箱来查找
+        User userInfo = userService.findByNameAndPassword(userInput.getName(), userInput.getPassword());
         if(userInfo == null){
-            throw new BaseException(ResultEnum.USER_NOT_FOUND);
+
+            //1. 先从 userName 里面解析出是什么格式，是邮箱还是电话还是用户名
+            if(RegexUtil.checkEmail(userInput.getName())){
+                userInfo = userService.findByMailboxAndPassword(userInput.getName(), userInput.getPassword());
+            }
+            if(RegexUtil.checkMobile(userInput.getName())){
+                userInfo = userService.findByPhoneNumberAndPassword(userInput.getName(), userInput.getPassword());
+            }
+            if(!RegexUtil.checkEmail(userInput.getName()) && !RegexUtil.checkMobile(userInput.getName())){
+                throw new BaseException(ResultEnum.NAME_FORMAT_ERROR);
+            }
+            if(userInfo == null){
+                throw new BaseException(ResultEnum.USER_NOT_FOUND);
+            }
         }
 
         log.warn("userInfo : " + userInfo);
@@ -258,12 +257,12 @@ public class UserController extends BaseAdminController{
         entityRefineService.refine(userInfo);
         Set<Permission> permissions = userInfo.getPermissions();
         if(permissionAspect.hasPermission(permissions, Permit.ADMIN)){
-            return simpleResult(ResultEnum.ADMIN_LOGIN_SUCCESS, null);
+            return simpleResult(ResultEnum.ADMIN_LOGIN_SUCCESS, userInfo);
         }
         if(permissionAspect.hasPermission(permissions, Permit.USER)){
-            return simpleResult(ResultEnum.USER_LOGIN_SUCCESS, null);
+            return simpleResult(ResultEnum.USER_LOGIN_SUCCESS, userInfo);
         }
-        return simpleResult(ResultEnum.USER_LOGIN_SUCCESS, null);
+        return simpleResult(ResultEnum.USER_LOGIN_SUCCESS, userInfo);
 
     }
 

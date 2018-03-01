@@ -44,7 +44,6 @@ public class ConfigController extends BaseAdminController{
     @GetMapping("/getInitData")
     public ResultVo getInitData(){
         Map<String, Object> data  = new HashMap<>();
-        data.put("allUsers", userService.findAll());
         data.put("allDepartments", departmentService.findAll());
         data.put("allSorts", sortItemService.findAll());
         return simpleResult(ResultEnum.SUCCESS, data);
