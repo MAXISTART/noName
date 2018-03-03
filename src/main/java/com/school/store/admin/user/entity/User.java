@@ -28,7 +28,7 @@ import java.util.Set;
 public class User extends BaseEntity{
 
 	// 用户的昵称
-	@Column(name = "name" , length = 36)
+	@Column(name = "name" , length = 36, unique = true)
 	private String name;
 
 	// 用户的密码

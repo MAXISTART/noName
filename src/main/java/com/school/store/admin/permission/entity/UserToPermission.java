@@ -17,11 +17,11 @@ import javax.persistence.Table;
 public class UserToPermission extends BaseEntity {
 
     // 用户ID
-    @Column(name = "userId" , length = 36)
+    @Column(name = "userId" , length = 36, nullable = false)
     private String userId;
 
     // 权限ID
-    @Column(name = "permissionId" , length = 36)
+    @Column(name = "permissionId" , length = 36, nullable = false)
     private String permissionId;
 
 }

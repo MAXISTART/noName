@@ -12,4 +12,5 @@ public interface UserToPermissionService extends IBaseRepository<UserToPermissio
     public List<UserToPermission> findByPermissionId(String permissionId);
     public List<UserToPermission> findByUserId(String userId);
     public UserToPermission findByPermissionIdAndUserId(String permissionId, String userId);
+    public int deleteByPermissionIdAndUserId(String permissionId, String userId);
 }

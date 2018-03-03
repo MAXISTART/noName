@@ -248,6 +248,9 @@ public class PermissionAspect {
 
 
     public boolean hasPermission(Set<Permission> permissions, String permissionName){
+        if(permissions == null){
+            return false;
+        }
         for(Permission permission : permissions){
             if(permission.getName().equals(permissionName)){
                 return true;

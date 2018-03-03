@@ -3,6 +3,7 @@ package com.school.store.admin.good.entity;
 import java.math.BigDecimal;
 
 import com.school.store.admin.buy.entity.BuyOrder;
+import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.annotation.CascadeDelete;
 import com.school.store.base.model.BaseEntity;
 import lombok.Data;
@@ -18,6 +19,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "good_items")
 @Data
+@CascadeDelete(value = StoreItem.class, filter = "goodId=?", args = {"id"})
 public class GoodItem extends BaseEntity {
 
 	// 物品的名称

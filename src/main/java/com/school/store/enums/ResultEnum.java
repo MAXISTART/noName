@@ -43,7 +43,9 @@ public enum ResultEnum {
 
     REGISTER_SUCCESS(15, "注册成功"),
 
-    USER_AREADLY_IN_SESSION_BEFORE_REGISTER(16, "当前已经有用户登录，请先登出用户再注册")
+    USER_AREADLY_IN_SESSION_BEFORE_REGISTER(16, "当前已经有用户登录，请先登出用户再注册"),
+
+    GET_SORTS_FAIL(17, "获取种类失败")
     ;
 
     private Integer code;
@@ -53,5 +55,9 @@ public enum ResultEnum {
     ResultEnum(Integer code, String message) {
         this.code = code;
         this.message = message;
+    }
+
+    public String toJson(){
+        return "{code: " + this.code + ", msg: \"" + this.message + "\"}";
     }
 }

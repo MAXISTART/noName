@@ -12,6 +12,7 @@ import javax.persistence.Query;
 import javax.persistence.Table;
 
 import com.school.store.annotation.CascadeDelete;
+import com.school.store.base.model.MPager;
 import com.school.store.base.model.SqlParams;
 import com.school.store.base.repository.IBaseRepository;
 import com.school.store.base.utils.BlankUtil;
@@ -234,7 +235,7 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 	@SuppressWarnings("unchecked")
 	@Transactional(readOnly=false)
 	@Override
-	public List<T> findByDynamicSqlParams(SqlParams sqlParams, int page, int rows, Class clazz) {
+	public MPager<T> findByDynamicSqlParams(SqlParams sqlParams, int page, int rows, Class clazz) {
     	Table table = (Table) clazz.getAnnotation(Table.class);
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery("SELECT * FROM " + table.name() + " " + sqlParams.getSql());
@@ -248,7 +249,14 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 		}
 		// setResultTransformer 是设置结果集映射到什么地方
 		// 注意，数据库中的列名和 实体的属性名 必须一致， 实体类可以比表的列的数量少
-		return query.setFirstResult((page - 1)*rows).setMaxResults(rows).setResultTransformer(Transformers.aliasToBean(clazz)).list();
+		System.out.println("query.list().size() = "+query.list().size());
+		MPager<T> mPage = new MPager<>();
+		mPage.setPageSize(rows);
+		mPage.setPage(page);
+		mPage.setTotal(query.list().size());
+		mPage.setData(query.setFirstResult((page - 1)*rows).setMaxResults(rows).setResultTransformer(Transformers.aliasToBean(clazz)).list());
+
+		return mPage;
 	}
 
 

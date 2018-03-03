@@ -1,6 +1,8 @@
 package com.school.store.base.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.school.store.admin.refine.Refine;
+import com.school.store.admin.refine.RefineMethod;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
 import org.springframework.data.annotation.CreatedBy;
@@ -65,5 +67,14 @@ public class BaseEntity implements Serializable {
 	@Column(name = "lastmodifiedBy")
 	@LastModifiedBy
 	private String lastmodifiedBy;
+
+
+	@Transient
+	@Refine(value = RefineMethod.setUserName, argNames = {"createBy"})
+	private String creatorName;
+
+	@Transient
+	@Refine(value = RefineMethod.setUserName, argNames = {"createBy"})
+	private String updatorName;
 
 }

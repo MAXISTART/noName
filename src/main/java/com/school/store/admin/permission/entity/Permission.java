@@ -23,7 +23,7 @@ public class Permission extends BaseEntity {
     private static final long serialVersionUID = 268075760018187388L;
 
     // 权限名称
-    @Column(name = "name" , length = 36)
+    @Column(name = "name" , length = 36, unique = true)
     private String name;
 
     // 权限描述

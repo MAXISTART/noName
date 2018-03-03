@@ -9,10 +9,12 @@ import com.school.store.admin.store.controller.StoreItemController;
 import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.base.model.MPager;
 import com.school.store.base.model.SqlParams;
 import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,6 +29,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/admin/good")
 @Permiss(and = Permit.ADMIN)
+@Slf4j
 public class GoodController extends BaseAdminController {
 
 
@@ -67,22 +70,26 @@ public class GoodController extends BaseAdminController {
 
     }
 
-
     @PostMapping(value = "/updateGoodItem")
     public ResultVo updateGoodItem(@RequestBody GoodItem goodItem) {
 
-        // 先检查录入的名字是否有问题
-        int rs_code = checkGoodItemNameAndSpec(goodItem);
-        switch (rs_code){
-            case 0:
+        List<GoodItem> goodItems = goodItemService.findByNameAndSpec(goodItem.getName(), goodItem.getSpec());
+        if(goodItems !=null && !goodItems.isEmpty()){
+
+            // 如果所找到的id是不同的，说明这个找出来的goodItem是不同于这个输入的goodItem，但是现在输入的goodItem是和找出来的goodItem的规格和名字重复
+            // 所以需要报错
+            if(!goodItems.get(0).getId().equals(goodItem.getId())){
+                return simpleResult(ResultEnum.NAME_SPEC_REPEAT,null);
+            }else{
                 goodItemService.dynamicUpdate(goodItem);
                 return simpleResult(ResultEnum.SUCCESS, null);
-            case 1:
-                return simpleResult(ResultEnum.NAME_SPEC_REPEAT, null);
-            case 2:
-                return simpleResult(ResultEnum.PARAM_ERROR,null);
+            }
+        }else{
+            // 找不到就说明现在是完全可行的
+            goodItemService.dynamicUpdate(goodItem);
+            return simpleResult(ResultEnum.SUCCESS, null);
         }
-        return simpleResult(ResultEnum.SUCCESS, null);
+
     }
 
 
@@ -90,7 +97,7 @@ public class GoodController extends BaseAdminController {
     @Transactional(readOnly = false)
     public ResultVo deleteGoodItem(@RequestBody GoodItem goodItem) {
         // 这里的RequestBody 的 user只需要一个id就行了
-        goodItemService.delete(goodItem);
+        goodItemService.cascadeDelete(goodItem);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -98,7 +105,9 @@ public class GoodController extends BaseAdminController {
     @Transactional(readOnly = false)
     public ResultVo deleteGoodItems(@RequestBody List<GoodItem> goodItems) {
         // 这里的RequestBody 的 goodItems 是一个 goodItem 的数组
-        goodItemService.delete(goodItems);
+        goodItems.forEach(goodItem -> {
+            goodItemService.cascadeDelete(goodItem);
+        });
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -128,8 +137,7 @@ public class GoodController extends BaseAdminController {
         }
 
         Page<GoodItem> goodItems = goodItemService.findAll(pager);
-
-
+        entityRefineService.refinePage(goodItems);
 
         return simpleResult(ResultEnum.SUCCESS, goodItems);
     }
@@ -155,26 +163,22 @@ public class GoodController extends BaseAdminController {
                                                      @RequestParam(required = false, defaultValue = "allName") String name
     ) {
         SqlParams sqlParams = new SqlParams();
-        if(!name.equals("allName")){
+        if(!name.equals("allName") && !name.equals("")){
             sqlParams.put("AND","name","LIKE");
             sqlParams.putValue("%"+name+"%");
         }
-        if(!price_start.equals("allPrice")){
+        if(!price_start.equals("allPrice") && !price_start.equals("")){
             sqlParams.put("AND", "price", ">=");
             sqlParams.putValue(price_start);
         }
-        if(!price_end.equals("allPrice")){
+        if(!price_end.equals("allPrice") && !price_end.equals("")){
             sqlParams.put("AND", "price", "<=");
             sqlParams.putValue(price_end);
         }
-        if(!name.equals("allName")){
-            sqlParams.put("AND", "name", "like");
-            sqlParams.putValue("%" + name + "%");
-        }
 
         // 返回的是真正的List<GoodItem>
-        List<GoodItem> goodItems = goodItemService.findByDynamicSqlParams( sqlParams, page, size, GoodItem.class);
-
+        MPager<GoodItem> goodItems = goodItemService.findByDynamicSqlParams( sqlParams, page, size, GoodItem.class);
+        entityRefineService.refineList(goodItems.getData());
         return simpleResult(ResultEnum.SUCCESS, goodItems);
     }
 

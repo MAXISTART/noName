@@ -2,6 +2,7 @@ package com.school.store.base.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.school.store.enums.ResultEnum;
 import sun.applet.Main;
 
 import java.io.File;
@@ -33,6 +34,7 @@ public class GenEmptyJson {
     }
 
 
+
     public String bean2Json2(Object entity){
         String jsonString = JSON.toJSONString(entity,
                 SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
@@ -61,11 +63,28 @@ public class GenEmptyJson {
                 pw.print("\r\n");
                 pw.print("\r\n");
             }
+            for (ResultEnum resultEnum : getAllResultEnum()){
+                pw.print(bean2Json2(resultEnum).replaceAll("\"", "") + ":" + resultEnum.toJson());
+                pw.print(",");
+                pw.print("\r\n");
+            }
+            pw.print("\r\n");
+            pw.print("\r\n");
+            pw.print("\r\n");
             pw.flush();
             pw.close();
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+
+    public List<ResultEnum> getAllResultEnum(){
+        List<ResultEnum> resultEnums = new ArrayList<>();
+        for(ResultEnum resultEnum : ResultEnum.values()){
+            resultEnums.add(resultEnum);
+        }
+        return resultEnums;
     }
 
 

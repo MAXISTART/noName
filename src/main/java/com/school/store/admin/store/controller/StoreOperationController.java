@@ -1,5 +1,6 @@
 package com.school.store.admin.store.controller;
 
+import com.school.store.admin.good.entity.GoodItem;
 import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.entity.StoreOperation;
@@ -11,6 +12,7 @@ import com.school.store.admin.user.entity.User;
 import com.school.store.admin.user.service.UserService;
 import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.base.model.MPager;
 import com.school.store.base.model.SqlParams;
 import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
@@ -235,9 +237,9 @@ public class StoreOperationController extends BaseAdminController {
         }
 
         // 返回的是真正的List<User>
-        List<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams(sqlParams, page, size, StoreOperation.class);
+        MPager<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams(sqlParams, page, size, StoreOperation.class);
 
-        entityRefineService.refineList(storeOperations);
+        entityRefineService.refineList(storeOperations.getData());
 
         return simpleResult(ResultEnum.SUCCESS, storeOperations);
     }

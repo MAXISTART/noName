@@ -11,6 +11,7 @@ import com.school.store.admin.user.service.UserService;
 import com.school.store.annotation.Permiss;
 import com.school.store.aspect.PermissionAspect;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.base.model.MPager;
 import com.school.store.base.model.SqlParams;
 import com.school.store.constant.CookieConstant;
 import com.school.store.constant.Permit;
@@ -29,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.Cookie;
@@ -106,29 +108,35 @@ public class UserController extends BaseAdminController{
     @PostMapping(value = "/addPermissions")
     @CacheEvict(value = "userWithPermission", allEntries = true)
     public ResultVo addPermissions(@RequestBody List<UserToPermission> userToPermissions) {
+
         // 要先验证是否已经存在了该 用户-权限 对。
         for(int index=0; index < userToPermissions.size(); index++){
             UserToPermission userToPermission = userToPermissions.get(index);
-            if(userToPermissionService.findByPermissionIdAndUserId(userToPermission.getPermissionId(), userToPermission.getUserId()) != null){
-                userToPermissions.remove(index);
+            if(userToPermission.getPermissionId() == null || userToPermission.getUserId() == null
+                    || StringUtils.isEmpty(userToPermission.getPermissionId()) || StringUtils.isEmpty(userToPermission.getUserId())){
+                continue;
+            }
+            if(userToPermissionService.findByPermissionIdAndUserId(userToPermission.getPermissionId(), userToPermission.getUserId()) == null){
+                userToPermissionService.save(userToPermission);
             }
         }
-        userToPermissionService.save(userToPermissions);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 
     /**
-     *  给指定用户添加权限
+     *  给指定用户删除权限
      * @param userToPermissions
      * @return
      */
 
     @Transactional(readOnly = false)
-    @PostMapping(value = "/deletePermissions")
+    @PostMapping(value = "/removePermissions")
     @CacheEvict(value = "userWithPermission", allEntries = true)
     public ResultVo removePermissions(@RequestBody List<UserToPermission> userToPermissions) {
-        userToPermissionService.delete(userToPermissions);
+        userToPermissions.forEach(userToPermission -> {
+            userToPermissionService.deleteByPermissionIdAndUserId(userToPermission.getPermissionId(), userToPermission.getUserId());
+        });
         return simpleResult(ResultEnum.SUCCESS, null);
     }
 
@@ -178,6 +186,21 @@ public class UserController extends BaseAdminController{
 
 
     /**
+     *  根据departmentId传回user
+     * @param departmentId
+     * @return
+     */
+    @PostMapping(value = "/findUsersByDepartmentId")
+    public ResultVo findUsersByDepartmentId(@RequestParam String departmentId){
+        List<User> users = userService.findByDepartmentId(departmentId);
+        // 给所有的user添加额外属性
+        entityRefineService.refineList(users);
+        return simpleResult(ResultEnum.SUCCESS, users);
+    }
+
+
+
+    /**
      *  以表单 form 形式 传递参数
      * @param page
      * @param size
@@ -204,9 +227,9 @@ public class UserController extends BaseAdminController{
         }
 
         // 返回的是真正的List<User>
-        List<User> users = userService.findByDynamicSqlParams(sqlParams,page,size,User.class);
+        MPager<User> users = userService.findByDynamicSqlParams(sqlParams,page,size,User.class);
         // 给每个user设置他们对应的departmentName
-        entityRefineService.refineList(users);
+        entityRefineService.refineList(users.getData());
         return simpleResult(ResultEnum.SUCCESS, users);
     }
 

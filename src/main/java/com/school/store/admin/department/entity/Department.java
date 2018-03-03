@@ -28,7 +28,7 @@ import javax.persistence.*;
 public class Department extends BaseEntity{
 
 	// 部门名称
-	@Column(name = "name" , length = 36)
+	@Column(name = "name" , length = 36, unique = true)
 	private String name;
 
 	// 部门职能详细描述,默认是text类型

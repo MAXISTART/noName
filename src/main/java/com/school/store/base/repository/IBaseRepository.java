@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.school.store.base.model.MPager;
 import com.school.store.base.model.SqlParams;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -260,7 +261,7 @@ public interface IBaseRepository<T,ID extends Serializable> extends PagingAndSor
      * @param clazz
      * @return
      */
-    public List<T> findByDynamicSqlParams(SqlParams sqlParams, int page, int rows, Class clazz);
+    public MPager<T> findByDynamicSqlParams(SqlParams sqlParams, int page, int rows, Class clazz);
 
 
     /**
