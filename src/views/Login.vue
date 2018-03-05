@@ -4,7 +4,7 @@
     <el-form-item prop="account">
       <el-input type="text" v-model="ruleForm2.account" auto-complete="off" placeholder="账号"></el-input>
     </el-form-item>
-    <el-form-item prop="checkPass">
+    <el-form-item prop="checkPass">routes.js
       <el-input type="password" v-model="ruleForm2.checkPass" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
     <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>
@@ -16,7 +16,7 @@
 </template>
 
 <script>
-  import { requestLogin } from '../api/api';
+  import { requestApi, Enum, msgUtils } from '../api/api';
   //import NProgress from 'nprogress'
   export default {
     data() {
@@ -40,73 +40,39 @@
       };
     },
     methods: {
-      getInitData() {
-          // /admin/config/getInitData
-          let sortGroup = []; // 获得种类参数
-          let goods = []; // 获得物品所有参数
-          let departmentsGroup = [];  // 部门名字参数
-          let usersGroup = []; // 负责人参数
-          this.$http.get('/api/admin/config/getInitData').then(res => {
-              let code = res.data.code;
-              if(code === 0) {
-                  let sortNames = res.data.data.allSorts; // 获得种类参数
-                  //goods = res.data.data.allGoods; // 获得物品所有参数
-                  let allDepartments = res.data.data.allDepartments;
-                  let allUsers = res.data.data.allUsers;
-                  for(let i in sortNames) {
-                      let sortObj = {value: sortNames[i].name, label: sortNames[i].name};
-                      sortObj = JSON.stringify(sortObj);
-                      sortGroup.push(sortObj);
-                  }
 
-                  allDepartments.forEach(item => {
-                      let obj = JSON.stringify(item);
-                      departmentsGroup.push(obj);
-                  });
-
-                  allUsers.forEach(item => {
-                      let obj = JSON.stringify(item);
-                      usersGroup.push(obj);
-                  });
-                  // 把初始数据赋予到sessionLorage中
-                  sessionStorage.sortGroup = sortGroup;
-                  sessionStorage.departmentsGroup = departmentsGroup;
-                  sessionStorage.usersGroup = usersGroup;
-              }else {
-                  let msg = res.msg;
-                  alert(msg);
-              }
-          }, err => {
-              alert("系统错误，请重新刷新页面！  " + err);
-          });
-      },
       handleReset2() {
         this.$refs.ruleForm2.resetFields();
       },
+
       handleSubmit2(ev) {
-        var _this = this;
+          const self = this;
         this.$refs.ruleForm2.validate((valid) => {
           if (valid) {
             //_this.$router.replace('/table');
             this.logining = true;
-            var loginParams = { username: this.ruleForm2.account, password: this.ruleForm2.checkPass };
-            requestLogin(loginParams).then(data => {
+            var loginParams = { name: this.ruleForm2.account, password: this.ruleForm2.checkPass };
+              requestApi.user.login(this, loginParams).then(res => {
               this.logining = false;
-              //NProgress.done();
-              let { msg, code, user } = data;
-              if (code !== 200) {
-                this.$message({
-                  message: msg,
-                  type: 'error'
-                });
-              } else {
-                sessionStorage.setItem('user', JSON.stringify(user));
-                this.getInitData();
-                this.$router.push({ path: '/buyThingApply' });
+              res = res.body;
+              if(res.code === Enum.ADMIN_LOGIN_SUCCESS.code){
+                // 登录成功，且用户为管理员
+                sessionStorage.setItem('user', JSON.stringify(res.data));
+                self.$router.push({ path: '/goodItem' });
               }
+              else if(res.code == Enum.USER_LOGIN_SUCCESS.code){
+                // 登录成功，且用户为普通用户
+                  sessionStorage.setItem('user', JSON.stringify(res.data));
+                  self.$router.push({ path: '/userHome' });
+              }
+              else{
+                // 登录失败，报错
+                  msgUtils.warning(this, res.msg);
+              }
+            }, error => {
+                  msgUtils.error(this, Enum.SYSTEM_ERROR.msg);
             });
           } else {
-            console.log('error submit!!');
             return false;
           }
         });

@@ -21,12 +21,18 @@ Vue.use(ElementUI)
 Vue.use(VueRouter)
 Vue.use(VueResource)
 Vue.use(Vuex)
+Vue.http.interceptors.push(function(request, next) {//拦截器
+// 跨域携带cookie
+    request.credentials = true;
+    next()
+})
 
 //NProgress.configure({ showSpinner: false });
 const router = new VueRouter({
   routes
 })
 
+// 设置拦截器，判断当前页面是否包含 user 这个属性在，如果不在就回到登录页面
 router.beforeEach((to, from, next) => {
   //NProgress.start();
   if (to.path == '/login') {

@@ -1,11 +1,11 @@
 module.exports =  {
   proxyList: {
-          '/api':{
-              target: 'http://hz6idx.natappfree.cc/schoolStore',
-              changeOrigin: true,
-              pathRewrite: {
-                  '^/api': ''
-              }
-          }
-  }
+    '/api':{
+        target: 'http://localhost/schoolStore',
+            changeOrigin: true,
+            pathRewrite: {
+            '^/api': ''
+        }
+    }
+}
 };
