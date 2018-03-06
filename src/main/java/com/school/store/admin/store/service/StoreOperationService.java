@@ -6,5 +6,5 @@ import com.school.store.base.repository.IBaseRepository;
 import java.io.Serializable;
 
 public interface StoreOperationService extends IBaseRepository<StoreOperation, Serializable>{
-
+    public StoreOperation findById(String id);
 }

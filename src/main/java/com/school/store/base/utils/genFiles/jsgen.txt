@@ -45,14 +45,10 @@
 	"approvalTime":null,
 	"bills":null,
 	"buyOrderItems":null,
-	"createBy":null,
-	"createTime":null,
 	"departmentId":null,
 	"departmentName":null,
 	"description":null,
 	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
 	"requestTime":null,
 	"requestTotalPrice":null,
 	"requestorId":null,
@@ -62,12 +58,7 @@
 
 //BuyOrderItem
 {
-	"createBy":null,
-	"createTime":null,
 	"goodId":null,
-	"id":null,
-	"lastmodifiedBy":null,
-	"lastmodifiedTime":null,
 	"name":null,
 	"number":null,
 	"orderId":null,

@@ -13,6 +13,8 @@ import com.school.store.admin.take.service.TakeOrderItemService;
 import com.school.store.admin.take.service.TakeOrderService;
 import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.base.model.MPager;
+import com.school.store.base.model.SqlParams;
 import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
@@ -23,6 +25,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -61,6 +64,10 @@ public class TakeOrderController extends BaseAdminController {
     @Transactional(readOnly = false)
     @PostMapping("/addTakeOrder")
     public ResultVo addTakeOrder(@RequestBody TakeOrder takeOrder) {
+
+        if(takeOrder.getTakeOrderItems() == null || takeOrder.getTakeOrderItems().isEmpty()){
+            throw new BaseException(ResultEnum.ITEMS_NOT_NULL);
+        }
 
         takeOrder.setId(null);
 
@@ -142,10 +149,15 @@ public class TakeOrderController extends BaseAdminController {
     @Transactional(readOnly = false)
     @PostMapping(value = "/quickOutput")
     public ResultVo quickOutput( @RequestBody List<String> takeOrderIds) {
-
         List<StoreOperation> storeOperations = new ArrayList<>();
-        for(String takeOrderId : takeOrderIds){
-            storeOperations.add(changeTakeOrder2StoreOperation(findTakeOrderById(takeOrderId)));
+        for (String takeOrderId : takeOrderIds) {
+            TakeOrder takeOrder = findTakeOrderById(takeOrderId);
+            if(takeOrder.getHasBeenOutput() == null || takeOrder.getHasBeenOutput()!= 1){
+                // 已经入过一次库的不会再入库了，但是还没入库的会设置该标志
+                takeOrder.setHasBeenOutput(1);
+                takeOrderService.saveOrUpdate(takeOrder);
+                storeOperations.add(changeTakeOrder2StoreOperation(takeOrder));
+            }
         }
         // 测试用的
         //return storeOperationController.testAddStoreOperations(storeOperations);
@@ -247,6 +259,61 @@ public class TakeOrderController extends BaseAdminController {
         return simpleResult(ResultEnum.SUCCESS, takeOrders);
     }
 
+
+
+    /**
+     * 以表单 form 形式 传递参数
+     *
+     * @param page
+     * @param size
+     * @param direction
+     * @param property
+     * @return
+     */
+    @PostMapping(value = "/findTakeOrdersBySearchParams")
+    public ResultVo findTakeOrdersBySearchParams(@RequestParam(required = true) Integer page,
+                                                @RequestParam(required = false, defaultValue = "20") Integer size,
+                                                @RequestParam(required = false, defaultValue = "DESC") String direction,
+                                                @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property,
+                                                @RequestParam(required = false, defaultValue = "allDepartment") String departmentId,
+                                                @RequestParam(required = false, defaultValue = "allRequestor") String requestorId,
+                                                @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_start,
+                                                @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_end,
+                                                @RequestParam(required = false, defaultValue = "allPrice") String price_start,
+                                                @RequestParam(required = false, defaultValue = "allPrice") String price_end
+    ) {
+        SqlParams sqlParams = new SqlParams();
+        if (!departmentId.equals("allDepartment") && !StringUtils.isEmpty(departmentId)) {
+            sqlParams.put("AND", "departmentId", "=");
+            sqlParams.putValue(departmentId);
+        }
+        if (!requestorId.equals("allRequestor") && !StringUtils.isEmpty(requestorId)) {
+            sqlParams.put("AND", "requestorId", "=");
+            sqlParams.putValue(requestorId);
+        }
+        if (!requestTime_start.equals("requestTime_all") && !StringUtils.isEmpty(requestTime_start)) {
+            sqlParams.put("AND", "requestTime", ">=");
+            sqlParams.putValue(requestTime_start);
+        }
+        if (!requestTime_end.equals("requestTime_end") && !StringUtils.isEmpty(requestTime_end)) {
+            sqlParams.put("AND", "requestTime", "<=");
+            sqlParams.putValue(requestTime_end);
+        }
+        if (!price_start.equals("allPrice") && !StringUtils.isEmpty(price_start)) {
+            sqlParams.put("AND", "requestTotalPrice", ">=");
+            sqlParams.putValue(price_start);
+        }
+        if (!price_end.equals("allPrice") && !StringUtils.isEmpty(price_end)) {
+            sqlParams.put("AND", "requestTotalPrice", "<=");
+            sqlParams.putValue(price_end);
+        }
+        sqlParams.put("ORDER BY", property, direction);
+        // 返回的是真正的List<User>
+        MPager<TakeOrder> takeOrders = takeOrderService.findByDynamicSqlParams(sqlParams, page, size, TakeOrder.class);
+        // 给每个user设置他们对应的departmentName
+        entityRefineService.refineList(takeOrders.getData());
+        return simpleResult(ResultEnum.SUCCESS, takeOrders);
+    }
 
 
 

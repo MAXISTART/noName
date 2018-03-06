@@ -60,6 +60,11 @@ public class TakeOrder extends BaseEntity{
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss",timezone="GMT+8")   //Hibernate中@ResponseBody返回的时间格式
     private Date approvalTime;
 
+    // 是否已经出过一次库了，0表示还未出库，1表示已经出库
+    @Column(name = "hasBeenOutput", length = 4)
+    private Integer hasBeenOutput;
+
+
     // 明细内容
     @Transient
     @Refine(value = RefineMethod.setTakeOrderItems, argNames= {"id"})

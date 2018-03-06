@@ -242,7 +242,7 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 		System.out.println("SELECT * FROM " + table.name() + " " + sqlParams.getSql());
 		List<SqlParams.SqlParam> Ps = sqlParams.params;
 		List<String> values = sqlParams.values;
-		if (Ps != null && !Ps.isEmpty()) {
+		if (Ps != null && !Ps.isEmpty() && values != null) {
 			for(int valueIndex=0; valueIndex < values.size(); valueIndex++){
 				query.setParameter(valueIndex, values.get(valueIndex));
 			}
@@ -254,6 +254,7 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 		mPage.setPageSize(rows);
 		mPage.setPage(page);
 		mPage.setTotal(query.list().size());
+		// 注意，数据库中的列名和 实体的属性名 必须一致， 实体类可以比表的列的数量少, 如果报错就检查一下数据库和实体
 		mPage.setData(query.setFirstResult((page - 1)*rows).setMaxResults(rows).setResultTransformer(Transformers.aliasToBean(clazz)).list());
 
 		return mPage;

@@ -45,7 +45,9 @@ public enum ResultEnum {
 
     USER_AREADLY_IN_SESSION_BEFORE_REGISTER(16, "当前已经有用户登录，请先登出用户再注册"),
 
-    GET_SORTS_FAIL(17, "获取种类失败")
+    GET_SORTS_FAIL(17, "获取种类失败"),
+
+    ITEMS_NOT_NULL(18, "明细不能为空")
     ;
 
     private Integer code;

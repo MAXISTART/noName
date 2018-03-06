@@ -46,7 +46,7 @@ public class TakeOrderItem extends BaseEntity{
 	@Column(name = "number", length = 255)
 	private Integer number;
 
-	// 申领的物品的实际数量
+	// 归还数量
 	@Column(name = "returnNumber", length = 255)
 	private Integer returnNumber;
 

@@ -16,6 +16,8 @@ public interface UserService extends IBaseRepository<User, Serializable> {
 
     public User findById(String id);
 
+    public User findByNameLike(String userName);
+
     public List<User> findByDepartmentId(String departmentId);
 
     public User findByNameAndPassword(String name, String password);

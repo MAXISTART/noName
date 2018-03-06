@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.Cookie;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Aspect
 @Component
@@ -111,6 +112,7 @@ public class PermissionAspect {
         // 设置当前的userId放进session，供controller调用
         HttpUtil.getSession().setAttribute("userId", userId);
 
+
         /**
          *  用redis来缓存权限开启功能，为每一个session都配置各自的权限开关，同时，定时清理，比如 判断当前时间是凌晨四点了，就删除这些数据。
          */
@@ -120,7 +122,8 @@ public class PermissionAspect {
         if(turn == null){
             // 如果这个session是新的，则给他配置权限开关，默认权限拦截是开启的
             turn = RedisConstant.PERMIT_ON;
-            redisTemplate.opsForValue().set(String.format(RedisConstant.SESSIONID_PREFIX,sessionId), turn);
+            Integer expire = RedisConstant.EXPIRE;
+            redisTemplate.opsForValue().set(String.format(RedisConstant.SESSIONID_PREFIX,sessionId), turn, expire, TimeUnit.SECONDS);
         }
 
         if(turn.equals(RedisConstant.PERMIT_OFF)){
@@ -146,7 +149,7 @@ public class PermissionAspect {
         if(user == null){
             throw new BaseException(ResultEnum.USER_NOT_FOUND);
         }
-        Set<Permission> permissions = permissionUtil.getUserPermissionByIdWithCache(user);
+        Set<Permission> permissions = permissionUtil.getUserPermissionByIdWithCache(user.getId());
 
         log.warn("ands : " + ands);
         log.warn("ors : " + ors);

@@ -9,8 +9,11 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class GenEntityMysql {
@@ -246,15 +249,49 @@ public class GenEntityMysql {
         return null;
     }
 
+
+
+    private void privateMethod(){
+        System.out.println("fuck");
+    }
+
     /**
      * 出口
      * TODO
      *
      * @param args
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
-        new GenEntityMysql();
+        //new GenEntityMysql();
+        setObjectColor(new MyTest());
 
     }
+
+    public static void setObjectColor(Object obj) throws Exception{
+        Class cls = obj.getClass();
+        String[] args = {"1"};
+        //获得类的私有方法
+        HashMap map = new HashMap();
+        Method method = cls.getDeclaredMethod("privateMethod", args.getClass(), map.getClass());
+        method.setAccessible(true); //没有设置就会报错
+        //调用该方法
+        method.invoke(obj, args, map);
+    }
+}
+
+//测试类
+class MyTest{
+
+
+    public void setMyTest(){
+        System.out.println("setMyTest");
+    }
+    /**
+     类的私有方法
+     **/
+    private void privateMethod(String[]args, HashMap map){
+        System.out.println("调用了 private Method");
+    }
+
 }

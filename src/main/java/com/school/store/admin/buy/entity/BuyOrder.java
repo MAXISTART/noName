@@ -66,6 +66,11 @@ public class BuyOrder extends BaseEntity {
 	@Column(name = "bills", columnDefinition = "TEXT")
 	private String bills;
 
+	// 是否已经入过一次库了，0表示还未入库，1表示已经入库
+	@Column(name = "hasBeenInput", length = 4)
+	private Integer hasBeenInput;
+
+
 	// 明细说明
 	@Transient
 	@Refine(value = RefineMethod.setBuyOrderItems, argNames= {"id"})

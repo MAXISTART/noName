@@ -200,6 +200,7 @@ public class UserController extends BaseAdminController{
 
 
 
+
     /**
      *  以表单 form 形式 传递参数
      * @param page
@@ -225,7 +226,7 @@ public class UserController extends BaseAdminController{
             sqlParams.put("AND","name","LIKE");
             sqlParams.putValue("%"+name+"%");
         }
-
+        sqlParams.put("ORDER BY", property, direction);
         // 返回的是真正的List<User>
         MPager<User> users = userService.findByDynamicSqlParams(sqlParams,page,size,User.class);
         // 给每个user设置他们对应的departmentName

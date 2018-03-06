@@ -1,5 +1,6 @@
 package com.school.store.admin.store.controller;
 
+import com.school.store.admin.cache.CacheUtil;
 import com.school.store.admin.good.entity.GoodItem;
 import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.entity.StoreItem;
@@ -11,12 +12,14 @@ import com.school.store.admin.store.service.StoreOperationService;
 import com.school.store.admin.user.entity.User;
 import com.school.store.admin.user.service.UserService;
 import com.school.store.annotation.Permiss;
+import com.school.store.aspect.PermissionAspect;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.base.model.MPager;
 import com.school.store.base.model.SqlParams;
 import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
+import com.school.store.utils.HttpUtil;
 import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +29,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,6 +55,12 @@ public class StoreOperationController extends BaseAdminController {
     @Autowired
     private EntityRefineService entityRefineService;
 
+    @Autowired
+    private PermissionAspect permissionAspect;
+
+    @Autowired
+    private CacheUtil cacheUtil;
+
     @PostMapping("/testAddStoreOperation")
     public ResultVo testAddStoreOperation(@RequestBody StoreOperation storeOperation) {
         return simpleResult(ResultEnum.SUCCESS, null);
@@ -61,7 +72,27 @@ public class StoreOperationController extends BaseAdminController {
     @PostMapping("/addStoreOperation")
     public ResultVo addStoreOperation(@RequestBody StoreOperation storeOperation) {
 
+
+        if(storeOperation.getStoreOperationItems() == null || storeOperation.getStoreOperationItems().isEmpty()){
+            throw new BaseException(ResultEnum.ITEMS_NOT_NULL);
+        }
+
+        // 先判断是 申请请求的是管理员 还是 用户，如果是管理员就是默认 approvalResutl = 1，如果不是则看情况
+        if(permissionAspect.hasPermission(cacheUtil.getUserPermissionByIdWithCache(HttpUtil.getSessionUserId()), Permit.ADMIN)){
+            storeOperation.setApprovalResult(1);
+            storeOperation.setOpinion("管理员自建入库单");
+        }
+
         storeOperation.setId(null);
+        // 计算一次总价
+        if(storeOperation.getRequestTotalPrice() == null && storeOperation.getStoreOperationItems() != null){
+            BigDecimal totalPrice = new BigDecimal("0");
+            for (StoreOperationItem storeOperationItem : storeOperation.getStoreOperationItems()) {
+                BigDecimal temp = storeOperationItem.getPrice().multiply(new BigDecimal(storeOperationItem.getNumber()));
+                totalPrice = totalPrice.add(temp);
+            }
+            storeOperation.setRequestTotalPrice(totalPrice);
+        }
         storeOperationService.save(storeOperation);
 
         // 保存明细内容，但是要先设置ID
@@ -166,6 +197,44 @@ public class StoreOperationController extends BaseAdminController {
     }
 
 
+
+
+    /**
+     * 管理员点击审核通过会执行下面的方法，
+     * 传递的参数格式如下，千万别多别少
+     * [
+     * {
+     * "id":"",
+     * "approvvalResult":""
+     * },
+     * {...},
+     * ]
+     *
+     * @param storeOperations
+     * @return
+     */
+    @Transactional(readOnly = false)
+    @PostMapping(value = "/approve")
+    public ResultVo approve(@RequestBody List<StoreOperation> storeOperations) {
+        storeOperations.forEach(storeOperation -> {
+            storeOperationService.dynamicUpdate(storeOperation);
+        });
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    /**
+     * findById
+     */
+    @PostMapping("/findStoreOperationById")
+    public StoreOperation findStoreOperationById(@RequestParam String storeOperationId) {
+        StoreOperation storeOperation = storeOperationService.findById(storeOperationId);
+        entityRefineService.refine(storeOperation);
+        return storeOperation;
+    }
+
+
+
     /**
      * 参数 page ,size 是一定要有的 ，另外两个可以默认
      *
@@ -207,35 +276,41 @@ public class StoreOperationController extends BaseAdminController {
     @PostMapping(value = "/findStoreOperationBySearchParams")
     public ResultVo findStoreOperationBySearchParams(@RequestParam(required = true) Integer page,
                                                      @RequestParam(required = false, defaultValue = "20") Integer size,
+                                                     @RequestParam(required = false, defaultValue = "DESC") String direction,
+                                                     @RequestParam(required = false, defaultValue = "lastmodifiedTime") String property,
                                                      @RequestParam(required = false, defaultValue = "allDepartment") String departmentId,
-                                                     @RequestParam(required = false, defaultValue = "allRequestorId") String requestorId,
-                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") String requestTotalPrice_start,
-                                                     @RequestParam(required = false, defaultValue = "allRequestTotalPrice") String requestTotalPrice_end,
-                                                     @RequestParam(required = false, defaultValue = "allTime") String requestTime_start,
-                                                     @RequestParam(required = false, defaultValue = "allTime") String requestTime_end
+                                                     @RequestParam(required = false, defaultValue = "allRequestor") String requestorId,
+                                                     @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_start,
+                                                     @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_end,
+                                                     @RequestParam(required = false, defaultValue = "allPrice") String price_start,
+                                                     @RequestParam(required = false, defaultValue = "allPrice") String price_end
                                                      ) {
         SqlParams sqlParams = new SqlParams();
-        if (!departmentId.equals("allDepartment")) {
+        if (!departmentId.equals("allDepartment") && !StringUtils.isEmpty(departmentId)) {
             sqlParams.put("AND", "departmentId", "=");
             sqlParams.putValue(departmentId);
         }
-        if (!requestorId.equals("allRequestorId")) {
+        if (!requestorId.equals("allRequestor") && !StringUtils.isEmpty(requestorId)) {
             sqlParams.put("AND", "requestorId", "=");
             sqlParams.putValue(requestorId);
         }
-        if(!requestTotalPrice_start.equals("allRequestTotalPrice")){
+        if (!requestTime_start.equals("requestTime_all") && !StringUtils.isEmpty(requestTime_start)) {
+            sqlParams.put("AND", "requestTime", ">=");
+            sqlParams.putValue(requestTime_start);
+        }
+        if (!requestTime_end.equals("requestTime_all") && !StringUtils.isEmpty(requestTime_end)) {
+            sqlParams.put("AND", "requestTime", "<=");
+            sqlParams.putValue(requestTime_end);
+        }
+        if (!price_start.equals("allPrice") && !StringUtils.isEmpty(price_start)) {
             sqlParams.put("AND", "requestTotalPrice", ">=");
-            sqlParams.putValue(requestTotalPrice_start);
+            sqlParams.putValue(price_start);
         }
-        if(!requestTotalPrice_end.equals("allRequestTotalPrice")){
+        if (!price_end.equals("allPrice") && !StringUtils.isEmpty(price_end)) {
             sqlParams.put("AND", "requestTotalPrice", "<=");
-            sqlParams.putValue(requestTotalPrice_end);
+            sqlParams.putValue(price_end);
         }
-        if(!requestTime_start.equals("allTime") && !requestTime_end.equals("allTime")){
-            sqlParams.put("AND", "requestTime", "BETWEEN");
-            sqlParams.putValue(requestTime_start, requestTime_end);
-        }
-
+        sqlParams.put("ORDER BY", property, direction);
         // 返回的是真正的List<User>
         MPager<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams(sqlParams, page, size, StoreOperation.class);
 

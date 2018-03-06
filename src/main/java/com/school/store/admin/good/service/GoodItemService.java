@@ -13,4 +13,9 @@ public interface GoodItemService extends IBaseRepository<GoodItem, Serializable>
     public List<GoodItem> findBySort(String sort);
 
     public List<GoodItem> findByName(String name);
+
+    public GoodItem findById(String id);
+
+    public List<GoodItem> findByNameLike(String name);
+
 }

@@ -1,9 +1,13 @@
 package com.school.store.admin.store.controller;
+import com.school.store.admin.good.entity.GoodItem;
+import com.school.store.admin.good.service.GoodItemService;
 import com.school.store.admin.refine.EntityRefineService;
 import com.school.store.admin.store.entity.StoreItem;
 import com.school.store.admin.store.service.StoreItemService;
 import com.school.store.annotation.Permiss;
 import com.school.store.base.controller.BaseAdminController;
+import com.school.store.base.model.MPager;
+import com.school.store.base.model.SqlParams;
 import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.vo.ResultVo;
@@ -15,6 +19,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -28,6 +34,9 @@ public class StoreItemController extends BaseAdminController {
 
     @Autowired
     private EntityRefineService entityRefineService;
+
+    @Autowired
+    private GoodItemService goodItemService;
 
     // 测试添加和删除
     @GetMapping("/testAdd")
@@ -97,10 +106,65 @@ public class StoreItemController extends BaseAdminController {
         }
 
         Page<StoreItem> storeItems = storeItemService.findAll(pager);
-        entityRefineService.refinePage(storeItems);
-
+        for(StoreItem storeItem : storeItems){
+            GoodItem goodItem = goodItemService.findById(storeItem.getGoodId());
+            storeItem.setTotalPrice(goodItem.getPrice().multiply(new BigDecimal(storeItem.getNumber())));
+            storeItem.setGoodItem(goodItem);
+        }
         return simpleResult(ResultEnum.SUCCESS, storeItems);
     }
+
+
+    /**
+     * 以表单 form 形式 传递参数
+     *
+     * @param page
+     * @param size
+     * @param price_start
+     * @param price_end
+     * @return
+     */
+    @PostMapping(value = "/findStoreItemsBySearchParams")
+    public ResultVo findStoreItemsBySearchParams(@RequestParam(required = true) Integer page,
+                                                @RequestParam(required = false, defaultValue = "20") Integer size,
+                                                @RequestParam(required = false, defaultValue = "allPrice") String price_start,
+                                                @RequestParam(required = false, defaultValue = "allPrice") String price_end,
+                                                @RequestParam(required = false, defaultValue = "allName") String name
+    ) {
+        SqlParams sqlParams = new SqlParams();
+        if(!name.equals("allName") && !name.equals("")){
+            sqlParams.put("AND","name","LIKE");
+            sqlParams.putValue("%"+name+"%");
+        }
+        if(!price_start.equals("allPrice") && !price_start.equals("")){
+            sqlParams.put("AND", "price", ">=");
+            sqlParams.putValue(price_start);
+        }
+        if(!price_end.equals("allPrice") && !price_end.equals("")){
+            sqlParams.put("AND", "price", "<=");
+            sqlParams.putValue(price_end);
+        }
+
+        // 返回的是真正的List<GoodItem>
+        MPager<GoodItem> goodItems = goodItemService.findByDynamicSqlParams( sqlParams, page, size, GoodItem.class);
+        // 找到goodItems的Id， 然后根据goodId返回storeItem
+        List<StoreItem> storeItems = new ArrayList<>();
+        for(GoodItem goodItem : goodItems.getData()){
+            StoreItem storeItem = storeItemService.findByGoodId(goodItem.getId());
+            storeItem.setGoodItem(goodItem);
+            storeItem.setTotalPrice(goodItem.getPrice().multiply(new BigDecimal(storeItem.getNumber())));
+            storeItems.add(storeItem);
+        }
+        entityRefineService.refineList(storeItems);
+        MPager<StoreItem> storeItemMPager = new MPager<>();
+        storeItemMPager.setData(storeItems);
+        storeItemMPager.setTotal(goodItems.getTotal());
+        storeItemMPager.setPage(goodItems.getPage());
+        storeItemMPager.setPageSize(goodItems.getPageSize());
+
+        return simpleResult(ResultEnum.SUCCESS, storeItemMPager);
+    }
+
 
 
 
@@ -176,6 +240,9 @@ public class StoreItemController extends BaseAdminController {
     public boolean checkNumber(String goodId, Integer number){
         // 检查库存是否足够
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
+        if(storeItem == null){
+            return false;
+        }
         if(storeItem.getNumber() < number){
             // 如果库存当前存在的数量小于要减少的数量
             return false;

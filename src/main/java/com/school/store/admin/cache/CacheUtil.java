@@ -30,16 +30,15 @@ public class CacheUtil {
 
     /**
      *  从缓存中获取 用户权限 ，将该方法直接写在 permissionAspect的话是不会起作用的（内部调用缓存是不起作用的）
-     * @param user
+     * @param userId
      * @return
      */
-    @Cacheable(value = "userWithPermission", key = "#user.id")
-    public Set<Permission> getUserPermissionByIdWithCache(User user){
+    @Cacheable(value = "userWithPermission", key = "#userId")
+    public Set<Permission> getUserPermissionByIdWithCache(String userId){
         System.out.println("不在缓存里");
-        System.out.println(user.getPermissions() + "");
 
         Set<Permission> permissions = new HashSet<>();
-        List<UserToPermission> userToPermissions = userToPermissionService.findByUserId(user.getId());
+        List<UserToPermission> userToPermissions = userToPermissionService.findByUserId(userId);
 
         userToPermissions.forEach(userToPermission -> {
             permissions.add(permissionService.findById(userToPermission.getPermissionId()));

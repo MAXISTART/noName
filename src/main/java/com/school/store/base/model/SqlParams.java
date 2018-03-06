@@ -38,12 +38,17 @@ public class SqlParams {
 
     public String getSql(){
         if(params != null && !params.isEmpty()){
-            StringBuilder builder = new StringBuilder("WHERE");
+            StringBuilder builder = new StringBuilder("WHERE 1=1");
             for(int i=0; i<params.size(); i++){
                 builder.append(" ");
-                if(i != 0){
-                    // 保证where后面没有关系词
-                    builder.append(params.get(i).getRelation()).append(" ");
+                // 保证where后面没有关系词
+                String relation = params.get(i).getRelation();
+                builder.append(relation).append(" ");
+                if(relation.equals("ORDER BY")){
+                    // 如果是排序，那么就不需要加参数问号了
+                    builder.append(params.get(i).getColumnName()).append(" ");
+                    builder.append(params.get(i).getKeyWord()).append(" ");
+                    continue;
                 }
                 builder.append(params.get(i).getColumnName()).append(" ");
                 if(params.get(i).getKeyWord().equals("BETWEEN")){
