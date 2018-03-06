@@ -237,16 +237,10 @@
 			    // 获取所有物品种类
 				requestApi.good.findAllSorts(this).then(res => {
                     res = res.body;
-                    // 如果登录过期了
-                    if(res.code === Enum.NOT_LOGIN.code){
-                        msgUtils.warning(this, Enum.NOT_LOGIN.msg);
-                        this.$router.push({ path: '/login' });
-                    }else{
-                        if(res.code === Enum.SUCCESS.code){
-                            this.sortNames = res.data;
-                        }else{
-                            msgUtils.warning(this, Enum.GET_SORTS_FAIL.msg);
-                        }
+					if(res.code === Enum.SUCCESS.code){
+						this.sortNames = res.data;
+					}else{
+						msgUtils.warning(this, Enum.GET_SORTS_FAIL.msg);
 					}
 				},err => {
                     msgUtils.error(this, Enum.SYSTEM_ERROR.msg);
@@ -342,7 +336,7 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
-							requestApi.good.addGoodItem(this, para).then(res => {
+							requestApi.good.add(this, para).then(res => {
 								this.addLoading = false;
 								//NProgress.done();
                                 res = res.body;

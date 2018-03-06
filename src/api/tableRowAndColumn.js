@@ -50,14 +50,12 @@ export const getNewDataAndMap = (propName, data) => {
     var newData = [];
     var map = {};
     var rowIndex = 0;
-    let bool = true;
     for(var i = 0;i < data.length;i++){
-        // console.log(data[i]);
         var items = data[i][propName];
-        if(items == null){
+        if(items.length === 0){
+            // 如果没明细的话，拒绝加入data
             continue;
         }else {
-            let bool = false;
             var size = items.length;
             for(var j = 0;j < items.length;j++){
                 var newDataElement = deepClone(data[i]);
@@ -77,4 +75,27 @@ export const getNewDataAndMap = (propName, data) => {
         map: map
     };
     return rs;
+}
+
+
+
+// 拆对象
+export const getNewData = (propName, data) => {
+    // propName是要取出的对象的名称，data是包含所有总单的数组
+    var newData = [];
+    for(var i = 0;i < data.length;i++){
+        var item = data[i][propName];
+        if(item === null){
+            // 如果没该对象属性的话，拒绝加入data
+            continue;
+        }else {
+            var newDataElement = deepClone(data[i]);
+            for(var prop in item){
+                newDataElement[propName + "_" + prop] = item[prop];
+            }
+            newDataElement.item = null;
+            newData.push(newDataElement);
+        }
+    }
+    return newData;
 }

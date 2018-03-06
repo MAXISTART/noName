@@ -72,6 +72,7 @@
 </template>
 
 <script>
+    import { requestApi, Enum, msgUtils } from '../api/api';
 	export default {
 		data() {
 			return {
@@ -88,7 +89,8 @@
 					type: [],
 					resource: '',
 					desc: ''
-				}
+				},
+                departments: []
 			}
 		},
 		methods: {
@@ -109,10 +111,19 @@
 				this.$confirm('确认退出吗?', '提示', {
 					//type: 'warning'
 				}).then(() => {
-					sessionStorage.removeItem('user');
-					_this.$router.push('/login');
+				    requestApi.user.logout(this).then(res => {
+				        res = res.body;
+				        console.log(res);
+						if(res.code === Enum.SUCCESS){
+						    msgUtils.success(this, Enum.LOGIN_OUT_SUCCESS);
+                            sessionStorage.removeItem('user');
+                            _this.$router.push({ path: '/login' });
+						}else{
+						    msgUtils.warning(this, res.msg);
+						}
+					});
 				}).catch(() => {
-
+					msgUtils.error(this, Enum.SYSTEM_ERROR.msg);
 				});
 
 
@@ -132,7 +143,6 @@
 				this.sysUserName = user.name || '';
 				this.sysUserAvatar = user.avatar || '';
 			}
-
 		}
 	}
 

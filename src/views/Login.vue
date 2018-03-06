@@ -4,7 +4,7 @@
     <el-form-item prop="account">
       <el-input type="text" v-model="ruleForm2.account" auto-complete="off" placeholder="账号"></el-input>
     </el-form-item>
-    <el-form-item prop="checkPass">routes.js
+    <el-form-item prop="checkPass">
       <el-input type="password" v-model="ruleForm2.checkPass" auto-complete="off" placeholder="密码"></el-input>
     </el-form-item>
     <el-checkbox v-model="checked" checked class="remember">记住密码</el-checkbox>
@@ -20,6 +20,13 @@
   //import NProgress from 'nprogress'
   export default {
     data() {
+      // 判断是否因为登录超时而跳转过来的
+      if(sessionStorage.getItem('not_login')){
+          if(sessionStorage.getItem('not_login') === 'error'){
+              // 弹框提示
+              msgUtils.warning(this, Enum.NOT_LOGIN.msg);
+          }
+      }
       return {
         logining: false,
         ruleForm2: {
@@ -58,11 +65,12 @@
               if(res.code === Enum.ADMIN_LOGIN_SUCCESS.code){
                 // 登录成功，且用户为管理员
                 sessionStorage.setItem('user', JSON.stringify(res.data));
-                self.$router.push({ path: '/goodItem' });
+                self.$router.push({ path: '/adminHome' });
               }
               else if(res.code == Enum.USER_LOGIN_SUCCESS.code){
                 // 登录成功，且用户为普通用户
                   sessionStorage.setItem('user', JSON.stringify(res.data));
+                  sessionStorage.removeItem('not_login');
                   self.$router.push({ path: '/userHome' });
               }
               else{

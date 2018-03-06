@@ -1,5 +1,5 @@
 <template>
-    <p class="page-container">404 page not found</p>
+    <p class="page-container">当前定位错误，请检查访问地址</p>
 </template>
 
 <style lang="scss" scoped>

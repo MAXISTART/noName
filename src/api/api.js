@@ -7,7 +7,7 @@ let department = 'department';
 let config = 'config';
 let good = 'good';
 let permission = 'permission';
-let storeItem = 'store';
+let store = 'store';
 let take = 'takeOrder';
 let storeOperation = 'storeOperation';
 
@@ -16,13 +16,15 @@ let getApi = (moduleName, methodName) => {
 }
 
 
+
 export const requestApi = {
     user: {
         login: (ref, params) => {return ref.$http.post(getApi(user,'login'), params)},
+        logout: (ref) => {return ref.$http.post(getApi(user,'logout'))},
         findByDepartment: (ref, params) => {return ref.$http.post(getApi(user,'findUsersByDepartmentId'), params)},
         findByParam: (ref, params) => {return ref.$http.post(getApi(user,'findUserBySearchParams'), params)},
         update: (ref, params) => {return ref.$http.post(getApi(user,'updateUser'), params)},
-        addUser: (ref, params) => {return ref.$http.post(getApi(user,'addUser'), params)},
+        add: (ref, params) => {return ref.$http.post(getApi(user,'addUser'), params)},
         delete: (ref, params) => {return ref.$http.post(getApi(user,'deleteUser'), params)},
         deletes: (ref, params) => {return ref.$http.post(getApi(user,'deleteUsers'), params)},
         removePermissions: (ref, params) => {return ref.$http.post(getApi(user,'removePermissions'), params)},
@@ -35,15 +37,25 @@ export const requestApi = {
         findByParam: (ref, params) => {return ref.$http.post(getApi(good,'findGoodItemsBySearchParams'), params)},
         update: (ref, params) => {return ref.$http.post(getApi(good,'updateGoodItem'), params)},
         findAllSorts: (ref) => {return ref.$http.get(getApi(good,'findAllSorts'))},
-        addGoodItem: (ref, params) => {return ref.$http.post(getApi(good,'addGoodItem'), params)},
+        add: (ref, params) => {return ref.$http.post(getApi(good,'addGoodItem'), params)},
         delete: (ref, params) => {return ref.$http.post(getApi(good,'deleteGoodItem'), params)},
         deletes: (ref, params) => {return ref.$http.post(getApi(good,'deleteGoodItems'), params)},
         findByName: (ref, name) => {return ref.$http.get(getApi(good,'findAllGoodItemByName')+'?name='+name)}
     },
+    store: {
+        findByParam: (ref, params) => {return ref.$http.post(getApi(store,'findStoreItemsBySearchParams'), params)},
+        findAll: (ref, page, size) => {return ref.$http.get(getApi(store,'findAllStoreItems')+'?page='+page+'&&size='+size)}
+        // 一般是不允许管理员直接操作storeItem表的，要操作就必须通过storeOperation表的插入
+
+        //update: (ref, params) => {return ref.$http.post(getApi(store,'updateStoreItem'), params)},
+        //add: (ref, params) => {return ref.$http.post(getApi(store,'addStoreItem'), params)},
+        //delete: (ref, params) => {return ref.$http.post(getApi(store,'deleteStoreItem'), params)},
+        //deletes: (ref, params) => {return ref.$http.post(getApi(store,'deleteStoreItems'), params)},
+    },
     takeOrder: {
         findByParam: (ref, params) => {return ref.$http.post(getApi(take,'findTakeOrdersBySearchParams'), params)},
         update: (ref, params) => {return ref.$http.post(getApi(take,'updateTakeOrder'), params)},
-        addTakeOrder: (ref, params) => {return ref.$http.post(getApi(take,'addTakeOrder'), params)},
+        add: (ref, params) => {return ref.$http.post(getApi(take,'addTakeOrder'), params)},
         delete: (ref, params) => {return ref.$http.post(getApi(take,'deleteTakeOrder'), params)},
         deletes: (ref, params) => {return ref.$http.post(getApi(take,'deleteTakeOrders'), params)},
         approve: (ref, params) => {return ref.$http.post(getApi(take,'approve'), params)},
@@ -53,24 +65,33 @@ export const requestApi = {
     buyOrder: {
         findByParam: (ref, params) => {return ref.$http.post(getApi(buy,'findBuyOrdersBySearchParams'), params)},
         update: (ref, params) => {return ref.$http.post(getApi(buy,'updateBuyOrder'), params)},
-        addBuyOrder: (ref, params) => {return ref.$http.post(getApi(buy,'addBuyOrder'), params)},
+        add: (ref, params) => {return ref.$http.post(getApi(buy,'addBuyOrder'), params)},
         delete: (ref, params) => {return ref.$http.post(getApi(buy,'deleteBuyOrder'), params)},
         deletes: (ref, params) => {return ref.$http.post(getApi(buy,'deleteBuyOrders'), params)},
         approve: (ref, params) => {return ref.$http.post(getApi(buy,'approve'), params)},
         quickInput: (ref, params) => {return ref.$http.post(getApi(buy,'quickInput'), params)},
         findById: (ref, params) => {return ref.$http.post(getApi(buy,'findBuyOrderById'), params)},
     },
+    storeOperation: {
+        findByParam: (ref, params) => {return ref.$http.post(getApi(storeOperation,'findStoreOperationBySearchParams'), params)},
+        update: (ref, params) => {return ref.$http.post(getApi(storeOperation,'updateStoreOperation'), params)},
+        add: (ref, params) => {return ref.$http.post(getApi(storeOperation,'addStoreOperation'), params)},
+        delete: (ref, params) => {return ref.$http.post(getApi(storeOperation,'deleteStoreOperation'), params)},
+        deletes: (ref, params) => {return ref.$http.post(getApi(storeOperation,'deleteStoreOperations'), params)},
+        approve: (ref, params) => {return ref.$http.post(getApi(storeOperation,'approve'), params)},
+        findById: (ref, params) => {return ref.$http.post(getApi(storeOperation,'findStoreOperationById'), params)},
+    },
     department: {
         findAll: (ref, page, size) => {return ref.$http.get(getApi(department,'findAllDepartments')+'?page='+page+'&&size='+size)},
         update: (ref, params) => {return ref.$http.post(getApi(department,'updateDepartment'), params)},
-        addDepartment: (ref, params) => {return ref.$http.post(getApi(department,'addDepartment'), params)},
+        add: (ref, params) => {return ref.$http.post(getApi(department,'addDepartment'), params)},
         delete: (ref, params) => {return ref.$http.post(getApi(department,'deleteDepartment'), params)},
         deletes: (ref, params) => {return ref.$http.post(getApi(department,'deleteDepartments'), params)}
     },
     permission: {
         findAll: (ref, page, size) => {return ref.$http.get(getApi(permission,'findAllPermissions')+'?page='+page+'&&size='+size)},
         update: (ref, params) => {return ref.$http.post(getApi(permission,'updatePermission'), params)},
-        addPermission: (ref, params) => {return ref.$http.post(getApi(permission,'addPermission'), params)},
+        add: (ref, params) => {return ref.$http.post(getApi(permission,'addPermission'), params)},
         delete: (ref, params) => {return ref.$http.post(getApi(permission,'deletePermission'), params)},
         deletes: (ref, params) => {return ref.$http.post(getApi(permission,'deletePermissions'), params)}
     }

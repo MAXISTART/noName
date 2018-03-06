@@ -83,22 +83,22 @@
         </el-dialog>
 
         <el-table :data="takeOrders" ref="takeOrders" v-loading="listLoading" :span-method="arraySpanMethod"
-                  @selection-change="selsChange" style="width: 100%;">
+                  @selection-change="selsChange"  @sort-change="sortAll" style="width: 100%;">
             <el-table-column type="selection" width="55">
             </el-table-column>
             <el-table-column type="index" width="60" align="center">
             </el-table-column>
-            <el-table-column label="采购单明细" align="center" width="800">
-                <el-table-column label="名称" prop="takeOrderItems_name" min-width="120" sortable align="center"></el-table-column>
-                <el-table-column label="种类" prop="takeOrderItems_sort" min-width="120" sortable align="center"></el-table-column>
-                <el-table-column label="规格" prop="takeOrderItems_spec" min-width="120" sortable align="center"></el-table-column>
-                <el-table-column label="单位" prop="takeOrderItems_unit" min-width="120" sortable align="center"></el-table-column>
-                <el-table-column label="数量" prop="takeOrderItems_number" min-width="120" sortable align="center"></el-table-column>
-                <el-table-column label="归还数量" prop="takeOrderItems_returnNumber" min-width="120" sortable align="center"></el-table-column>
-                <el-table-column label="实际单价" prop="takeOrderItems_price" min-width="120" sortable align="center"></el-table-column>
+            <el-table-column label="申领单明细" align="center" width="800">
+                <el-table-column label="名称" prop="takeOrderItems_name" min-width="120"  align="center"></el-table-column>
+                <el-table-column label="种类" prop="takeOrderItems_sort" min-width="120"  align="center"></el-table-column>
+                <el-table-column label="规格" prop="takeOrderItems_spec" min-width="120"  align="center"></el-table-column>
+                <el-table-column label="单位" prop="takeOrderItems_unit" min-width="120"  align="center"></el-table-column>
+                <el-table-column label="数量" prop="takeOrderItems_number" min-width="120"  align="center"></el-table-column>
+                <el-table-column label="归还数量" prop="takeOrderItems_returnNumber" min-width="120"  align="center"></el-table-column>
+                <el-table-column label="实际单价" prop="takeOrderItems_price" min-width="120"  align="center"></el-table-column>
             </el-table-column>
 
-            <el-table-column label="采购单信息"  align="center" width="1060">
+            <el-table-column label="申领单信息"  align="center" width="1060">
                 <el-table-column label="审核进度" prop="approvalResult"
                                  :filters="[{text: '已通过', value: '1'}, {text: '审核中', value: 2}, {text: '已驳回', value: 0}]"
                                  :filter-method="filterTag"
@@ -114,23 +114,22 @@
                         </el-popover>
                     </template>
                 </el-table-column>
-                <el-table-column label="是否已经出库" prop="hasBeenOutput" :formatter="formatOutputFlag" min-width="140" sortable align="center"></el-table-column>
-                <el-table-column label="申请部门" prop="departmentName" min-width="140" sortable align="center"></el-table-column>
-                <el-table-column label="申请人" prop="requestorName" min-width="140" sortable align="center"></el-table-column>
-                <el-table-column label="申请时间" prop="requestTime" min-width="200" sortable align="center"></el-table-column>
-                <el-table-column label="申请总价" prop="requestTotalPrice" min-width="140" sortable align="center"></el-table-column>
-                <el-table-column label="申请原因" prop="description" min-width="200" sortable align="center"></el-table-column>
-                <el-table-column label="发票地址" prop="bills" min-width="140" sortable align="center"></el-table-column>
+                <el-table-column label="是否已经出库" prop="hasBeenOutput" :formatter="formatOutputFlag" min-width="140" sortable="custom" align="center"></el-table-column>
+                <el-table-column label="申请部门" prop="departmentName" min-width="140" sortable="custom" align="center"></el-table-column>
+                <el-table-column label="申请人" prop="requestorName" min-width="140" sortable="custom" align="center"></el-table-column>
+                <el-table-column label="申请时间" prop="requestTime" min-width="200" sortable="custom" align="center"></el-table-column>
+                <el-table-column label="申请总价" prop="requestTotalPrice" min-width="140" sortable="custom" align="center"></el-table-column>
+                <el-table-column label="申请原因" prop="description" min-width="200" sortable="custom" align="center"></el-table-column>
             </el-table-column>
 
             <el-table-column label="系统属性" width="320" align="center">
-                <el-table-column prop="creatorName" label="创建者" width="120" sortable align="center">
+                <el-table-column prop="creatorName" label="创建者" width="120" sortable="custom" align="center">
                 </el-table-column>
-                <el-table-column type="date" prop="createTime" label="创建时间" min-width="180" sortable align="center">
+                <el-table-column type="date" prop="createTime" label="创建时间" min-width="180" sortable="custom" align="center">
                 </el-table-column>
-                <el-table-column prop="updatorName" label="最后更新人" min-width="180" sortable align="center">
+                <el-table-column prop="updatorName" label="最后更新人" min-width="180" sortable="custom" align="center">
                 </el-table-column>
-                <el-table-column type="date" prop="lastmodifiedTime" label="最后更新时间" min-width="180" sortable align="center">
+                <el-table-column type="date" prop="lastmodifiedTime" label="最后更新时间" min-width="180" sortable="custom" align="center">
                 </el-table-column>
             </el-table-column>
 
@@ -601,54 +600,31 @@
             };
         },
 
-        computed: {
-            // 计算编辑框的总价
-            computeEditTotalPrice: {
-                set: function(value) {
-                    this.editObj.totalPrice = value;
-                },
-                get: function() {
-                    let takeOrderItems = this.editObj.takeOrderItems;
-                    let totalPrice = 0;
-                    if(takeOrderItems) {
-                        takeOrderItems.forEach(item => {
-                            let tempPrice = item.price * 100 * item.number / 100;
-                            totalPrice += tempPrice;
-                        });
-                    }
-                    this.editObj.totalPrice = totalPrice;
-                    return this.editObj.totalPrice;
-                }
-            },
-
-            // 计算新增框的总价
-            computeAddTotalPrice: {
-                set: function(value) {
-                    this.addObj.totalPrice = value;
-                },
-                get: function() {
-                    let takeOrderItems = this.addObj.takeOrderItems;
-                    let totalPrice = 0;
-                    if(takeOrderItems) {
-                        takeOrderItems.forEach(item => {
-                            let tempPrice = item.price * 100 * item.number / 100;
-                            totalPrice += tempPrice;
-                        });
-                    }
-                    if(Number.isNaN(totalPrice)) {
-                        this.addObj.totalPrice = 0;
-                    }else {
-                        this.addObj.totalPrice = totalPrice;
-                    }
-                    return this.addObj.totalPrice;
-                }
-            },
-        },
         components: {
             CustomForm
         },
 
         methods: {
+            // 排序
+            sortAll(sort) {
+                var propName = sort.prop;
+                if(propName === 'creatorName'){
+                    propName = 'createBy';
+                }
+                if(propName === 'updatorName'){
+                    propName = 'lastmodifiedBy';
+                }
+                // 把所有name的都转为Id
+                propName = propName.replace('Name','Id');
+                this.filters.property = propName;
+                if(sort.order === 'ascending'){
+                    this.filters.direction = 'ASC';
+                }
+                if(sort.order === 'descending'){
+                    this.filters.direction = 'DESC';
+                }
+                this.getTakeOrders();
+            },
             // 设置 是否出库 标志
             formatOutputFlag(row, column) {
                 if(row.hasBeenOutput === 1){
@@ -659,11 +635,9 @@
             },
             // filter的
             onFilterClose() {
-                console.log(this.filters);
                 this.getTakeOrders();
             },
             refreshData() {
-                console.log(this.filters);
                 this.getTakeOrders();
                 this.filterVisible = false;
             },
@@ -701,6 +675,12 @@
                 //let  rexNum = /^[1-9]\d*$/;
                 let  rexNum =  /^\d+$/;
                 this.canAdd = true;
+                if(takeOrderItems.length === 0){
+                    // 明细不能为空
+                    this.canAdd = false;
+                    msgUtils.warning(this, '明细不能为空');
+                    return;
+                }
                 takeOrderItems.forEach(item => {
                     // 先验证名字
                     if(item.name === '' ){
@@ -801,16 +781,10 @@
                 // 获取所有部门信息
                 requestApi.department.findAll(this, 0, 1000).then(res => {
                     res = res.body;
-                    // 如果登录过期了
-                    if(res.code === Enum.NOT_LOGIN.code){
-                        msgUtils.warning(this, Enum.NOT_LOGIN.msg);
-                        this.$router.push({ path: '/login' });
+                    if(res.code === Enum.SUCCESS.code){
+                        this.allDepartments = res.data.content;
                     }else{
-                        if(res.code === Enum.SUCCESS.code){
-                            this.allDepartments = res.data.content;
-                        }else{
-                            msgUtils.warning(this, res.msg);
-                        }
+                        msgUtils.warning(this, res.msg);
                     }
                 },err => {
                     msgUtils.error(this, Enum.SYSTEM_ERROR.msg);
@@ -836,6 +810,10 @@
                 formData .append('requestorId', this.filters.requestorId);
                 formData .append('requestTime_start', this.filters.requestTime_start);
                 formData .append('requestTime_end', this.filters.requestTime_end);
+                if(this.filters.property && this.filters.direction){
+                    formData .append('property', this.filters.property);
+                    formData .append('direction', this.filters.direction);
+                }
                 requestApi.takeOrder.findByParam(this, formData).then(res => {
                     this.listLoading = false;
                     res = res.body;
@@ -927,11 +905,10 @@
                             this.$confirm('确认提交吗？', '提示', {}).then(() => {
                                 this.addLoading = true;
                                 let para = this.addObj;
-                                requestApi.takeOrder.addTakeOrder(this, para).then(res => {
+                                requestApi.takeOrder.add(this, para).then(res => {
                                     res = res.body;
                                     this.addFormVisible = false;
                                     this.addLoading = false;
-                                    //console.log();
                                     if(res.code === Enum.SUCCESS.code){
                                         this.getTakeOrders();
                                     }else{

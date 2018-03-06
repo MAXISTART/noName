@@ -149,11 +149,6 @@
                 requestApi.permission.findAll(this, this.pagination.currentPage-1, this.pagination.pageSize).then(res => {
                     this.listLoading = false;
                     res = res.body;
-                    // 如果登录过期了
-                    if(res.code === Enum.NOT_LOGIN.code){
-                        msgUtils.warning(this, Enum.NOT_LOGIN.msg);
-                        this.$router.push({ path: '/login' });
-                    }
                     if(res.code === Enum.SUCCESS.code){
                         this.pagination.total = res.data.totalElements;
                         this.permissions = res.data.content;
@@ -231,7 +226,7 @@
 							this.addLoading = true;
 							//NProgress.start();
 							let para = Object.assign({}, this.addForm);
-							requestApi.permission.addPermission(this, para).then(res => {
+							requestApi.permission.add(this, para).then(res => {
 								this.addLoading = false;
 								//NProgress.done();
                                 res = res.body;

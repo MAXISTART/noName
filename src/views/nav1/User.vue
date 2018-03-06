@@ -368,16 +368,10 @@
 			    // 获取所有部门信息
                 requestApi.department.findAll(this, 0, 1000).then(res => {
                     res = res.body;
-                    // 如果登录过期了
-                    if(res.code === Enum.NOT_LOGIN.code){
-                        msgUtils.warning(this, Enum.NOT_LOGIN.msg);
-                        this.$router.push({ path: '/login' });
-                    }else{
-                        if(res.code === Enum.SUCCESS.code){
-                            this.departments = res.data.content;
-                        }else{
-                            msgUtils.warning(this, res.msg);
-                        }
+					if(res.code === Enum.SUCCESS.code){
+						this.departments = res.data.content;
+					}else{
+						msgUtils.warning(this, res.msg);
 					}
 				},err => {
                     msgUtils.error(this, Enum.SYSTEM_ERROR.msg);
@@ -495,7 +489,7 @@
                                     para.departmentId = department.id;
                                 }
                             });
-							requestApi.user.addUser(this, para).then(res => {
+							requestApi.user.add(this, para).then(res => {
 								this.addLoading = false;
 								//NProgress.done();
                                 res = res.body;
