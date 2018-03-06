@@ -20,6 +20,9 @@
 				<el-form-item>
 					<el-button type="primary" @click="handleAdd">新增</el-button>
 				</el-form-item>
+				<el-form-item>
+					<el-button type="primary" v-on:click="handleAddSorts">添加物品种类</el-button>
+				</el-form-item>
 			</el-form>
 		</el-col>
 
@@ -146,6 +149,21 @@
 				<el-button type="primary" @click.native="addSubmit" :loading="addLoading">提交</el-button>
 			</div>
 		</el-dialog>
+
+
+		<!--新增种类界面-->
+		<el-dialog title="新增种类" :visible.sync="addSortFormVisible" :close-on-click-modal="false">
+			<el-form :model="addSortForm" label-width="80px"  ref="addSortForm">
+				<el-form-item label="名称" prop="name">
+					<el-input v-model="addSortForm.name" auto-complete="off"></el-input>
+				</el-form-item>
+			</el-form>
+			<div slot="footer" class="dialog-footer">
+				<el-button @click.native="addSortFormVisible = false">取消</el-button>
+				<el-button type="primary" @click.native="addFormSubmit" :loading="addSortLoading">提交</el-button>
+			</div>
+		</el-dialog>
+
 	</section>
 </template>
 
@@ -156,6 +174,11 @@
 	export default {
 		data() {
 			return {
+                addSortFormVisible: false,
+                addSortLoading: false,
+                addSortForm: {
+                    name: ''
+				},
 				filters: {
 					name: '',
 					price_start: '',
@@ -224,6 +247,26 @@
 			}
 		},
 		methods: {
+            handleAddSorts() {
+				this.addSortFormVisible = true;
+			},
+            addFormSubmit() {
+                this.addSortLoading = true;
+                requestApi.good.addSort(this, this.addSortForm).then(res => {
+                    this.addSortLoading = false;
+                    this.addSortFormVisible = false;
+                    res = res.body;
+                    if(res.code === Enum.SUCCESS.code){
+                        this.getGoodItems();
+                    }else{
+                        msgUtils.warning(this, res.msg);
+					}
+                }, err => {
+                    this.addSortLoading = false;
+                    this.addSortFormVisible = false;
+                    msgUtils.error(this, Enum.SYSTEM_ERROR.msg);
+                });
+			},
 			handleCurrentChange(val) {
                 this.pagination.currentPage = val;
 				this.getGoodItems();

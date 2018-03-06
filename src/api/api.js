@@ -35,6 +35,7 @@ export const requestApi = {
     },
     good: {
         findByParam: (ref, params) => {return ref.$http.post(getApi(good,'findGoodItemsBySearchParams'), params)},
+        addSort: (ref, params) => {return ref.$http.post(getApi(good,'addSortItem'), params)},
         update: (ref, params) => {return ref.$http.post(getApi(good,'updateGoodItem'), params)},
         findAllSorts: (ref) => {return ref.$http.get(getApi(good,'findAllSorts'))},
         add: (ref, params) => {return ref.$http.post(getApi(good,'addGoodItem'), params)},
