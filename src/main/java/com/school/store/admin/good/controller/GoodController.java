@@ -178,6 +178,7 @@ public class GoodController extends BaseAdminController {
 
         // 返回的是真正的List<GoodItem>
         MPager<GoodItem> goodItems = goodItemService.findByDynamicSqlParams( sqlParams, page, size, GoodItem.class);
+        entityRefineService.refineList(goodItems.getData());
         return simpleResult(ResultEnum.SUCCESS, goodItems);
     }
 
