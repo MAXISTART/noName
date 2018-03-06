@@ -1,5 +1,5 @@
 
-let base = 'http://n8ffr9.natappfree.cc/schoolStore/admin';
+let base = 'http://psmxxe.natappfree.cc/schoolStore/admin';
 // 模块变量
 let user = 'user';
 let buy = 'buyOrder';
