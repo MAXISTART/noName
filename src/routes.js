@@ -9,6 +9,7 @@ import BuyOrder from './views/nav2/BuyOrder.vue'
 import TakeOrder from './views/nav2/TakeOrder.vue'
 import StoreOperation from './views/nav2/StoreOperation.vue'
 import StoreItem from './views/nav2/StoreItem.vue'
+import DocxUpload from './views/nav1/DocxUpload.vue'
 import AdminHome from './views/nav1/AdminHome.vue'
 import StoreChart from './views/charts/StoreChart.vue'
 import Form from './views/nav1/Form.vue'
@@ -46,7 +47,8 @@ let routes = [
             { path: '/department', component: Department, name: '部门' },
             { path: '/user', component: User, name: '用户' },
             { path: '/permission', component: Permission, name: '权限' },
-            { path: '/goodItem', component: GoodItem, name: '用品' }
+            { path: '/goodItem', component: GoodItem, name: '用品' },
+            { path: '/docxUpload', component: DocxUpload, name: '搬迁简道云文件' }
             /*{ path: '/form', component: Form, name: '自定义表格' }*/
         ]
     },

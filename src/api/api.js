@@ -1,5 +1,5 @@
 
-let base = 'http://cx84y2.natappfree.cc/schoolStore/admin';
+let base = 'http://localhost:4000/schoolStore/admin';
 // 模块变量
 let user = 'user';
 let buy = 'buyOrder';
@@ -31,7 +31,8 @@ export const requestApi = {
         addPermissions: (ref, params) => {return ref.$http.post(getApi(user,'addPermissions'), params)}
     },
     config: {
-        getInitData: (ref) => {return ref.$http.get(getApi(config,'getInitData'))}
+        getInitData: (ref) => {return ref.$http.get(getApi(config,'getInitData'))},
+        uploadExcels: () => {return getApi(config,'uploadExcels')}
     },
     good: {
         findByParam: (ref, params) => {return ref.$http.post(getApi(good,'findGoodItemsBySearchParams'), params)},
@@ -120,7 +121,10 @@ export const Enum = {
     MOBILE_FORMAT_ERROR:{code: 14, msg: "手机号格式错误"},
     REGISTER_SUCCESS:{code: 15, msg: "注册成功"},
     USER_AREADLY_IN_SESSION_BEFORE_REGISTER:{code: 16, msg: "当前已经有用户登录，请先登出用户再注册"},
-    GET_SORTS_FAIL: {code: 17, msg: "获取种类失败"}
+    GET_SORTS_FAIL: {code: 17, msg: "获取种类失败"},
+    UPLOAD_FORMAT_ERR: {code: 30, msg: '上传模板只能是 xls、xlsx 格式!'},
+    UPLOAD_SIZE_ERR: {code: 31, msg: '上传模板大小不能超过 100MB!'},
+    UPLOAD_ERR: {code: 32, msg: '上传失败!'}
 }
 
 export const msgUtils = {

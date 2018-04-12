@@ -912,7 +912,7 @@
                                     if(res.code === Enum.SUCCESS.code){
                                         this.getTakeOrders();
                                     }else{
-                                        msgUtils.warning(res.msg);
+                                        msgUtils.warning(this, res.msg);
                                     }
                                 }, err => {
                                     this.addFormVisible = false;
@@ -955,7 +955,7 @@
                             msgUtils.success(this, "出库成功！");
                             this.getTakeOrders();
                         }else{
-                            msgUtils.warning(res.msg);
+                            msgUtils.warning(this, res.msg);
                         }
                     },error => {
                         this.listLoading = false;
@@ -1153,7 +1153,7 @@
                                     if(res.code === Enum.SUCCESS.code){
                                         this.getTakeOrders();
                                     }else{
-                                        msgUtils.warning(res.msg);
+                                        msgUtils.warning(this, res.msg);
                                     }
                                 }, err => {
                                     this.editFormVisible = false;
