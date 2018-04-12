@@ -1,5 +1,14 @@
 package com.school.store.base.excel;
 
+import com.school.store.admin.buy.entity.BuyOrder;
+import com.school.store.admin.buy.entity.BuyOrderItem;
+import com.school.store.admin.department.entity.Department;
+import com.school.store.admin.department.service.DepartmentService;
+import com.school.store.admin.good.entity.GoodItem;
+import com.school.store.admin.good.service.GoodItemService;
+import com.school.store.admin.take.entity.TakeOrder;
+import com.school.store.admin.take.entity.TakeOrderItem;
+import com.school.store.utils.DateUtil;
 import lombok.Data;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -8,72 +17,220 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
-
+@Component
 public class ExcelUtils {
 
     private String packageName = "com.school.store.base.excel";
     private String packageOutPath = "main.java." + packageName;//指定实体生成所在包的路径
 
+
+    @Autowired
+    private GoodItemService goodItemService;
+
+    @Autowired
+    private DepartmentService departmentService;
+
     Sheet sheet;
 
-    /**
-     *  要做的两个功能
-     *  重点说下，下面的配置文件用  config.java 或者 constance.java  来编写更好（尽量用到生成器去生成代码），然后注入到 BaseController 中
-     *
-     *  1. 实现数据库资料的转移，需要写个配置文件，配置简道云上不同表单对应的不同实体名称以及对应的mapper的生成
-     *  2. 实现自身数据库的选择字段导出模板以及导入文件，实现一个别名接口（数据库和实体都是保存的是字段英文名，
-     *      需要匹配到中文名，其实本质也是mapper）
-     *
-     */
 
     public static void main(String[] args){
         ExcelUtils utils = new ExcelUtils();
-        utils.init(null, "test.xlsx");
-/*        Map<String, Integer> mapper = new HashMap<>();
+
+/*
+        Map<String, Integer> mapper = new HashMap<>();
         mapper.put("totalPrice", 9);
         mapper.put("details.name", 3);
-        List<Map> beans = utils.getBeanMaps(mapper, utils.getHeaderSize());*/
+        List<Map> beans = utils.getBeanMaps(mapper, utils.getHeaderSize());*//*
 
-        Map blocks = utils.separate(2, 0);
-        System.out.println(blocks);
+        utils.init(null, "test.xlsx");
+        Map<Integer, Block> blocks = utils.separate(2, 0);
+        System.out.println(blocks);*/
+/*
+        utils.init(null, "办公用品信息表_20180411230729.xlsx");
+        System.out.println(utils.getGoodItems());
 
+        utils.init(null, "办公用品入库表_20180411233323.xlsx");
+        System.out.println(utils.getBuyOrders());*/
+
+        utils.init(null, "办公用品申领表_20180412004119.xlsx");
+        System.out.println(utils.getTakeOrders());
     }
 
 
-    public List<Map> getBeanMaps(Map<String, Integer> mapper, int headerSize){
+
+
+    /**
+     *  解析 入库表的
+     * @return
+     */
+    public List<BuyOrder> getBuyOrders(){
+
+
+        if(sheet == null){
+            return null;
+        }
+
+        List<BuyOrder> buyOrders = new ArrayList<>();
+
+        // 先根据提交时间进行分割
+        Map<Integer, Block> blocks = separateByCol(2, 11);
+
+        for(Integer index : blocks.keySet()){
+            BuyOrder buyOrder = new BuyOrder();
+            int i = 0;
+            List<BuyOrderItem> buyOrderItems = new ArrayList<>();
+            Row row = null;
+            int rowStartIndex = blocks.get(index).getFirstLineNumber();
+            for(;i <= blocks.get(index).getSize() - 1;i++){
+                row = sheet.getRow(rowStartIndex + i);
+                BuyOrderItem buyOrderItem = new BuyOrderItem();
+                buyOrderItem.setGoodId(goodItemService.findByName(getCellValue(row.getCell(3))).get(0).getId());
+                buyOrderItem.setSpec(getCellValue(row.getCell(5)));
+                buyOrderItem.setUnit(getCellValue(row.getCell(6)));
+                buyOrderItem.setName(getCellValue(row.getCell(3)));
+                String number = getCellValue(row.getCell(7)).trim();
+                buyOrderItem.setNumber(number.equals("") ? new BigDecimal(0) : new BigDecimal(number));
+                String price = getCellValue(row.getCell(8)).trim();
+                buyOrderItem.setPrice(new BigDecimal(price.equals("") ? "0" : price));
+
+                buyOrderItems.add(buyOrderItem);
+            }
+
+            buyOrder.setBuyOrderItems(buyOrderItems);
+            buyOrder.setApprovalResult(1);
+            buyOrders.add(buyOrder);
+        }
+        return buyOrders;
+    }
+
+
+    /**
+     *  解析 申领表的
+     * @return
+     */
+    public List<TakeOrder> getTakeOrders(){
+
+
+        if(sheet == null){
+            return null;
+        }
+
+        List<TakeOrder> takeOrders = new ArrayList<>();
+
+        // 先根据提交时间进行分割
+        Map<Integer, Block> blocks = separateByDateTime(2, 0, 2);
+        for(Integer index : blocks.keySet()){
+            TakeOrder takeOrder = new TakeOrder();
+            int i = 0;
+            List<TakeOrderItem> takeOrderItems = new ArrayList<>();
+            Row row = null;
+            int rowStartIndex = blocks.get(index).getFirstLineNumber();
+            for(;i <= blocks.get(index).getSize() - 1;i++){
+                row = sheet.getRow(rowStartIndex + i);
+                String name = getCellValue(row.getCell(4));
+                if(!name.trim().equals("")){
+                    TakeOrderItem takeOrderItem = new TakeOrderItem();
+                    System.out.println("name : " + name);
+                    takeOrderItem.setGoodId(goodItemService.findByName(name).get(0).getId());
+                    takeOrderItem.setUnit(getCellValue(row.getCell(7)));
+                    String number = getCellValue(row.getCell(8)).trim();
+                    takeOrderItem.setNumber(number.equals("") ? new BigDecimal(0) : new BigDecimal(number));
+                    String price = getCellValue(row.getCell(9)).trim();
+                    takeOrderItem.setPrice(new BigDecimal(price.equals("") ? "0" : price));
+                    takeOrderItem.setName(getCellValue(row.getCell(4)));
+                    takeOrderItems.add(takeOrderItem);
+                }
+            }
+            //System.out.println("size : " + takeOrderItems.size());
+
+            takeOrder.setRequestTime(DateUtil.toDateTime(getCellValue(row.getCell(0))));
+            takeOrder.setApprovalTime(takeOrder.getRequestTime());
+            takeOrder.setApprovalResult(1);
+            String departmentName = getCellValue(row.getCell(2));
+            List<Department> departments = departmentService.findByName(departmentName);
+            if(departments != null && !departments.isEmpty()){
+                takeOrder.setDepartmentId(departments.get(0).getId());
+            }
+            if(!takeOrderItems.isEmpty()){
+                takeOrder.setTakeOrderItems(takeOrderItems);
+                takeOrders.add(takeOrder);
+            }
+
+        }
+        return takeOrders;
+    }
+
+
+    /**
+     *  解析 商品的
+     * @return
+     */
+    public List<GoodItem> getGoodItems(){
+
+
+        if(sheet == null){
+            return null;
+        }
+
+        List<GoodItem> goodItems = new ArrayList<>();
+
+        int rowIndex = 1;
+        int count = sheet.getLastRowNum()+1;//总行数
+        for(; rowIndex < count; rowIndex++){
+            Row row = sheet.getRow(rowIndex);
+            GoodItem goodItem = new GoodItem();
+
+            goodItem.setName(getCellValue(row.getCell(0)));
+            goodItem.setUnit(getCellValue(row.getCell(1)));
+            goodItem.setSpec(getCellValue(row.getCell(2)));
+            String price = getCellValue(row.getCell(3)).trim();
+            goodItem.setPrice(new BigDecimal(price.equals("") ? "0" : price));
+            goodItem.setNumber(new BigDecimal(0));
+            goodItem.setSort(null);
+            goodItems.add(goodItem);
+        }
+        return goodItems;
+    }
+
+
+
+    public List<Map> getBeanMaps(Map<String, Integer> mapper, Map<Integer, Block> blocks){
 
         if(sheet == null){
             return null;
         }
 
         // 获取头部最后一行
-        Row headerLastRow = sheet.getRow(headerSize - 1);
 
         int count = sheet.getLastRowNum()+1;//总行数
         //int count = 4;//总行数
 
         List<Map> list = new ArrayList<>();
 
-        for(int rowIndex = headerSize; rowIndex < count; rowIndex++){
-            Row row = sheet.getRow(rowIndex);
+        for(Integer startRowIndex : blocks.keySet()){
 
-            Map bean = new HashMap();
-            for(String keyName : mapper.keySet()){
-                // 获取所在列
-                int columnIndex = mapper.get(keyName);
-                String keyValue = getCellValue(row.getCell(columnIndex));
-                resolve(keyName, keyValue, bean);
+            int rowIndex = 0;
+            for(; rowIndex <=blocks.get(startRowIndex).getSize(); rowIndex++ ){
+                Map bean = new HashMap();
+                Row row = sheet.getRow(rowIndex);
+                for(String keyName : mapper.keySet()){
+                    // 获取所在列
+                    int columnIndex = mapper.get(keyName);
+                    String keyValue = getCellValue(row.getCell(columnIndex));
+                    resolve(keyName, keyValue, bean);
+                }
+                list.add(bean);
             }
-            list.add(bean);
+
         }
 
         return list;
@@ -122,6 +279,75 @@ public class ExcelUtils {
 
 
     /**
+     *  根据时间来分割行，Map里面存储的是行号, columnIndex用来标识不同的block
+     */
+    public Map<Integer,Block> separateByDateTime(int headerSize, int dateColumnIndex, int departColumnIndex){
+        Map<Integer,Block> blocks = new HashMap<>();
+
+        int listIndex = 0;
+
+        int count = sheet.getLastRowNum()+1;//总行数
+
+        for(int rowIndex = headerSize;rowIndex < count;rowIndex++){
+            Row row = sheet.getRow(rowIndex);
+            String firstCellValue = getCellValue(row.getCell(dateColumnIndex));
+
+            String secondCellValue = getCellValue(row.getCell(departColumnIndex));
+            if(blocks.get(listIndex) == null){
+                addBlock(blocks, listIndex, rowIndex, firstCellValue, secondCellValue);
+            }else{
+                // 如果属于同一段时间，比如都是14点期间，而且是同一个部门，那么就判定为一个总单
+                if(getHour(firstCellValue).equals(getHour(blocks.get(listIndex).getFirstCellValue())) && secondCellValue.equals(blocks.get(listIndex).getSecondCellValue())){
+                    // 属于上一个block的
+                    blocks.get(listIndex).increaseSize();
+                }else{
+                    // 属于新的block
+                    listIndex++;
+                    addBlock(blocks,listIndex, rowIndex, firstCellValue, secondCellValue);
+                }
+            }
+        }
+        return blocks;
+    }
+
+
+    public String getHour(String time){
+        return time.split(" ")[1].split(":")[0];
+    }
+
+    /**
+     *  根据某列来分割行，Map里面存储的是行号, columnIndex用来标识不同的block
+     */
+    public Map<Integer,Block> separateByCol(int headerSize, int columnIndex){
+        Map<Integer,Block> blocks = new HashMap<>();
+
+        int listIndex = 0;
+
+        int count = sheet.getLastRowNum()+1;//总行数
+
+        for(int rowIndex = headerSize;rowIndex < count;rowIndex++){
+            Row row = sheet.getRow(rowIndex);
+            String firstCellValue = getCellValue(row.getCell(columnIndex));
+            if(blocks.get(listIndex) == null){
+                addBlock(blocks, listIndex, rowIndex, firstCellValue);
+            }else{
+                if(firstCellValue.equals(blocks.get(listIndex).getFirstCellValue())){
+                    // 属于上一个block的
+                    blocks.get(listIndex).increaseSize();
+                }else{
+                    // 属于新的block
+                    listIndex++;
+                    addBlock(blocks,listIndex, rowIndex, firstCellValue);
+                }
+            }
+        }
+        return blocks;
+    }
+
+
+
+
+    /**
      *  根据合并单元格来分割行，Map里面存储的是行号, columnIndex用来标识不同的block
      */
     public Map<Integer,Block> separate(int headerSize, int columnIndex){
@@ -134,13 +360,13 @@ public class ExcelUtils {
         for(int rowIndex = headerSize;rowIndex < count;rowIndex++){
             Row row = sheet.getRow(rowIndex);
             String firstCellValue = getCellValue(row.getCell(columnIndex));
-
+            System.out.println(firstCellValue);
             if(isMergedRegion(sheet,rowIndex,0)){
 
                 if(blocks.get(listIndex) == null){
                     addBlock(blocks, listIndex, rowIndex, firstCellValue);
                 }else{
-                    if(firstCellValue == blocks.get(listIndex).getFirstCellValue()){
+                    if(firstCellValue.equals(blocks.get(listIndex).getFirstCellValue()) || firstCellValue.trim().equals("")){
                         // 属于上一个block的
                         blocks.get(listIndex).increaseSize();
                     }else{
@@ -165,6 +391,16 @@ public class ExcelUtils {
         block.setFirstLineNumber(rowIndex);
         block.increaseSize();
         block.setFirstCellValue(firstCellValue);
+        blocks.put(listIndex, block);
+    }
+
+
+    public void addBlock(Map<Integer,Block> blocks, Integer listIndex, int rowIndex, String firstCellValue, String secondCellValue){
+        Block block = new Block();
+        block.setFirstLineNumber(rowIndex);
+        block.increaseSize();
+        block.setFirstCellValue(firstCellValue);
+        block.setSecondCellValue(secondCellValue);
         blocks.put(listIndex, block);
     }
 
@@ -447,6 +683,7 @@ class Block{
 
     private String firstCellValue;
 
+    private String secondCellValue;
 
     public void increaseSize(){
         size++;

@@ -54,6 +54,9 @@ public class GoodController extends BaseAdminController {
     @Transactional(readOnly = false)
     @PostMapping("/addGoodItem")
     public ResultVo addGoodItem(@RequestBody GoodItem goodItem) {
+        if(goodItem.getNumber() == null){
+            goodItem.setNumber(new BigDecimal(0));
+        }
         int rs_code = checkGoodItemNameAndSpec(goodItem);
         switch (rs_code){
             case 0:
@@ -339,9 +342,13 @@ public class GoodController extends BaseAdminController {
         StoreItem storeItem = new StoreItem();
         storeItem.setNumber(goodItem.getNumber());
         storeItem.setGoodId(goodItem.getId());
-        storeItem.setLockNumber(0);
+        storeItem.setLockNumber(new BigDecimal(0));
         storeItem.setInputTime(new Date());
-        storeItem.setTotalPrice(goodItem.getPrice().multiply(new BigDecimal(goodItem.getNumber())));
+        if(goodItem.getPrice() == null || goodItem.getNumber() == null){
+            storeItem.setTotalPrice(null);
+        }else{
+            storeItem.setTotalPrice(goodItem.getPrice().multiply(goodItem.getNumber()));
+        }
         return storeItem;
     }
 

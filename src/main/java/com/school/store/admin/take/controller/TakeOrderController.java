@@ -20,6 +20,8 @@ import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
 import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -79,13 +81,14 @@ public class TakeOrderController extends BaseAdminController {
         BigDecimal totalPrice = new BigDecimal("0");
 
         for(TakeOrderItem takeOrderItem : takeOrderItems){
-            BigDecimal temp = takeOrderItem.getPrice().multiply(new BigDecimal(takeOrderItem.getNumber()));
+            BigDecimal temp = takeOrderItem.getPrice().multiply(takeOrderItem.getNumber());
             totalPrice = totalPrice.add(temp);
         }
         takeOrder.setRequestTotalPrice(totalPrice);
 
+        System.out.println(" takeOrder : " + takeOrder);
         takeOrderService.save(takeOrder);
-
+        System.out.println(" takeOrder insert success");
 
         if(takeOrderItems != null && !takeOrderItems.isEmpty()){
             for (TakeOrderItem takeOrderItem : takeOrderItems){
@@ -97,6 +100,7 @@ public class TakeOrderController extends BaseAdminController {
                     takeOrderItem.setReturnNumber(0);
                 }else{
                     // 事务自动回滚
+                    System.out.println(" takeOrder insert fail");
                     throw new BaseException(ResultEnum.STORE_UNSATISFY);
                 }
             }

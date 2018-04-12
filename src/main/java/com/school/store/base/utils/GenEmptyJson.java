@@ -1,6 +1,6 @@
 package com.school.store.base.utils;
 
-import com.alibaba.fastjson.JSON;
+//import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.school.store.enums.ResultEnum;
 import sun.applet.Main;
@@ -36,9 +36,10 @@ public class GenEmptyJson {
 
 
     public String bean2Json2(Object entity){
-        String jsonString = JSON.toJSONString(entity,
+/*        String jsonString = JSON.toJSONString(entity,
                 SerializerFeature.PrettyFormat, SerializerFeature.WriteMapNullValue, SerializerFeature.WriteDateUseDateFormat);
-        return jsonString;
+        return jsonString;*/
+        return null;
     }
 
 

@@ -98,7 +98,7 @@ public class BuyOrderController extends BaseAdminController {
         BigDecimal totalPrice = new BigDecimal("0");
 
         for (BuyOrderItem buyOrderItem : buyOrderItems) {
-            BigDecimal temp = buyOrderItem.getPrice().multiply(new BigDecimal(buyOrderItem.getNumber()));
+            BigDecimal temp = buyOrderItem.getPrice().multiply(buyOrderItem.getNumber());
             totalPrice = totalPrice.add(temp);
         }
         buyOrder.setRequestTotalPrice(totalPrice);

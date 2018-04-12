@@ -44,8 +44,8 @@ public class BuyOrderItem extends BaseEntity {
     private BigDecimal price;
 
     // 采购的物品的实际数量
-    @Column(name = "number", length = 255)
-    private Integer number;
+    @Column(name = "number", precision = 10, scale = 2)
+    private BigDecimal number;
 
     // 对应的总单ID
     @Column(name = "orderId", length = 36)

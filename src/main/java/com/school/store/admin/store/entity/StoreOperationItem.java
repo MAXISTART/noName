@@ -47,7 +47,7 @@ public class StoreOperationItem extends BaseEntity {
 
     // 操作的物品的实际数量
     @Column(name = "number", length = 255)
-    private Integer number;
+    private BigDecimal number;
 
     @Column(name = "orderId", length = 36)
     private String orderId;

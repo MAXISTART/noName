@@ -12,5 +12,6 @@ public interface DepartmentService extends IBaseRepository<Department,Serializab
 
     public List<Department> findAll();
     public Department findById(String id);
-    
+
+    public List<Department> findByName(String departmentName);
 }

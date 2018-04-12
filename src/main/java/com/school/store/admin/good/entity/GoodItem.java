@@ -43,8 +43,8 @@ public class GoodItem extends BaseEntity {
     private String spec;
 
 	// 刚开始的入库数量 ， 管理员不修改数量的话默认为 0
-	@Column(name = "number", columnDefinition = "int(255) default 0 ")
-	private Integer number;
+	@Column(name = "number", precision = 10, scale = 2)
+	private BigDecimal number;
 
 }
 

@@ -43,11 +43,11 @@ public class TakeOrderItem extends BaseEntity{
 	private BigDecimal price;
 
 	// 申领的物品的实际数量
-	@Column(name = "number", length = 255)
-	private Integer number;
+	@Column(name = "number", precision = 10, scale = 2)
+	private BigDecimal number;
 
 	// 归还数量
-	@Column(name = "returnNumber", length = 255)
+	@Column(name = "returnNumber", precision = 10, scale = 2)
 	private Integer returnNumber;
 
 	// 总单的ID

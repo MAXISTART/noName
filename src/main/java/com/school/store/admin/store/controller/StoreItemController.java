@@ -40,12 +40,12 @@ public class StoreItemController extends BaseAdminController {
 
     // 测试添加和删除
     @GetMapping("/testAdd")
-    public String testAdd(@RequestParam String goodId, @RequestParam Integer number){
+    public String testAdd(@RequestParam String goodId, @RequestParam BigDecimal number){
         return addNumber(goodId, number) + "";
     }
 
     @GetMapping("/testReduce")
-    public String testReduce(@RequestParam String goodId, @RequestParam Integer number){
+    public String testReduce(@RequestParam String goodId, @RequestParam BigDecimal number){
         return reduceNumber(goodId, number) + "";
     }
 
@@ -108,7 +108,7 @@ public class StoreItemController extends BaseAdminController {
         Page<StoreItem> storeItems = storeItemService.findAll(pager);
         for(StoreItem storeItem : storeItems){
             GoodItem goodItem = goodItemService.findById(storeItem.getGoodId());
-            storeItem.setTotalPrice(goodItem.getPrice().multiply(new BigDecimal(storeItem.getNumber())));
+            storeItem.setTotalPrice(goodItem.getPrice().multiply(storeItem.getNumber()));
             storeItem.setGoodItem(goodItem);
         }
         return simpleResult(ResultEnum.SUCCESS, storeItems);
@@ -152,7 +152,7 @@ public class StoreItemController extends BaseAdminController {
         for(GoodItem goodItem : goodItems.getData()){
             StoreItem storeItem = storeItemService.findByGoodId(goodItem.getId());
             storeItem.setGoodItem(goodItem);
-            storeItem.setTotalPrice(goodItem.getPrice().multiply(new BigDecimal(storeItem.getNumber())));
+            storeItem.setTotalPrice(goodItem.getPrice().multiply(storeItem.getNumber()));
             storeItems.add(storeItem);
         }
         entityRefineService.refineList(storeItems);
@@ -171,9 +171,9 @@ public class StoreItemController extends BaseAdminController {
     @Transactional(readOnly = false)
     @Permiss(need = false)
     // 这是系统级别的方法，不提供给任何用户，只是系统调用
-    public boolean addNumber(String goodId, Integer number){
+    public boolean addNumber(String goodId, BigDecimal number){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
-        storeItem.setNumber(storeItem.getNumber() + number);
+        storeItem.setNumber(storeItem.getNumber().add(number));
         // 这里因为持久化了，必须用merge，而不能用sql或者save
         storeItemService.saveOrUpdate(storeItem);
         return true;
@@ -182,13 +182,13 @@ public class StoreItemController extends BaseAdminController {
     @Transactional(readOnly = false)
     @Permiss(need = false)
     // 这是系统级别的方法，不提供给任何用户，只是系统调用
-    public boolean reduceNumber(String goodId, Integer number){
+    public boolean reduceNumber(String goodId, BigDecimal number){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
-        if(storeItem.getNumber() < number){
+        if(storeItem.getNumber().compareTo(number) == -1){
             // 如果库存所含数量小于要减少的数量
             return false;
         }
-        storeItem.setNumber(storeItem.getNumber() - number);
+        storeItem.setNumber(storeItem.getNumber().subtract(number));
         // 这里因为持久化了，必须用merge，而不能用sql或者save
         storeItemService.saveOrUpdate(storeItem);
         return true;
@@ -203,9 +203,9 @@ public class StoreItemController extends BaseAdminController {
     @Transactional(readOnly = false)
     @Permiss(need = false)
     // 这是系统级别的方法，不提供给任何用户，只是系统调用
-    public boolean addLockNumber(String goodId, Integer lockNumber){
+    public boolean addLockNumber(String goodId, BigDecimal lockNumber){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
-        storeItem.setLockNumber(storeItem.getLockNumber() + lockNumber);
+        storeItem.setLockNumber(storeItem.getLockNumber().add(lockNumber));
         // 这里因为持久化了，必须用merge，而不能用sql或者save
         storeItemService.saveOrUpdate(storeItem);
         return true;
@@ -220,9 +220,9 @@ public class StoreItemController extends BaseAdminController {
     @Transactional(readOnly = false)
     @Permiss(need = false)
     // 这是系统级别的方法，不提供给任何用户，只是系统调用
-    public boolean reduceLockNumber(String goodId, Integer lockNumber){
+    public boolean reduceLockNumber(String goodId, BigDecimal lockNumber){
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
-        storeItem.setLockNumber(storeItem.getLockNumber() - lockNumber);
+        storeItem.setLockNumber(storeItem.getLockNumber().subtract(lockNumber));
         // 这里因为持久化了，必须用merge，而不能用sql或者save
         storeItemService.saveOrUpdate(storeItem);
         return true;
@@ -237,13 +237,13 @@ public class StoreItemController extends BaseAdminController {
     @Transactional(readOnly = false)
     @Permiss(need = false)
     // 这是系统级别的方法，不提供给任何用户，只是系统调用
-    public boolean checkNumber(String goodId, Integer number){
+    public boolean checkNumber(String goodId, BigDecimal number){
         // 检查库存是否足够
         StoreItem storeItem = storeItemService.findByGoodId(goodId);
         if(storeItem == null){
             return false;
         }
-        if(storeItem.getNumber() < number){
+        if(storeItem.getNumber().compareTo(number) == -1){
             // 如果库存当前存在的数量小于要减少的数量
             return false;
         }else{

@@ -30,12 +30,12 @@ public class StoreItem extends BaseEntity {
     private String goodId;
 
     // 当前库存还有多少，这个是需要持久化到数据库里面去的
-    @Column(name = "number", length = 255)
-    private Integer number;
+    @Column(name = "number", precision = 10, scale = 2)
+    private BigDecimal number;
 
     // 当前正在审批的数量（像订场一样，被锁住的数量，也是有个时效，看审批流程的时效），默认为0
-    @Column(name = "lockNumber", length = 255)
-    private Integer lockNumber;
+    @Column(name = "lockNumber", precision = 10, scale = 2)
+    private BigDecimal lockNumber;
 
     // 存储物品的信息，但是只是展示的时候用的容器
     @Transient

@@ -22,7 +22,7 @@ public class ImportMaps {
         good = new HashMap();
 
 
-        storeOperation.put("", "");
+        storeOperation.put("tableName", "");
     }
 
 }

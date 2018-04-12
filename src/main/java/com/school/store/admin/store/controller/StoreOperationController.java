@@ -88,7 +88,7 @@ public class StoreOperationController extends BaseAdminController {
         if(storeOperation.getRequestTotalPrice() == null && storeOperation.getStoreOperationItems() != null){
             BigDecimal totalPrice = new BigDecimal("0");
             for (StoreOperationItem storeOperationItem : storeOperation.getStoreOperationItems()) {
-                BigDecimal temp = storeOperationItem.getPrice().multiply(new BigDecimal(storeOperationItem.getNumber()));
+                BigDecimal temp = storeOperationItem.getPrice().multiply(storeOperationItem.getNumber());
                 totalPrice = totalPrice.add(temp);
             }
             storeOperation.setRequestTotalPrice(totalPrice);
