@@ -102,6 +102,7 @@ public class BuyOrderController extends BaseAdminController {
             totalPrice = totalPrice.add(temp);
         }
         buyOrder.setRequestTotalPrice(totalPrice);
+        log.warn("userId 是 " + HttpUtil.getSessionUserId());
         buyOrder.setRequestorId(HttpUtil.getSessionUserId());
         buyOrderService.save(buyOrder);
 
@@ -264,6 +265,7 @@ public class BuyOrderController extends BaseAdminController {
      * @return
      */
     @PostMapping(value = "/findBuyOrdersBySearchParams")
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo findBuyOrdersBySearchParams(@RequestParam(required = true) Integer page,
                                                 @RequestParam(required = false, defaultValue = "20") Integer size,
                                                 @RequestParam(required = false, defaultValue = "DESC") String direction,
@@ -273,14 +275,27 @@ public class BuyOrderController extends BaseAdminController {
                                                 @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_start,
                                                 @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_end,
                                                 @RequestParam(required = false, defaultValue = "allPrice") String price_start,
-                                                @RequestParam(required = false, defaultValue = "allPrice") String price_end
+                                                @RequestParam(required = false, defaultValue = "allPrice") String price_end,
+                                                @RequestParam(required = false, defaultValue = "allApprovalResult") String approvalResult
     ) {
+
+        // 先判断当前用户是user还是admin
+        boolean isUser = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.USER);
+        boolean isAdmin = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.ADMIN);
+        if(isUser && !isAdmin){
+            // 如果只有user权限而没有管理员权限，那么就必须判断requestorId
+            if(!requestorId.equals(HttpUtil.getSessionUserId())){
+                throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+            }
+        }
+
         SqlParams sqlParams = new SqlParams();
         if (!departmentId.equals("allDepartment") && !StringUtils.isEmpty(departmentId)) {
             sqlParams.put("AND", "departmentId", "=");
             sqlParams.putValue(departmentId);
         }
         if (!requestorId.equals("allRequestor") && !StringUtils.isEmpty(requestorId)) {
+            log.warn("requestorId : " + requestorId);
             sqlParams.put("AND", "requestorId", "=");
             sqlParams.putValue(requestorId);
         }
@@ -300,6 +315,20 @@ public class BuyOrderController extends BaseAdminController {
             sqlParams.put("AND", "requestTotalPrice", "<=");
             sqlParams.putValue(price_end);
         }
+        if (!approvalResult.equals("allApprovalResult") && !StringUtils.isEmpty(approvalResult)) {
+            if(approvalResult.trim().equals("-1")){
+                // 当等于-1时表示获取已经审核的（无论是不是审核通过）
+                sqlParams.put("OR", "approvalResult", "=");
+                sqlParams.putValue("1");
+                sqlParams.put("OR", "approvalResult", "=");
+                sqlParams.putValue("0");
+            }else{
+                sqlParams.put("AND", "approvalResult", "=");
+                sqlParams.putValue(approvalResult);
+            }
+        }
+
+
         sqlParams.put("ORDER BY", property, direction);
         // 返回的是真正的List<User>
         MPager<BuyOrder> buyOrders = buyOrderService.findByDynamicSqlParams(sqlParams, page, size, BuyOrder.class);

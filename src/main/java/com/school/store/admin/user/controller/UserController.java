@@ -67,6 +67,7 @@ public class UserController extends BaseAdminController{
     @PostMapping(value = "/addUser")
     public ResultVo addUser(@RequestBody User user) {
         user.setId(null);
+        user.setPassword("123456");
         userService.save(user);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
@@ -77,6 +78,21 @@ public class UserController extends BaseAdminController{
         userService.dynamicUpdate(user);
         return simpleResult(ResultEnum.SUCCESS, null);
     }
+
+
+    /**
+     *  这个是由任意的user或者admin来更新的，只能更新自己的账号信息，不能更新其他账号的
+     * @param user
+     * @return
+     */
+    @PostMapping(value = "/updateUserBySelf")
+    @Permiss(newOr = {Permit.ADMIN, Permit.USER})
+    public ResultVo updateUserBySelf(@RequestBody User user) {
+        user.setId(HttpUtil.getSessionUserId());
+        userService.dynamicUpdate(user);
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
 
 
     @Transactional(readOnly = false)
@@ -199,8 +215,6 @@ public class UserController extends BaseAdminController{
     }
 
 
-
-
     /**
      *  以表单 form 形式 传递参数
      * @param page
@@ -274,6 +288,7 @@ public class UserController extends BaseAdminController{
         CookieUtil.set(response, CookieConstant.TOKEN, token, expire);
 
         // 4. 设置用户到session中
+        log.warn("userId 是 " + userInfo.getId());
         HttpUtil.getSession().setAttribute("userId", userInfo.getId());
 
         // 获取用户的权限，根据权指定用户为管理员还是用户，前端根据这个得知应该跳转 管理员页面 还是 用户页面

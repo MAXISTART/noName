@@ -183,7 +183,8 @@ public class PermissionAspect {
             throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
         }
 
-        // 权限通过，可以继续执行
+        // 权限通过，可以继续执行，同时把权限存进session中，供之后使用
+        HttpUtil.getSession().setAttribute("permissions", permissions);
 
     }
 

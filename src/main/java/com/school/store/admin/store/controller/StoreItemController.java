@@ -91,6 +91,7 @@ public class StoreItemController extends BaseAdminController {
      * @return
      */
     @GetMapping(value = "/findAllStoreItems")
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo findAllStoreItems(@RequestParam(required = true) Integer page,
                                       @RequestParam(required = false, defaultValue = "20") Integer size,
                                       @RequestParam(required = false, defaultValue = "DESC") String direction,
@@ -155,6 +156,7 @@ public class StoreItemController extends BaseAdminController {
             storeItem.setTotalPrice(goodItem.getPrice().multiply(storeItem.getNumber()));
             storeItems.add(storeItem);
         }
+        // 这个是用来修改创建者和修改者的
         entityRefineService.refineList(storeItems);
         MPager<StoreItem> storeItemMPager = new MPager<>();
         storeItemMPager.setData(storeItems);
@@ -163,6 +165,20 @@ public class StoreItemController extends BaseAdminController {
         storeItemMPager.setPageSize(goodItems.getPageSize());
 
         return simpleResult(ResultEnum.SUCCESS, storeItemMPager);
+    }
+
+
+
+
+    @PostMapping(value = "/findStoreItemByStoreItemId")
+    @Permiss(newOr = {Permit.ADMIN, Permit.USER})
+    public ResultVo findStoreItemByStoreItemId(@RequestParam(required = true) String storeItemId){
+        StoreItem storeItem = storeItemService.findOne(storeItemId.trim());
+        GoodItem goodItem = goodItemService.findOne(storeItem.getGoodId());
+        storeItem.setGoodItem(goodItem);
+        storeItem.setTotalPrice(goodItem.getPrice().multiply(storeItem.getNumber()));
+        entityRefineService.refine(storeItem);
+        return simpleResult(ResultEnum.SUCCESS, storeItem);
     }
 
 
