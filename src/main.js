@@ -24,11 +24,21 @@ import AppStyles from './css/app.css'
 // Import Routes
 import Routes from './routes.js'
 
+// Import Vue-resource
+import VueResource from 'vue-resource'
+
 // Import App Component
 import App from './app'
 
 // Init F7 Vue Plugin
 Vue.use(Framework7Vue)
+
+Vue.use(VueResource)
+Vue.http.interceptors.push(function(request, next) {//拦截器
+// 跨域携带cookie
+    request.credentials = true;
+    next()
+})
 
 // Init App
 new Vue({

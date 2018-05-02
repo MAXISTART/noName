@@ -1,4 +1,23 @@
 export default [
+    {
+        path: '/home/',
+        component: require('./schoolStoresPage/home.vue')
+    },
+    {
+        path: '/userInfo/',
+        component: require('./schoolStoresPage/userInfo.vue')
+    },
+    {
+        path: '/storeItems/',
+        component: require('./schoolStoresPage/storeItems.vue')
+    },
+    {
+        path: '/storeItemDetail/:id',
+        component: require('./schoolStoresPage/storeItemDetail.vue')
+    },
+
+
+// 下面是原本的
   {
     path: '/',
     component: require('./pages/mainPage.vue')

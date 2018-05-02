@@ -18,7 +18,7 @@
       <f7-list-item v-for="(item, index) in items"
         :title="item"
         :key="index"
-      ></f7-list-item>
+      >dsad</f7-list-item>
     </f7-list>
   </f7-page>
 </template>

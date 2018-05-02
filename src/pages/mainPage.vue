@@ -35,6 +35,12 @@ export default {
           id: 'items1',
           items: [
             {
+                title: 'Home',
+                link: '/home/',
+                badge: '',
+                badgeColor: ''
+            },
+            {
               title: 'Accordion',
               link: '/accordion/',
               badge: '',
