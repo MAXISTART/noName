@@ -108,7 +108,7 @@
 
               <f7-tab id="tab1" active>
 
-                    <f7-page infinite-scroll pull-to-refresh @ptr:refresh="refreshBuyData()" @infinite="onScrollBuyOrders">
+                    <f7-page infinite-scroll pull-to-refresh @ptr:refresh="refreshBuyData" @infinite="onScrollBuyOrders">
 
                         <f7-block>
                             <f7-block-title>临时采购单</f7-block-title>
@@ -123,7 +123,7 @@
                                                           @swipeout:deleted="onDeleteBuyOrderItem(item.goodId)"
                                                           :key="index">
                                                 <f7-swipeout-actions>
-                                                    <f7-swipeout-button @click="changeNumber(item.goodId)">修改</f7-swipeout-button>
+                                                    <f7-swipeout-button @click="changeBuyOrderNumber(item.goodId)">修改</f7-swipeout-button>
                                                     <f7-swipeout-button delete v-if="item.isDelete">删除</f7-swipeout-button>
                                                 </f7-swipeout-actions>
                                             </f7-list-item>
@@ -158,7 +158,7 @@
                         <f7-block>
                             <f7-block-title>已经被审批的采购单</f7-block-title>
                             <f7-list accordion inset>
-                                <f7-list-item accordion-item :title="buyOrder.createTime" v-for="(buyOrder, index) in approvedBuyOrders">
+                                <f7-list-item accordion-item :title="buyOrder.lastmodifiedTime" v-for="(buyOrder, index) in approvedBuyOrders">
                                     <f7-accordion-content>
                                         <f7-list>
                                             <f7-list-item v-for="(item, index) in buyOrder.buyOrderItems"
@@ -182,29 +182,86 @@
 
               </f7-tab>
               <f7-tab id="tab2">
-                <f7-block>
-                  <p>
-                    This is tab 2 content
-                  </p>
-                  <p>
-                    Ut ac lobortis lacus, non pellentesque arcu. Quisque sodales sapien malesuada, condimentum nunc at, viverra lacus. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus eu pulvinar turpis, id tristique quam. Aenean venenatis molestie diam, sit amet condimentum nisl pretium id. Donec diam tortor, mollis in vehicula id, vehicula consectetur nulla. Quisque posuere rutrum mauris, eu rutrum turpis blandit at. Proin volutpat tortor sit amet metus porttitor accumsan. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut dapibus posuere dictum.
-                  </p>
-                  <p>
-                    Fusce luctus turpis nunc, id porta orci blandit eget. Aenean sodales quam nec diam varius, in ornare ipsum condimentum. Aenean eleifend, nulla sit amet volutpat adipiscing, ligula nulla pharetra risus, vitae consequat leo tortor eu nunc. Vivamus at fringilla metus. Duis neque lectus, sagittis in volutpat a, pretium vel turpis. Nam accumsan auctor libero, quis sodales felis faucibus quis. Etiam vestibulum sed nisl vel aliquet. Aliquam pellentesque leo a lacus ultricies scelerisque. Vestibulum vestibulum fermentum tincidunt. Proin eleifend metus non quam pretium, eu vehicula ipsum egestas. Nam eget nibh enim. Etiam sem leo, pellentesque a elit vel, egestas rhoncus enim. Morbi ultricies adipiscing tortor, vitae condimentum lacus hendrerit nec. Phasellus laoreet leo quis purus elementum, ut fringilla justo eleifend. Nunc ultricies a sapien vitae auctor. Aliquam id erat elementum, laoreet est et, dapibus ligula.
-                  </p>
-                </f7-block>
+
+                  <f7-page infinite-scroll pull-to-refresh @ptr:refresh="refreshTakeData" @infinite="onScrollTakeOrders">
+
+                      <f7-block>
+                          <f7-block-title>临时申领单</f7-block-title>
+                          <f7-list accordion inset>
+                              <f7-list-item accordion-item title="临时申领单">
+                                  <f7-accordion-content>
+                                      <f7-list>
+                                          <f7-list-item v-for="(item, index) in takeOrderItems"
+                                                        swipeout
+                                                        :title="item.title"
+                                                        swipeout
+                                                        @swipeout:deleted="onDeleteTakeOrderItem(item.goodId)"
+                                                        :key="index">
+                                              <f7-swipeout-actions>
+                                                  <f7-swipeout-button @click="changeTakeOrderNumber(item.goodId)">修改</f7-swipeout-button>
+                                                  <f7-swipeout-button delete v-if="item.isDelete">删除</f7-swipeout-button>
+                                              </f7-swipeout-actions>
+                                          </f7-list-item>
+                                          <f7-list-item>
+                                              <f7-link @click="applyTakeOrder" v-if="takeOrderItems.length > 0" style="display: block;text-align: center;width: 100%">申请此申领单</f7-link>
+                                              <f7-link v-if="takeOrderItems.length == 0" style="display: block;text-align: center;width: 100%">当前无申请内容</f7-link>
+                                          </f7-list-item>
+                                      </f7-list>
+                                  </f7-accordion-content>
+                              </f7-list-item>
+                          </f7-list>
+                      </f7-block>
+
+
+                      <f7-block>
+                          <f7-block-title>当前审批中的申领单</f7-block-title>
+                          <f7-list accordion inset>
+                              <f7-list-item accordion-item :title="takeOrder.createTime" v-for="(takeOrder, index) in approvingTakeOrders">
+                                  <f7-accordion-content>
+                                      <f7-list>
+                                          <f7-list-item v-for="(item, index) in takeOrder.takeOrderItems"
+                                                        :title="item.name + '(' + item.spec + ')' + '[' + item.number + item.unit + ']'"
+                                                        :key="index">
+                                          </f7-list-item>
+                                      </f7-list>
+                                  </f7-accordion-content>
+                              </f7-list-item>
+                          </f7-list>
+                      </f7-block>
+
+
+                      <f7-block>
+                          <f7-block-title>已经被审批的申领单</f7-block-title>
+                          <f7-list accordion inset>
+                              <f7-list-item accordion-item :title="takeOrder.lastmodifiedTime" v-for="(takeOrder, index) in approvedTakeOrders">
+                                  <f7-accordion-content>
+                                      <f7-list>
+                                          <f7-list-item v-for="(item, index) in takeOrder.takeOrderItems"
+                                                        :title="item.name + '(' + item.spec + ')' + '[' + item.number + item.unit + ']'"
+                                                        :key="index">
+                                          </f7-list-item>
+                                          <f7-list-item v-if="takeOrder.approvalResult === 1">
+                                              <f7-button big fill color="green" style="display: block;text-align: center;width: 100%" >审批通过</f7-button>
+                                          </f7-list-item>
+                                          <f7-list-item v-if="takeOrder.approvalResult === 0">
+                                              <f7-button big fill color="red" style="display: block;text-align: center;width: 100%" >审批未通过</f7-button>
+                                          </f7-list-item>
+                                      </f7-list>
+
+                                  </f7-accordion-content>
+                              </f7-list-item>
+                          </f7-list>
+                      </f7-block>
+
+                  </f7-page>
+
               </f7-tab>
+
               <f7-tab id="tab3">
                 <f7-block>
-                  <p>
-                    This is tab 3 content
-                  </p>
-                  <p>
-                    Nulla gravida libero eget lobortis iaculis. In sed elit eu nibh adipiscing faucibus. Sed ac accumsan lacus. In ut diam quis turpis fringilla volutpat. In ultrices dignissim consequat. Cras pretium tortor et lorem condimentum posuere. Nulla facilisi. Suspendisse pretium egestas lacus ac laoreet. Mauris rhoncus quis ipsum quis tristique. Vivamus ultricies urna quis nunc egestas, in euismod turpis fringilla. Nam tellus massa, vehicula eu sapien non, dapibus tempor lorem. Fusce placerat orci arcu, eu dignissim enim porttitor vel. Nullam porttitor vel dolor sed feugiat. Suspendisse potenti. Maecenas ac mattis odio. Sed vel ultricies lacus, sed posuere libero.
-                  </p>
-                  <p>
-                    Nulla gravida libero eget lobortis iaculis. In sed elit eu nibh adipiscing faucibus. Sed ac accumsan lacus. In ut diam quis turpis fringilla volutpat. In ultrices dignissim consequat. Cras pretium tortor et lorem condimentum posuere. Nulla facilisi. Suspendisse pretium egestas lacus ac laoreet. Mauris rhoncus quis ipsum quis tristique. Vivamus ultricies urna quis nunc egestas, in euismod turpis fringilla. Nam tellus massa, vehicula eu sapien non, dapibus tempor lorem. Fusce placerat orci arcu, eu dignissim enim porttitor vel. Nullam porttitor vel dolor sed feugiat. Suspendisse potenti. Maecenas ac mattis odio. Sed vel ultricies lacus, sed posuere libero.
-                  </p>
+
+
+
                 </f7-block>
               </f7-tab>
             </f7-tabs>
@@ -264,12 +321,24 @@ export default {
       username: '15521394967',
       password: '123456',
         dataPreLoaded: false,
+
+        // 属于采购板块的
         buyOrderDataFinished: false,
         buyOrderItems: [],
         approvingBuyOrders: [],
         approvedBuyOrders: [],
         buyOrderPageSize: 10,
         buyOrderPage: 0,
+
+        // 属于申领板块的
+        takeOrderDataFinished: false,
+        takeOrderItems: [],
+        approvingTakeOrders: [],
+        approvedTakeOrders: [],
+        takeOrderPageSize: 10,
+        takeOrderPage: 0,
+
+
       items: [
         {
           title: 'Forms',
@@ -368,6 +437,7 @@ export default {
               self.$f7.alert(Enum.SYSTEM_ERROR.msg, '错误信息');
           });
       },
+
       applyBuyOrder: function () {
           let f7 = this.$f7;
           let self = this;
@@ -407,7 +477,7 @@ export default {
 
       },
 
-      changeNumber: function (goodId) {
+      changeBuyOrderNumber: function (goodId) {
           var self = this;
           let f7 = this.$f7
           f7.prompt('', '请输入数量', function (value) {
@@ -448,6 +518,7 @@ export default {
               }
           }
       },
+
       getTempBuyOrderItems: function() {
           let tempBuyOrder = JSON.parse(sessionStorage.getItem('tempBuyOrder'));
           let items = [];
@@ -509,6 +580,190 @@ export default {
 
       },
 
+
+      onScrollTakeOrders: function () {
+          // 滚动加载的，是数组push的类型，并不是重新赋值
+          let self = this;
+          // 下面是获取审核中的单和已经通过的单
+          // 审批结果，-1表示已经审核了（包含通过和未通过），2表示还未审核
+          self.takeOrderPage += 1;
+          let formData  = new FormData();
+          formData .append('approvalResult', -1);
+          formData .append('page', self.takeOrderPage);
+          formData .append('size', self.takeOrderPageSize);
+          let user = JSON.parse(sessionStorage.getItem('user'));
+          formData .append('requestorId', user.id);
+
+          // self.showCustomPreloader();
+          requestApi.takeOrder.findByParam(self, formData).then(res => {
+              res = res.body;
+              // self.hideCustomPreloader();
+              if(res.code === Enum.SUCCESS.code){
+                  if(res.data.data.length != 0){
+                      self.takeOrderDataFinished = false;
+                      console.log(res.data);
+                      for(let i = 0; i < res.data.data.length; i++){
+                          self.approvedTakeOrders.push(res.data.data[i]);
+                      }
+                  }else if( res.data.total <= ((self.takeOrderPage + 1) * self.takeOrderPageSize)){
+                      // 数据已经记载完
+                      self.takeOrderDataFinished = true;
+                      //self.$f7.alert('已经没有更多数据', '提醒');
+                  }
+                  self.computeData();
+              }
+              else{
+                  self.$f7.alert(res.msg, '错误信息');
+              }
+          }, error => {
+              // self.hideCustomPreloader();
+              self.$f7.alert(Enum.SYSTEM_ERROR.msg, '错误信息');
+          });
+      },
+
+      applyTakeOrder: function () {
+          let f7 = this.$f7;
+          let self = this;
+          f7.prompt('', '请描述下该采购单', function (description) {
+              f7.showPreloader('添加采购单中...');
+              let tempTakeOrder = JSON.parse(sessionStorage.getItem('tempTakeOrder'));
+              let takeOrderItems = [];
+              for(let itemName in tempTakeOrder.takeOrderItems){
+                  let item = tempTakeOrder.takeOrderItems[itemName];
+                  takeOrderItems.push(item);
+              }
+              // 这个并不会存回sessionStorage，所以并不影响sessionStorage中的tempTakeOrder
+              tempTakeOrder.takeOrderItems = takeOrderItems;
+              // 接下来填充其他信息
+              let userInfo = JSON.parse(sessionStorage.getItem('user'));
+              tempTakeOrder.departmentId = userInfo.departmentId;
+              tempTakeOrder.description = description;
+
+              requestApi.takeOrder.add(self, tempTakeOrder).then(res => {
+                  res = res.body;
+                  f7.hidePreloader();
+                  if(res.code === Enum.SUCCESS.code){
+                      f7.alert('成功', '添加采购单成功');
+                      tempTakeOrder = null;
+                      sessionStorage.setItem('tempTakeOrder', JSON.stringify(tempTakeOrder));
+                      self.getTempTakeOrderItems();
+                      self.getTakeOrdersByApprovalResult(2);
+                      self.computeData();
+                  }else{
+                      f7.alert(res.msg, '警告');
+                  }
+              }, err => {
+                  f7.hidePreloader();
+                  f7.alert(Enum.SYSTEM_ERROR.msg,'警告');
+              });
+          });
+
+      },
+
+      changeTakeOrderNumber: function (goodId) {
+          var self = this;
+          let f7 = this.$f7
+          f7.prompt('', '请输入数量', function (value) {
+              if(value <= 0){
+                  f7.alert('警告！', ' ' + value + ' 小于等于0，不符合要求');
+              }else{
+                  // 从session中获取临时采购单
+                  let tempTakeOrder = JSON.parse(sessionStorage.getItem('tempTakeOrder'));
+                  if(!tempTakeOrder){
+                      f7.alert('出错，请刷新页面', '出错！');
+                  }
+                  if(tempTakeOrder.takeOrderItems){
+                      tempTakeOrder.takeOrderItems[goodId].number = value;
+                  }else{
+                      f7.alert('出错，请刷新页面', '出错！');
+                  }
+                  // console.log(tempTakeOrder);
+                  sessionStorage.setItem('tempTakeOrder', JSON.stringify(tempTakeOrder));
+                  f7.alert('成功！', '修改采购单成功');
+                  // 更新数据
+                  self.getTempTakeOrderItems();
+              }
+          })
+      },
+
+      onDeleteTakeOrderItem: function (goodId) {
+          // 删除采购单明细中的一个数据
+          let tempTakeOrder = JSON.parse(sessionStorage.getItem('tempTakeOrder'));
+          let self = this;
+          if(tempTakeOrder){
+              // 如果总采购单存在的话
+              if(tempTakeOrder.takeOrderItems){
+                  // 如果存在明细
+                  delete tempTakeOrder.takeOrderItems[goodId];
+                  // 删除后还得存回去,因为删除的动画只是表面，实际并没有真正删除
+                  sessionStorage.setItem('tempTakeOrder', JSON.stringify(tempTakeOrder));
+                  self.getTempTakeOrderItems();
+              }
+          }
+      },
+
+      getTempTakeOrderItems: function() {
+          let tempTakeOrder = JSON.parse(sessionStorage.getItem('tempTakeOrder'));
+          let items = [];
+          let self = this;
+          if(tempTakeOrder){
+              // 如果总采购单存在的话
+              if(tempTakeOrder.takeOrderItems){
+                  // 如果存在明细
+                  for(let itemName in tempTakeOrder.takeOrderItems){
+                      let item = tempTakeOrder.takeOrderItems[itemName];
+                      item.title = item.name + '(' + item.spec + ')' + '[' + item.number + item.unit + ']';
+                      item.isDelete = true;
+                      items.push(item);
+                  }
+              }
+          }
+          self.takeOrderItems = items;
+      },
+
+      getTakeOrdersByApprovalResult(approval) {
+          let self = this;
+          // 下面是获取审核中的单和已经通过的单
+          // 审批结果，-1表示已经审核了（包含通过和未通过），2表示还未审核
+          let formData  = new FormData();
+          if(approval === 2){
+              formData .append('page', 0);
+              formData .append('size', 999);
+          }else if( approval === -1 ){
+              formData .append('page', self.takeOrderPage);
+              formData .append('size', self.takeOrderPageSize);
+          }
+
+          formData .append('approvalResult', approval);
+
+          let user = JSON.parse(sessionStorage.getItem('user'));
+          formData .append('requestorId', user.id);
+
+          // self.showCustomPreloader();
+          requestApi.takeOrder.findByParam(self, formData).then(res => {
+              res = res.body;
+              // self.hideCustomPreloader();
+              if(res.code === Enum.SUCCESS.code){
+                  console.log(res.data);
+                  if(approval === 2){
+                      self.approvingTakeOrders = res.data.data;
+                  }else if(approval === -1){
+                      self.approvedTakeOrders = res.data.data;
+                  }
+                  self.takeOrderDataFinished = true;
+                  self.computeData();
+              }
+              else{
+                  self.$f7.alert(res.msg, '错误信息');
+              }
+          }, error => {
+              // self.hideCustomPreloader();
+              self.$f7.alert(Enum.SYSTEM_ERROR.msg, '错误信息');
+          });
+
+      },
+
+
       closeLogin: function () {
           this.showCustomPreloader();
           var loginParams = { name: this.username, password: this.password };
@@ -557,6 +812,16 @@ export default {
           }, 1000)
       },
 
+      refreshTakeData: function () {
+          let self = this;
+          // 刷心的话会重置page
+          self.takeOrderPage = 0;
+          self.getTakeData();
+          setTimeout(function () {
+              self.$f7.pullToRefreshDone()
+          }, 1000)
+      },
+
       getBuyData: function () {
           // 此方法获取得到的数据是直接赋值进去的而不是填充进去的
           this.getTempBuyOrderItems();
@@ -564,10 +829,18 @@ export default {
           this.getBuyOrdersByApprovalResult(-1);
       },
 
+      getTakeData: function () {
+          // 此方法获取得到的数据是直接赋值进去的而不是填充进去的
+          this.getTempTakeOrderItems();
+          this.getTakeOrdersByApprovalResult(2);
+          this.getTakeOrdersByApprovalResult(-1);
+      },
+
       getFirstData: function () {
           // 第一次加载时的data，根据当前状态是否有变化来判断的
           let self = this;
           this.getTempBuyOrderItems();
+          this.getTempTakeOrderItems();
           if(!self.dataPreLoaded){
               self.getAllData();
               self.dataPreLoaded = true;
@@ -577,37 +850,57 @@ export default {
       computeData: function () {
           // 该方法类似生命周期里面的最后一步，无论是哪种加载，最终都要进行判断数据是否为空
           let self = this;
+          let approvingDefault = [
+              {
+                  createTime: '无正在审批中的订单',
+                  buyOrderItems : []
+              }
+          ];
+          let approvedDefault = [
+              {
+                  createTime: '无审批过的订单',
+                  buyOrderItems : []
+              }
+          ];
           if(self.approvingBuyOrders.length === 0){
-              self.approvingBuyOrders = [
-                  {
-                      createTime: '无正在审批中的订单',
-                      buyOrderItems : []
-                  }
-              ];
+              self.approvingBuyOrders = approvingDefault;
           }
           if(self.approvedBuyOrders.length === 0){
-              self.approvedBuyOrders = [
-                  {
-                      createTime: '无审批过的订单',
-                      buyOrderItems : []
-                  }
-              ];
+              self.approvedBuyOrders = approvedDefault;
+          }
+          if(self.approvingTakeOrders.length === 0){
+              self.approvingTakeOrders = approvingDefault;
+          }
+          if(self.approvedTakeOrders.length === 0){
+              self.approvedTakeOrders = approvedDefault;
           }
 
           // 检查数据是否加载完了
           if(self.buyOrderDataFinished){
               // 如果已经结束，就需要去除加载符号，但是滑动触发不能去掉，因为别的地方还用到
               // self.$f7.detachInfiniteScroll(self.$$('.infinite-scroll'));
-              self.$$('.infinite-scroll-preloader').hide();
+              self.$$('.infinite-scroll-preloader').eq(0).hide();
           }else {
               // 添加下拉触发以及下拉图标
               // self.$f7.attachInfiniteScroll(self.$$('.infinite-scroll'));
-              self.$$('.infinite-scroll-preloader').show();
+              self.$$('.infinite-scroll-preloader').eq(0).show();
+          }
+
+          // 检查数据是否加载完了
+          if(self.takeOrderDataFinished){
+              // 如果已经结束，就需要去除加载符号，但是滑动触发不能去掉，因为别的地方还用到
+              // self.$f7.detachInfiniteScroll(self.$$('.infinite-scroll'));
+              self.$$('.infinite-scroll-preloader').eq(1).hide();
+          }else {
+              // 添加下拉触发以及下拉图标
+              // self.$f7.attachInfiniteScroll(self.$$('.infinite-scroll'));
+              self.$$('.infinite-scroll-preloader').eq(1).show();
           }
       },
 
       getAllData: function() {
           this.getBuyData();
+          this.getTakeData();
       }
   }
 }
