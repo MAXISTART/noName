@@ -80,7 +80,7 @@
         </f7-pages>
         <!-- IOS Theme Toolbar -->
         <f7-toolbar v-if="$theme.ios">
-          <f7-link open-popup @click="getAllData">明细一览</f7-link>
+          <f7-link open-popup @click="getFirstData">明细一览</f7-link>
           <f7-link open-popover>Menu</f7-link>
         </f7-toolbar>
       </f7-view>
@@ -165,11 +165,11 @@
                                                           :title="item.name + '(' + item.spec + ')' + '[' + item.number + item.unit + ']'"
                                                           :key="index">
                                             </f7-list-item>
-                                            <f7-list-item>
-                                                <f7-button big fill color="green" style="display: block;text-align: center;width: 100%">审批通过</f7-button>
+                                            <f7-list-item v-if="buyOrder.approvalResult === 1">
+                                                <f7-button big fill color="green" style="display: block;text-align: center;width: 100%" >审批通过</f7-button>
                                             </f7-list-item>
-                                            <f7-list-item>
-                                                <f7-button big fill color="red" style="display: block;text-align: center;width: 100%">审批未通过</f7-button>
+                                            <f7-list-item v-if="buyOrder.approvalResult === 0">
+                                                <f7-button big fill color="red" style="display: block;text-align: center;width: 100%" >审批未通过</f7-button>
                                             </f7-list-item>
                                         </f7-list>
 
@@ -263,32 +263,12 @@ export default {
     return {
       username: '15521394967',
       password: '123456',
-        buyLoading: false,
-        buyOrderItems: [
-          {
-              title: 'Swipe left on me please',
-              isDelete: true
-          }, {
-              title: 'Swipe left on me too',
-              isDelete: true
-          }, {
-              title: 'You can\'n delete me',
-              isDelete: true
-          }
-      ],
-        approvingBuyOrders: [
-            {
-                createTime: '无正在审批中的订单',
-                buyOrderItems : []
-            }
-        ],
-        approvedBuyOrders: [
-            {
-                createTime: '无已经审批的订单',
-                buyOrderItems : []
-            }
-        ],
-        buyOrderPageSize: 20,
+        dataPreLoaded: false,
+        buyOrderDataFinished: false,
+        buyOrderItems: [],
+        approvingBuyOrders: [],
+        approvedBuyOrders: [],
+        buyOrderPageSize: 10,
         buyOrderPage: 0,
       items: [
         {
@@ -350,19 +330,43 @@ export default {
   methods: {
 
       onScrollBuyOrders: function () {
-          if (this.buyLoading) {
-              return;
-          }
-
-          this.buyLoading = true;
-
+          // 滚动加载的，是数组push的类型，并不是重新赋值
           let self = this;
+          // 下面是获取审核中的单和已经通过的单
+          // 审批结果，-1表示已经审核了（包含通过和未通过），2表示还未审核
+          self.buyOrderPage += 1;
+          let formData  = new FormData();
+          formData .append('approvalResult', -1);
+          formData .append('page', self.buyOrderPage);
+          formData .append('size', self.buyOrderPageSize);
+          let user = JSON.parse(sessionStorage.getItem('user'));
+          formData .append('requestorId', user.id);
 
-          setTimeout(function () {
-              self.loading = false;
-              this.f7.alert('scroll!', '');
-          }, 1000)
-
+          // self.showCustomPreloader();
+          requestApi.buyOrder.findByParam(self, formData).then(res => {
+              res = res.body;
+              // self.hideCustomPreloader();
+              if(res.code === Enum.SUCCESS.code){
+                  if(res.data.data.length != 0){
+                      self.buyOrderDataFinished = false;
+                      console.log(res.data);
+                      for(let i = 0; i < res.data.data.length; i++){
+                          self.approvedBuyOrders.push(res.data.data[i]);
+                      }
+                  }else if( res.data.total <= ((self.buyOrderPage + 1) * self.buyOrderPageSize)){
+                      // 数据已经记载完
+                      self.buyOrderDataFinished = true;
+                      //self.$f7.alert('已经没有更多数据', '提醒');
+                  }
+                  self.computeData();
+              }
+              else{
+                  self.$f7.alert(res.msg, '错误信息');
+              }
+          }, error => {
+              // self.hideCustomPreloader();
+              self.$f7.alert(Enum.SYSTEM_ERROR.msg, '错误信息');
+          });
       },
       applyBuyOrder: function () {
           let f7 = this.$f7;
@@ -391,6 +395,7 @@ export default {
                       sessionStorage.setItem('tempBuyOrder', JSON.stringify(tempBuyOrder));
                       self.getTempBuyOrderItems();
                       self.getBuyOrdersByApprovalResult(2);
+                      self.computeData();
                   }else{
                       f7.alert(res.msg, '警告');
                   }
@@ -399,6 +404,7 @@ export default {
                   f7.alert(Enum.SYSTEM_ERROR.msg,'警告');
               });
           });
+
       },
 
       changeNumber: function (goodId) {
@@ -430,13 +436,15 @@ export default {
       onDeleteBuyOrderItem: function (goodId) {
           // 删除采购单明细中的一个数据
           let tempBuyOrder = JSON.parse(sessionStorage.getItem('tempBuyOrder'));
+          let self = this;
           if(tempBuyOrder){
               // 如果总采购单存在的话
               if(tempBuyOrder.buyOrderItems){
                   // 如果存在明细
                   delete tempBuyOrder.buyOrderItems[goodId];
-                  // 删除后还得存回去
+                  // 删除后还得存回去,因为删除的动画只是表面，实际并没有真正删除
                   sessionStorage.setItem('tempBuyOrder', JSON.stringify(tempBuyOrder));
+                  self.getTempBuyOrderItems();
               }
           }
       },
@@ -483,26 +491,13 @@ export default {
               // self.hideCustomPreloader();
               if(res.code === Enum.SUCCESS.code){
                   console.log(res.data);
-                  if(res.data.data.length != 0){
-                      if(approval === 2){
-                          self.approvingBuyOrders = res.data.data;
-                      }else if(approval === -1){
-                          self.approvedBuyOrders = res.data.data;
-                      }
-                  }else{
-                      self.approvingBuyOrders = [
-                          {
-                              createTime: '无正在审批中的订单',
-                              buyOrderItems : []
-                          }
-                      ];
-                      self.approvedBuyOrders = [
-                          {
-                              createTime: '无审批过的订单',
-                              buyOrderItems : []
-                          }
-                      ];
+                  if(approval === 2){
+                      self.approvingBuyOrders = res.data.data;
+                  }else if(approval === -1){
+                      self.approvedBuyOrders = res.data.data;
                   }
+                  self.buyOrderDataFinished = true;
+                  self.computeData();
               }
               else{
                   self.$f7.alert(res.msg, '错误信息');
@@ -511,6 +506,7 @@ export default {
               // self.hideCustomPreloader();
               self.$f7.alert(Enum.SYSTEM_ERROR.msg, '错误信息');
           });
+
       },
 
       closeLogin: function () {
@@ -519,8 +515,8 @@ export default {
           requestApi.user.login(this, loginParams).then(res => {
               this.logining = false;
               res = res.body;
-              if(res.code === Enum.USER_LOGIN_SUCCESS.code){
-                  // 登录成功，且用户为普通用户
+              if(res.code === Enum.USER_LOGIN_SUCCESS.code || res.code === Enum.ADMIN_LOGIN_SUCCESS.code){
+                  // 登录成功
                   sessionStorage.setItem('user', JSON.stringify(res.data));
                   this.hideCustomPreloader();
                   window.f7.closeModal('#login-screen')
@@ -553,6 +549,8 @@ export default {
 
       refreshBuyData: function () {
           let self = this;
+          // 刷心的话会重置page
+          self.buyOrderPage = 0;
           self.getBuyData();
           setTimeout(function () {
               self.$f7.pullToRefreshDone()
@@ -560,9 +558,52 @@ export default {
       },
 
       getBuyData: function () {
+          // 此方法获取得到的数据是直接赋值进去的而不是填充进去的
           this.getTempBuyOrderItems();
           this.getBuyOrdersByApprovalResult(2);
           this.getBuyOrdersByApprovalResult(-1);
+      },
+
+      getFirstData: function () {
+          // 第一次加载时的data，根据当前状态是否有变化来判断的
+          let self = this;
+          this.getTempBuyOrderItems();
+          if(!self.dataPreLoaded){
+              self.getAllData();
+              self.dataPreLoaded = true;
+          }
+      },
+
+      computeData: function () {
+          // 该方法类似生命周期里面的最后一步，无论是哪种加载，最终都要进行判断数据是否为空
+          let self = this;
+          if(self.approvingBuyOrders.length === 0){
+              self.approvingBuyOrders = [
+                  {
+                      createTime: '无正在审批中的订单',
+                      buyOrderItems : []
+                  }
+              ];
+          }
+          if(self.approvedBuyOrders.length === 0){
+              self.approvedBuyOrders = [
+                  {
+                      createTime: '无审批过的订单',
+                      buyOrderItems : []
+                  }
+              ];
+          }
+
+          // 检查数据是否加载完了
+          if(self.buyOrderDataFinished){
+              // 如果已经结束，就需要去除加载符号，但是滑动触发不能去掉，因为别的地方还用到
+              // self.$f7.detachInfiniteScroll(self.$$('.infinite-scroll'));
+              self.$$('.infinite-scroll-preloader').hide();
+          }else {
+              // 添加下拉触发以及下拉图标
+              // self.$f7.attachInfiniteScroll(self.$$('.infinite-scroll'));
+              self.$$('.infinite-scroll-preloader').show();
+          }
       },
 
       getAllData: function() {
