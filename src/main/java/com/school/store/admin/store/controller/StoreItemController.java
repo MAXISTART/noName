@@ -134,15 +134,15 @@ public class StoreItemController extends BaseAdminController {
     ) {
         SqlParams sqlParams = new SqlParams();
         if(!name.equals("allName") && !name.equals("")){
-            sqlParams.put("AND","name","LIKE");
-            sqlParams.putValue("%"+name+"%");
+            sqlParams.put(" AND name LIKE %?% ");
+            sqlParams.putValue(name);
         }
         if(!price_start.equals("allPrice") && !price_start.equals("")){
-            sqlParams.put("AND", "price", ">=");
+            sqlParams.put(" AND price >= ? ");
             sqlParams.putValue(price_start);
         }
         if(!price_end.equals("allPrice") && !price_end.equals("")){
-            sqlParams.put("AND", "price", "<=");
+            sqlParams.put(" AND price <= ? ");
             sqlParams.putValue(price_end);
         }
 

@@ -240,12 +240,9 @@ public class BaseRepository<T,ID extends Serializable> extends SimpleJpaReposito
 		Session session = entityManager.unwrap(Session.class);
 		SQLQuery query = session.createSQLQuery("SELECT * FROM " + table.name() + " " + sqlParams.getSql());
 		System.out.println("SELECT * FROM " + table.name() + " " + sqlParams.getSql());
-		List<SqlParams.SqlParam> Ps = sqlParams.params;
 		List<String> values = sqlParams.values;
-		if (Ps != null && !Ps.isEmpty() && values != null) {
-			for(int valueIndex=0; valueIndex < values.size(); valueIndex++){
-				query.setParameter(valueIndex, values.get(valueIndex));
-			}
+		for(int valueIndex=0; valueIndex < values.size(); valueIndex++){
+			query.setParameter(valueIndex, values.get(valueIndex));
 		}
 		// setResultTransformer 是设置结果集映射到什么地方
 		// 注意，数据库中的列名和 实体的属性名 必须一致， 实体类可以比表的列的数量少

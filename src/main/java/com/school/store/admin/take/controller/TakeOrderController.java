@@ -289,42 +289,43 @@ public class TakeOrderController extends BaseAdminController {
     ) {
         SqlParams sqlParams = new SqlParams();
         if (!departmentId.equals("allDepartment") && !StringUtils.isEmpty(departmentId)) {
-            sqlParams.put("AND", "departmentId", "=");
+            sqlParams.put(" AND departmentId = ? ");
             sqlParams.putValue(departmentId);
         }
         if (!requestorId.equals("allRequestor") && !StringUtils.isEmpty(requestorId)) {
-            sqlParams.put("AND", "requestorId", "=");
+            sqlParams.put(" AND requestorId = ? ");
             sqlParams.putValue(requestorId);
         }
         if (!requestTime_start.equals("requestTime_all") && !StringUtils.isEmpty(requestTime_start)) {
-            sqlParams.put("AND", "requestTime", ">=");
+            sqlParams.put(" AND requestTime >= ? ");
             sqlParams.putValue(requestTime_start);
         }
-        if (!requestTime_end.equals("requestTime_end") && !StringUtils.isEmpty(requestTime_end)) {
-            sqlParams.put("AND", "requestTime", "<=");
+        if (!requestTime_end.equals("requestTime_all") && !StringUtils.isEmpty(requestTime_end)) {
+            sqlParams.put(" AND requestTime <= ? ");
             sqlParams.putValue(requestTime_end);
         }
         if (!price_start.equals("allPrice") && !StringUtils.isEmpty(price_start)) {
-            sqlParams.put("AND", "requestTotalPrice", ">=");
+            sqlParams.put(" AND requestTotalPrice >= ? ");
             sqlParams.putValue(price_start);
         }
         if (!price_end.equals("allPrice") && !StringUtils.isEmpty(price_end)) {
-            sqlParams.put("AND", "requestTotalPrice", "<=");
+            sqlParams.put(" AND requestTotalPrice <= ? ");
             sqlParams.putValue(price_end);
         }
         if (!approvalResult.equals("allApprovalResult") && !StringUtils.isEmpty(approvalResult)) {
             if(approvalResult.trim().equals("-1")){
                 // 当等于-1时表示获取已经审核的（无论是不是审核通过）
-                sqlParams.put("OR", "approvalResult", "=");
+                sqlParams.put(" AND (approvalResult = ? OR approvalResult = ?) ");
                 sqlParams.putValue("1");
-                sqlParams.put("OR", "approvalResult", "=");
                 sqlParams.putValue("0");
             }else{
-                sqlParams.put("AND", "approvalResult", "=");
+                sqlParams.put(" AND approvalResult = ? ");
                 sqlParams.putValue(approvalResult);
             }
         }
-        sqlParams.put("ORDER BY", property, direction);
+
+
+        sqlParams.put(" ORDER BY " + property + " " + direction);
         // 返回的是真正的List<User>
         MPager<TakeOrder> takeOrders = takeOrderService.findByDynamicSqlParams(sqlParams, page, size, TakeOrder.class);
         // 给每个user设置他们对应的departmentName

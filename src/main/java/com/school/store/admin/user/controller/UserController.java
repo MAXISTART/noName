@@ -233,14 +233,14 @@ public class UserController extends BaseAdminController{
     ) {
         SqlParams sqlParams = new SqlParams();
         if(!departmentId.equals("allDepartment")){
-            sqlParams.put("AND","departmentId","=");
+            sqlParams.put(" AND departmentId = ? ");
             sqlParams.putValue(departmentId);
         }
         if(!name.equals("allName")){
-            sqlParams.put("AND","name","LIKE");
-            sqlParams.putValue("%"+name+"%");
+            sqlParams.put(" AND name LIKE %?% ");
+            sqlParams.putValue(name);
         }
-        sqlParams.put("ORDER BY", property, direction);
+        sqlParams.put(" ORDER BY " + property + " " + direction);
         // 返回的是真正的List<User>
         MPager<User> users = userService.findByDynamicSqlParams(sqlParams,page,size,User.class);
         // 给每个user设置他们对应的departmentName

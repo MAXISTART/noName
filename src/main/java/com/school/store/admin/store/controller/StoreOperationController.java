@@ -287,30 +287,30 @@ public class StoreOperationController extends BaseAdminController {
                                                      ) {
         SqlParams sqlParams = new SqlParams();
         if (!departmentId.equals("allDepartment") && !StringUtils.isEmpty(departmentId)) {
-            sqlParams.put("AND", "departmentId", "=");
+            sqlParams.put(" AND departmentId = ? ");
             sqlParams.putValue(departmentId);
         }
         if (!requestorId.equals("allRequestor") && !StringUtils.isEmpty(requestorId)) {
-            sqlParams.put("AND", "requestorId", "=");
+            sqlParams.put(" AND requestorId = ? ");
             sqlParams.putValue(requestorId);
         }
         if (!requestTime_start.equals("requestTime_all") && !StringUtils.isEmpty(requestTime_start)) {
-            sqlParams.put("AND", "requestTime", ">=");
+            sqlParams.put(" AND requestTime >= ? ");
             sqlParams.putValue(requestTime_start);
         }
         if (!requestTime_end.equals("requestTime_all") && !StringUtils.isEmpty(requestTime_end)) {
-            sqlParams.put("AND", "requestTime", "<=");
+            sqlParams.put(" AND requestTime <= ? ");
             sqlParams.putValue(requestTime_end);
         }
         if (!price_start.equals("allPrice") && !StringUtils.isEmpty(price_start)) {
-            sqlParams.put("AND", "requestTotalPrice", ">=");
+            sqlParams.put(" AND requestTotalPrice >= ? ");
             sqlParams.putValue(price_start);
         }
         if (!price_end.equals("allPrice") && !StringUtils.isEmpty(price_end)) {
-            sqlParams.put("AND", "requestTotalPrice", "<=");
+            sqlParams.put(" AND requestTotalPrice <= ? ");
             sqlParams.putValue(price_end);
         }
-        sqlParams.put("ORDER BY", property, direction);
+        sqlParams.put(" ORDER BY " + property + " " + direction);
         // 返回的是真正的List<User>
         MPager<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams(sqlParams, page, size, StoreOperation.class);
 
