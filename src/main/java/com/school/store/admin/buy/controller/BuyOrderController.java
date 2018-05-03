@@ -102,7 +102,6 @@ public class BuyOrderController extends BaseAdminController {
             totalPrice = totalPrice.add(temp);
         }
         buyOrder.setRequestTotalPrice(totalPrice);
-        log.warn("userId 是 " + HttpUtil.getSessionUserId());
         buyOrder.setRequestorId(HttpUtil.getSessionUserId());
         buyOrderService.save(buyOrder);
 

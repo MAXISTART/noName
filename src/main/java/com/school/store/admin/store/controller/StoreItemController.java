@@ -134,7 +134,8 @@ public class StoreItemController extends BaseAdminController {
     ) {
         SqlParams sqlParams = new SqlParams();
         if(!name.equals("allName") && !name.equals("")){
-            sqlParams.put(" AND name LIKE %?% ");
+            name = "%" + name + "%";
+            sqlParams.put(" AND name LIKE ? ");
             sqlParams.putValue(name);
         }
         if(!price_start.equals("allPrice") && !price_start.equals("")){

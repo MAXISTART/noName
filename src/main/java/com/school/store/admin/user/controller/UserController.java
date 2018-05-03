@@ -237,7 +237,8 @@ public class UserController extends BaseAdminController{
             sqlParams.putValue(departmentId);
         }
         if(!name.equals("allName")){
-            sqlParams.put(" AND name LIKE %?% ");
+            name = "%" + name + "%";
+            sqlParams.put(" AND name LIKE ? ");
             sqlParams.putValue(name);
         }
         sqlParams.put(" ORDER BY " + property + " " + direction);

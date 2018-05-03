@@ -70,17 +70,25 @@ public class StoreOperationController extends BaseAdminController {
 
     @Transactional(readOnly = false)
     @PostMapping("/addStoreOperation")
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo addStoreOperation(@RequestBody StoreOperation storeOperation) {
 
+        // 先判断是 申请请求的是管理员 还是 用户，如果是管理员就是默认 approvalResutl = 1，如果不是则看情况
+        boolean isUser = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.USER);
+        boolean isAdmin = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.ADMIN);
+        if(isAdmin){
+            // 如果有admin权限，那么 默认 approvalResutl = 1，但是不能先进行该操作，要有个审批的流程走，也就是要先addReduce。
+            storeOperation.setApprovalResult(1);
+            storeOperation.setOpinion("管理员自建入库单");
+        }else if(!isAdmin && isUser){
+            // 如果只有user权限，那么 默认 approvalResutl = 0，
+            storeOperation.setApprovalResult(0);
+        }else{
+            throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+        }
 
         if(storeOperation.getStoreOperationItems() == null || storeOperation.getStoreOperationItems().isEmpty()){
             throw new BaseException(ResultEnum.ITEMS_NOT_NULL);
-        }
-
-        // 先判断是 申请请求的是管理员 还是 用户，如果是管理员就是默认 approvalResutl = 1，如果不是则看情况
-        if(permissionAspect.hasPermission(cacheUtil.getUserPermissionByIdWithCache(HttpUtil.getSessionUserId()), Permit.ADMIN)){
-            storeOperation.setApprovalResult(1);
-            storeOperation.setOpinion("管理员自建入库单");
         }
 
         storeOperation.setId(null);
@@ -96,6 +104,20 @@ public class StoreOperationController extends BaseAdminController {
         storeOperationService.save(storeOperation);
 
         // 保存明细内容，但是要先设置ID
+        applyStoreOperation(storeOperation, false);
+        storeOperationItemService.save(storeOperation.getStoreOperationItems());
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
+
+    /**
+     *  根据提供的storeOperation 以及 其对应的storeOperationItems来操作storeItem，这样分离出来是为了兼顾更新以及创建StoreOperation的问题
+     * @param storeOperation
+     */
+    @Transactional(readOnly = false)
+    @Permiss(need = false)
+    // 这是系统级别的方法，不提供给任何用户，只是系统调用
+    public void applyStoreOperation(StoreOperation storeOperation, boolean needReduceLockNumber){
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
         if (storeOperationItems != null) {
             for (StoreOperationItem storeOperationItem : storeOperationItems) {
@@ -107,21 +129,21 @@ public class StoreOperationController extends BaseAdminController {
                     switch (storeOperation.getType()) {
                         case 1:
                             // 如果是带审批的入库类型
-
                             storeItemController.addNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
                             break;
                         case 2:
                             // 如果是带审批的出库类型
                             if (storeItemController.reduceNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber())) {
-                                // 解放锁住的lockNumber
-                                storeItemController.reduceLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
+                                if(needReduceLockNumber){
+                                    // 解放锁住的lockNumber
+                                    storeItemController.reduceLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
+                                }
                                 break;
                             } else {
                                 // 事务自动回滚
                                 throw new BaseException(ResultEnum.STORE_UNSATISFY);
                             }
                     }
-
                 }
 
                 if(storeOperation.getApprovalResult() == 0){
@@ -136,14 +158,9 @@ public class StoreOperationController extends BaseAdminController {
                             break;
                     }
                 }
-
             }
-            storeOperationItemService.save(storeOperationItems);
         }
-
-        return simpleResult(ResultEnum.SUCCESS, null);
     }
-
 
     /**
      * 批量生成操作纪录
@@ -217,7 +234,12 @@ public class StoreOperationController extends BaseAdminController {
     @PostMapping(value = "/approve")
     public ResultVo approve(@RequestBody List<StoreOperation> storeOperations) {
         storeOperations.forEach(storeOperation -> {
-            storeOperationService.dynamicUpdate(storeOperation);
+            // 这里的storeOperation以及他们的item已经是存在表中的了，所以此时只需要进行更新以及操作库存
+            StoreOperation item = storeOperationService.findById(storeOperation.getId());
+            entityRefineService.refine(item);
+            item.setApprovalResult(storeOperation.getApprovalResult());
+            applyStoreOperation(item, true);
+            storeOperationService.saveOrUpdate(item);
         });
         return simpleResult(ResultEnum.SUCCESS, null);
     }

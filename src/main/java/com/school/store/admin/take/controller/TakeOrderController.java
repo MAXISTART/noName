@@ -12,12 +12,14 @@ import com.school.store.admin.take.entity.TakeOrderItem;
 import com.school.store.admin.take.service.TakeOrderItemService;
 import com.school.store.admin.take.service.TakeOrderService;
 import com.school.store.annotation.Permiss;
+import com.school.store.aspect.PermissionAspect;
 import com.school.store.base.controller.BaseAdminController;
 import com.school.store.base.model.MPager;
 import com.school.store.base.model.SqlParams;
 import com.school.store.constant.Permit;
 import com.school.store.enums.ResultEnum;
 import com.school.store.exception.BaseException;
+import com.school.store.utils.HttpUtil;
 import com.school.store.utils.MyBeanUtil;
 import com.school.store.vo.ResultVo;
 import lombok.extern.log4j.Log4j;
@@ -39,6 +41,10 @@ import java.util.List;
 @RequestMapping("/admin/takeOrder")
 @Permiss(and = Permit.ADMIN)
 public class TakeOrderController extends BaseAdminController {
+
+
+    @Autowired
+    PermissionAspect permissionAspect;
 
     @Autowired
     private TakeOrderService takeOrderService;
@@ -65,6 +71,7 @@ public class TakeOrderController extends BaseAdminController {
      */
     @Transactional(readOnly = false)
     @PostMapping("/addTakeOrder")
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo addTakeOrder(@RequestBody TakeOrder takeOrder) {
 
         if(takeOrder.getTakeOrderItems() == null || takeOrder.getTakeOrderItems().isEmpty()){
@@ -76,6 +83,7 @@ public class TakeOrderController extends BaseAdminController {
         // 默认用户提交的是未审核的申领表
         takeOrder.setApprovalResult(2);
         takeOrder.setRequestTime(new Date());
+        takeOrder.setHasBeenOutput(0);
         // 计算总价
         List<TakeOrderItem> takeOrderItems = takeOrder.getTakeOrderItems();
         BigDecimal totalPrice = new BigDecimal("0");
@@ -85,10 +93,8 @@ public class TakeOrderController extends BaseAdminController {
             totalPrice = totalPrice.add(temp);
         }
         takeOrder.setRequestTotalPrice(totalPrice);
-
-        System.out.println(" takeOrder : " + takeOrder);
+        takeOrder.setRequestorId(HttpUtil.getSessionUserId());
         takeOrderService.save(takeOrder);
-        System.out.println(" takeOrder insert success");
 
         if(takeOrderItems != null && !takeOrderItems.isEmpty()){
             for (TakeOrderItem takeOrderItem : takeOrderItems){
@@ -275,6 +281,7 @@ public class TakeOrderController extends BaseAdminController {
      * @return
      */
     @PostMapping(value = "/findTakeOrdersBySearchParams")
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo findTakeOrdersBySearchParams(@RequestParam(required = true) Integer page,
                                                 @RequestParam(required = false, defaultValue = "20") Integer size,
                                                 @RequestParam(required = false, defaultValue = "DESC") String direction,
@@ -287,6 +294,17 @@ public class TakeOrderController extends BaseAdminController {
                                                 @RequestParam(required = false, defaultValue = "allPrice") String price_end,
                                                 @RequestParam(required = false, defaultValue = "allApprovalResult") String approvalResult
     ) {
+
+        // 先判断当前用户是user还是admin
+        boolean isUser = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.USER);
+        boolean isAdmin = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.ADMIN);
+        if(isUser && !isAdmin){
+            // 如果只有user权限而没有管理员权限，那么就必须判断requestorId
+            if(!requestorId.equals(HttpUtil.getSessionUserId())){
+                throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+            }
+        }
+
         SqlParams sqlParams = new SqlParams();
         if (!departmentId.equals("allDepartment") && !StringUtils.isEmpty(departmentId)) {
             sqlParams.put(" AND departmentId = ? ");
