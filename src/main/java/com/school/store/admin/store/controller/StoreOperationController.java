@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -81,8 +82,8 @@ public class StoreOperationController extends BaseAdminController {
             storeOperation.setApprovalResult(1);
             storeOperation.setOpinion("管理员自建入库单");
         }else if(!isAdmin && isUser){
-            // 如果只有user权限，那么 默认 approvalResutl = 0，
-            storeOperation.setApprovalResult(0);
+            // 如果只有user权限，那么 默认 approvalResutl = 2，表示等待审核
+            storeOperation.setApprovalResult(2);
         }else{
             throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
         }
@@ -92,6 +93,8 @@ public class StoreOperationController extends BaseAdminController {
         }
 
         storeOperation.setId(null);
+        storeOperation.setRequestorId(HttpUtil.getSessionUserId());
+        storeOperation.setRequestTime(new Date());
         // 计算一次总价
         if(storeOperation.getRequestTotalPrice() == null && storeOperation.getStoreOperationItems() != null){
             BigDecimal totalPrice = new BigDecimal("0");
@@ -296,6 +299,7 @@ public class StoreOperationController extends BaseAdminController {
      * @return
      */
     @PostMapping(value = "/findStoreOperationBySearchParams")
+    @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo findStoreOperationBySearchParams(@RequestParam(required = true) Integer page,
                                                      @RequestParam(required = false, defaultValue = "20") Integer size,
                                                      @RequestParam(required = false, defaultValue = "DESC") String direction,
@@ -307,6 +311,17 @@ public class StoreOperationController extends BaseAdminController {
                                                      @RequestParam(required = false, defaultValue = "allPrice") String price_start,
                                                      @RequestParam(required = false, defaultValue = "allPrice") String price_end
                                                      ) {
+
+        // 先判断当前用户是user还是admin
+        boolean isUser = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.USER);
+        boolean isAdmin = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.ADMIN);
+        if(isUser && !isAdmin){
+            // 如果只有user权限而没有管理员权限，那么就必须判断requestorId
+            if(!requestorId.equals(HttpUtil.getSessionUserId())){
+                throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
+            }
+        }
+
         SqlParams sqlParams = new SqlParams();
         if (!departmentId.equals("allDepartment") && !StringUtils.isEmpty(departmentId)) {
             sqlParams.put(" AND departmentId = ? ");
