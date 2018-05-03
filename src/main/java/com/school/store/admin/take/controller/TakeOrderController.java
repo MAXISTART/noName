@@ -106,7 +106,6 @@ public class TakeOrderController extends BaseAdminController {
                     takeOrderItem.setReturnNumber(0);
                 }else{
                     // 事务自动回滚
-                    System.out.println(" takeOrder insert fail");
                     throw new BaseException(ResultEnum.STORE_UNSATISFY);
                 }
             }
