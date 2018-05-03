@@ -1,5 +1,5 @@
 
-let base = 'http://47.106.145.248:4000/schoolStore/admin';
+let base = 'http://schoolstores.s1.natapp.cc/schoolStore/admin';
 // 模块变量
 let user = 'user';
 let buy = 'buyOrder';
