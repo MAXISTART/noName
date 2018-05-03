@@ -324,7 +324,8 @@ public class StoreOperationController extends BaseAdminController {
                                                      @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_start,
                                                      @RequestParam(required = false, defaultValue = "requestTime_all") String requestTime_end,
                                                      @RequestParam(required = false, defaultValue = "allPrice") String price_start,
-                                                     @RequestParam(required = false, defaultValue = "allPrice") String price_end
+                                                     @RequestParam(required = false, defaultValue = "allPrice") String price_end,
+                                                     @RequestParam(required = false, defaultValue = "allApprovalResult") String approvalResult
                                                      ) {
 
         // 先判断当前用户是user还是admin
@@ -362,6 +363,19 @@ public class StoreOperationController extends BaseAdminController {
             sqlParams.put(" AND requestTotalPrice <= ? ");
             sqlParams.putValue(price_end);
         }
+
+        if (!approvalResult.equals("allApprovalResult") && !StringUtils.isEmpty(approvalResult)) {
+            if(approvalResult.trim().equals("-1")){
+                // 当等于-1时表示获取已经审核的（无论是不是审核通过）
+                sqlParams.put(" AND (approvalResult = ? OR approvalResult = ?) ");
+                sqlParams.putValue("1");
+                sqlParams.putValue("0");
+            }else{
+                sqlParams.put(" AND approvalResult = ? ");
+                sqlParams.putValue(approvalResult);
+            }
+        }
+
         sqlParams.put(" ORDER BY " + property + " " + direction);
         // 返回的是真正的List<User>
         MPager<StoreOperation> storeOperations = storeOperationService.findByDynamicSqlParams(sqlParams, page, size, StoreOperation.class);
