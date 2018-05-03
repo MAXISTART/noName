@@ -10,66 +10,27 @@
       <f7-view id="left-panel-view">
         <f7-pages>
           <f7-page>
-            <f7-block-title>LEFT PANEL</f7-block-title>
-            <f7-block>
-              <p>
-                This is a side panel. You can close it by clicking outsite or on this link: <f7-link close-panel="left">close me</f7-link>. You can put here anything, even another isolated view like in <f7-link open-panel="right">Right Panel</f7-link>
-              </p>
-            </f7-block>
-            <f7-block-title>FRAMEWORK7 KITCHEN SINK</f7-block-title>
+            <f7-block-title>操作面板</f7-block-title>
             <f7-list>
-              <f7-list-item v-for="(item, index) in items"
-                  media="<i class='icon icon-f7'></i>"
+              <f7-list-item
                   link-close-panel
-                  link-view=".view-main"
-                  :link="item.link"
-                  :title="item.title"
-                  :key="index"
-              ></f7-list-item>
+                  link-view=".view-main">
+                  <f7-link open-popup="#login-screen">登录</f7-link>
+              </f7-list-item>
+
             </f7-list>
-            <f7-block>
-              <p>
-                Long text block goes here. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sem urna, gravida non scelerisque id, fringilla ac velit. Phasellus elementum a ipsum at ornare. Mauris sagittis rhoncus euismod. Integer convallis augue eu lacus ultrices, in dictum elit consequat. Nulla faucibus massa id felis egestas eleifend. Proin consequat dignissim magna ut scelerisque. Vestibulum ac lorem semper, posuere sapien nec, pharetra massa. Nulla a tellus facilisis, sollicitudin quam porta, aliquam lorem. Fusce dignissim eros ac diam molestie, ut ultrices lorem tristique. Ut facilisis augue ac nisi egestas malesuada. Nunc posuere tortor quis eleifend mollis. Aliquam erat volutpat. Donec feugiat elit tellus, nec convallis orci elementum in. Sed urna mi, vestibulum id tempus id, pretium et ante. Pellentesque eget sollicitudin ligula. Phasellus pellentesque velit eu porta suscipit.
-              </p>
-            </f7-block>
           </f7-page>
         </f7-pages>
       </f7-view>
     </f7-panel>
 
-    <!-- Right Panel -->
-    <f7-panel right reveal layout="dark">
-      <f7-view id="right-panel-view" navbar-through :dynamic-navbar="true">
-        <f7-navbar v-if="$theme.ios" title="Right Panel" sliding></f7-navbar>
-        <f7-pages>
-          <f7-page>
-            <f7-navbar v-if="$theme.material" title="Right Panel" sliding></f7-navbar>
-            <f7-block>
-              <p>
-                This is a right side panel. You can close it by clicking outsite or on this link: <f7-link close-panel>close me</f7-link>. You can put here anything, even another isolated view, try it:
-              </p>
-            </f7-block>
-            <f7-list>
-              <f7-list-item
-                title="Right panel page 2"
-                link="/sidePanels/panelRight2/"
-              ></f7-list-item>
-              <f7-list-item
-                title="Right panel page 3"
-                link="/sidePanels/panelRight3/"
-              ></f7-list-item>
-            </f7-list>
-          </f7-page>
-        </f7-pages>       
-      </f7-view>
-    </f7-panel>
 
     <!-- Main Views -->
     <f7-views>
       <f7-view id="main-view" navbar-through toolbar-through :dynamic-navbar="true" main>
         <!-- iOS Theme Navbar -->
         <f7-navbar v-if="$theme.ios">
-          <f7-nav-center sliding>Framework7</f7-nav-center>
+          <f7-nav-center sliding>仓库系统</f7-nav-center>
           <f7-nav-right>
             <f7-link icon="icon-bars" open-panel="left"></f7-link>
           </f7-nav-right>
@@ -80,8 +41,8 @@
         </f7-pages>
         <!-- IOS Theme Toolbar -->
         <f7-toolbar v-if="$theme.ios">
-          <f7-link open-popup @click="getFirstData">明细一览</f7-link>
-          <f7-link open-popover>Menu</f7-link>
+          <f7-link open-popup @click="getFirstData">我的表单</f7-link>
+          <!--<f7-link open-popover>Menu</f7-link>-->
         </f7-toolbar>
       </f7-view>
     </f7-views>
@@ -392,15 +353,6 @@
       </f7-view>
     </f7-login-screen>
 
-    <f7-popover style="width: 240px">
-      <f7-list>
-        <f7-list-button v-for="(btn, index) in popoverBtns" 
-          :href="btn.link"
-          :key="index"
-          close-popover
-        >{{btn.title}}</f7-list-button>
-      </f7-list>
-    </f7-popover>
   </div>
 </template>
 
@@ -440,61 +392,6 @@ export default {
         storeOperationPageSize: 10,
         storeOperationPage: 0,
 
-
-      items: [
-        {
-          title: 'Forms',
-          link: '/forms/'
-        }, {
-          title: 'List View',
-          link: '/listView/'
-        }, {
-          title: 'Media Lists',
-          link: '/mediaLists/'
-        }, {
-          title: 'Modals',
-          link: '/modals/'
-        }, {
-          title: 'Navbars And Toolbars',
-          link: '/navbarsAndToolbars/'
-        }, {
-          title: 'Popover',
-          link: '/popover/'
-        }, {
-          title: 'Side Panels',
-          link: '/sidePanels/'
-        }, {
-          title: 'Swipe To Delete',
-          link: '/swipeToDelete/',
-        }, {
-          title: 'Swiper Slider',
-          link: '/swiperSlider/',          
-        }, {
-          title: 'Tabs',
-          link: '/tabs/'
-        }
-      ],
-      popoverBtns: [
-        {
-          title: 'Modals',
-          link: '/modals/'
-        }, {
-          title: 'Popover',
-          link: '/popover/'
-        }, {
-          title: 'Tabs',
-          link: '/tabs/'
-        }, {
-          title: 'Side Panels',
-          link: '/sidePanels/'
-        }, {
-          title: 'List View',
-          link: '/listView/'
-        }, {
-          title: 'Forms',
-          link: '/forms/'
-        }
-      ]
     }
   },
   components: { MainPage },
@@ -726,8 +623,8 @@ export default {
       applyTakeOrder: function () {
           let f7 = this.$f7;
           let self = this;
-          f7.prompt('', '请描述下该采购单', function (description) {
-              f7.showPreloader('添加采购单中...');
+          f7.prompt('', '请描述下该申领单', function (description) {
+              f7.showPreloader('添加申领单中...');
               let tempTakeOrder = JSON.parse(sessionStorage.getItem('tempTakeOrder'));
               let takeOrderItems = [];
               for(let itemName in tempTakeOrder.takeOrderItems){
@@ -745,7 +642,7 @@ export default {
                   res = res.body;
                   f7.hidePreloader();
                   if(res.code === Enum.SUCCESS.code){
-                      f7.alert('成功', '添加采购单成功');
+                      f7.alert('成功', '添加申领单成功');
                       tempTakeOrder = null;
                       sessionStorage.setItem('tempTakeOrder', JSON.stringify(tempTakeOrder));
                       self.getTempTakeOrderItems();
@@ -781,7 +678,7 @@ export default {
                   }
                   // console.log(tempTakeOrder);
                   sessionStorage.setItem('tempTakeOrder', JSON.stringify(tempTakeOrder));
-                  f7.alert('成功！', '修改采购单成功');
+                  f7.alert('成功！', '修改申领单成功');
                   // 更新数据
                   self.getTempTakeOrderItems();
               }
@@ -938,7 +835,7 @@ export default {
                   res = res.body;
                   f7.hidePreloader();
                   if(res.code === Enum.SUCCESS.code){
-                      f7.alert('成功', '添加采购单成功');
+                      f7.alert('成功', '添加操作单成功');
                       tempStoreOperation = null;
                       if(val === 1){
                           // 这是input单
@@ -994,7 +891,7 @@ export default {
                       // 这是output单
                       sessionStorage.setItem('tempOutputStoreOperation', JSON.stringify(tempStoreOperation));
                   }
-                  f7.alert('成功！', '修改采购单成功');
+                  f7.alert('成功！', '修改操作单成功');
                   // 更新数据
                   self.getTempStoreOperationItems();
               }

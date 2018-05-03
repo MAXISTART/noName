@@ -22,97 +22,64 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="mainPage.vue" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/pages/mainPage.vue">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="510">
-              <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="app.vue" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/app.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="450">
-              <caret line="444" column="9" lean-forward="true" selection-start-line="444" selection-start-column="9" selection-end-line="444" selection-end-column="9" />
+            <state relative-caret-position="1442">
+              <caret line="622" column="34" selection-start-line="622" selection-start-column="34" selection-end-line="622" selection-end-column="34" />
               <folding>
+                <element signature="n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-                <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#f7-block#1;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+                <element signature="n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
+                <element signature="n#f7-login-screen#0;n#div#0;n#template#0;n#!!top" />
+                <element signature="e#31918#33543#0" />
+                <element signature="e#33580#35217#0" />
+                <element signature="e#35267#36248#0" />
+                <element signature="e#36298#36858#0" />
+                <element signature="e#36901#37600#0" />
+                <element signature="e#37649#39122#0" />
+                <element signature="e#39169#40839#0" />
+                <element signature="e#40884#43265#0" />
+                <element signature="e#43325#44957#0" />
+                <element signature="e#45017#46167#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="framework7.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/node_modules/framework7/dist/js/framework7.js">
+      <file leaf-file-name="mainPage.vue" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/pages/mainPage.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="279120">
-              <caret line="9304" column="45" selection-start-line="9304" selection-start-column="45" selection-end-line="9304" selection-end-column="45" />
+            <state relative-caret-position="630">
+              <caret line="21" column="33" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="framework7-vue.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/node_modules/framework7-vue/src/framework7-vue.js">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="600">
-              <caret line="102" column="28" selection-start-line="102" selection-start-column="28" selection-end-line="102" selection-end-column="28" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="loginScreen.vue" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/pages/loginScreen/loginScreen.vue">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="buttons.vue" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/pages/forms/buttons.vue">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1950">
-              <caret line="65" column="15" selection-start-line="65" selection-start-column="15" selection-end-line="65" selection-end-column="15" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pullToRefresh.vue" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/pages/pullToRefresh.vue">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1800">
-              <caret line="60" column="32" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="infiniteScroll.vue" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/pages/infiniteScroll.vue">
+      <file leaf-file-name="routes.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/routes.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="420">
-              <caret line="14" column="8" selection-start-line="14" selection-start-column="8" selection-end-line="14" selection-end-column="8" />
+              <caret line="14" column="18" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="18" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="storeItemDetail.vue" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue">
+      <file leaf-file-name="main.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6060">
-              <caret line="202" column="96" selection-start-line="202" selection-start-column="96" selection-end-line="202" selection-end-column="96" />
+            <state relative-caret-position="510">
+              <caret line="30" column="23" lean-forward="true" selection-start-line="30" selection-start-column="23" selection-end-line="30" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -121,12 +88,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>nest</find>
-      <find>总明细</find>
-      <find>approvedBuyOrders</find>
-      <find>明细一</find>
-      <find>reflesh</find>
-      <find>@</find>
       <find>scroll</find>
       <find>buyOrderPage</find>
       <find>approval</find>
@@ -151,6 +112,12 @@
       <find>console</find>
       <find>@click=&quot;a</find>
       <find>onScroll</find>
+      <find>明细一栏</find>
+      <find>明细一</find>
+      <find>login</find>
+      <find>About F</find>
+      <find>popoverBtns</find>
+      <find>tab3</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -160,15 +127,15 @@
     <option name="CHANGED_PATHS">
       <list>
         <option value="$PROJECT_DIR$/src/main.js" />
-        <option value="$PROJECT_DIR$/src/pages/mainPage.vue" />
         <option value="$PROJECT_DIR$/src/pages/searchBar.vue" />
         <option value="$PROJECT_DIR$/src/schoolStoresPage/home.vue" />
-        <option value="$PROJECT_DIR$/src/routes.js" />
         <option value="$PROJECT_DIR$/src/pages/modals.vue" />
         <option value="$PROJECT_DIR$/src/api/api.js" />
         <option value="$PROJECT_DIR$/src/schoolStoresPage/userInfo.vue" />
         <option value="$PROJECT_DIR$/src/schoolStoresPage/storeItems.vue" />
         <option value="$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue" />
+        <option value="$PROJECT_DIR$/src/routes.js" />
+        <option value="$PROJECT_DIR$/src/pages/mainPage.vue" />
         <option value="$PROJECT_DIR$/src/app.vue" />
       </list>
     </option>
@@ -220,7 +187,7 @@
               <item name="schoolStoreM" type="b2602c69:ProjectViewProjectNode" />
               <item name="schoolStoreM" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="schoolStoresPage" type="462c0819:PsiDirectoryNode" />
+              <item name="pages" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -237,6 +204,8 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="E:\nodeProject\schoolStoreM\src\pages" />
+      <recent name="E:\nodeProject\schoolStoreM\src\schoolStoresPage" />
       <recent name="D:\NodeProject\schoolStoresM\src\schoolStoresPage" />
       <recent name="D:\NodeProject\schoolStoresM\src" />
       <recent name="D:\NodeProject\schoolStoresM\src\schoolStoresPage\login" />
@@ -279,11 +248,13 @@
       <workItem from="1525312979763" duration="5436000" />
       <workItem from="1525337000058" duration="40000" />
       <workItem from="1525337644691" duration="631000" />
+      <workItem from="1525339698885" duration="874000" />
+      <workItem from="1525352470420" duration="4641000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="101850000" />
+    <option name="totallyTimeSpent" value="107365000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -293,20 +264,20 @@
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32978722" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Run" order="2" />
       <window_info id="npm" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info id="Favorites" order="2" side_tool="true" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="right" id="Commander" order="0" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
-      <window_info anchor="bottom" id="Find" order="1" />
     </layout>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -317,52 +288,10 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="17" />
+      <option name="time" value="21" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItems.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="9" column="35" lean-forward="true" selection-start-line="9" selection-start-column="35" selection-end-line="9" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/modals.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3060">
-          <caret line="102" column="10" lean-forward="true" selection-start-line="102" selection-start-column="10" selection-end-line="102" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2490">
-          <caret line="83" column="16" lean-forward="true" selection-start-line="83" selection-start-column="16" selection-end-line="83" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/home.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="3" selection-start-line="3" selection-end-line="5" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/mainPage.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="7260">
-          <caret line="242" column="28" lean-forward="true" selection-start-line="242" selection-start-column="28" selection-end-line="242" selection-end-column="28" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/userInfo.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="5" column="21" selection-start-line="5" selection-start-column="21" selection-end-line="5" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/searchBar.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
@@ -417,18 +346,30 @@
         <state relative-caret-position="7110">
           <caret line="237" column="55" lean-forward="true" selection-start-line="237" selection-start-column="55" selection-end-line="237" selection-end-column="55" />
           <folding>
+            <element signature="n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-            <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#f7-block#1;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#f7-login-screen#0;n#div#0;n#template#0;n#!!top" />
+            <element signature="e#31918#33543#0" />
+            <element signature="e#33580#35217#0" />
+            <element signature="e#35267#36248#0" />
+            <element signature="e#36298#36858#0" />
+            <element signature="e#36901#37600#0" />
+            <element signature="e#37649#39122#0" />
+            <element signature="e#39169#40839#0" />
+            <element signature="e#40884#43265#0" />
+            <element signature="e#43325#44957#0" />
+            <element signature="e#45017#46167#0" />
           </folding>
         </state>
       </provider>
@@ -506,13 +447,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItems2.vue" />
-    <entry file="file://$PROJECT_DIR$/src/routes.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="14" column="37" selection-start-line="14" selection-start-column="37" selection-end-line="14" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/searchBar.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="540">
@@ -583,24 +517,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1200">
-          <caret line="41" selection-start-line="41" selection-end-line="41" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/preloader.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2220">
           <caret line="74" column="32" lean-forward="true" selection-start-line="74" selection-start-column="32" selection-end-line="74" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/loginScreen/loginScreen.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
         </state>
       </provider>
     </entry>
@@ -615,13 +535,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="630">
           <caret line="59" column="8" selection-start-line="59" selection-start-column="8" selection-end-line="59" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/mainPage.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="510">
-          <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -660,30 +573,110 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/loginScreen/loginScreen.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="14" column="47" lean-forward="true" selection-start-line="14" selection-start-column="21" selection-end-line="14" selection-end-column="47" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dist/static/js/app.79356fefc911da6326c9.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret column="105812" selection-start-column="105812" selection-end-column="105812" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/icons.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="600">
+          <caret line="20" selection-start-line="20" selection-end-line="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/mediaList.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="356">
+          <caret line="85" column="30" lean-forward="true" selection-start-line="85" selection-start-column="30" selection-end-line="85" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/navbarsAndToolbars/tabbarWithLabel.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-540" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6060">
-          <caret line="202" column="96" selection-start-line="202" selection-start-column="96" selection-end-line="202" selection-end-column="96" />
+        <state relative-caret-position="320">
+          <caret line="185" column="21" selection-start-line="185" selection-start-column="21" selection-end-line="185" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/home.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret column="10" lean-forward="true" selection-start-column="10" selection-end-column="10" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/mainPage.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="4" column="20" lean-forward="true" selection-start-line="4" selection-start-column="20" selection-end-line="4" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/mainPage.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="630">
+          <caret line="21" column="33" selection-start-line="21" selection-start-column="33" selection-end-line="21" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/routes.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="420">
+          <caret line="14" column="18" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="30" column="23" lean-forward="true" selection-start-line="30" selection-start-column="23" selection-end-line="30" selection-end-column="23" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/app.vue">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="450">
-          <caret line="444" column="9" lean-forward="true" selection-start-line="444" selection-start-column="9" selection-end-line="444" selection-end-column="9" />
+        <state relative-caret-position="1442">
+          <caret line="622" column="34" selection-start-line="622" selection-start-column="34" selection-end-line="622" selection-end-column="34" />
           <folding>
+            <element signature="n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-            <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#f7-block#1;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#f7-login-screen#0;n#div#0;n#template#0;n#!!top" />
+            <element signature="e#31918#33543#0" />
+            <element signature="e#33580#35217#0" />
+            <element signature="e#35267#36248#0" />
+            <element signature="e#36298#36858#0" />
+            <element signature="e#36901#37600#0" />
+            <element signature="e#37649#39122#0" />
+            <element signature="e#39169#40839#0" />
+            <element signature="e#40884#43265#0" />
+            <element signature="e#43325#44957#0" />
+            <element signature="e#45017#46167#0" />
           </folding>
         </state>
       </provider>
