@@ -25,7 +25,7 @@
       <file leaf-file-name="mainPage.vue" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pages/mainPage.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
+            <state relative-caret-position="510">
               <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
             </state>
           </provider>
@@ -34,14 +34,12 @@
       <file leaf-file-name="app.vue" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/app.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="273">
-              <caret line="154" column="35" lean-forward="true" selection-start-line="154" selection-start-column="35" selection-end-line="154" selection-end-column="35" />
+            <state relative-caret-position="623">
+              <caret line="916" column="29" lean-forward="true" selection-start-line="916" selection-start-column="29" selection-end-line="916" selection-end-column="29" />
               <folding>
                 <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-                <element signature="n#f7-block#1;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
-                <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
@@ -51,27 +49,45 @@
                 <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
                 <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-                <element signature="e#14502#14545#0" expanded="true" />
-                <element signature="e#14927#15699#0" />
-                <element signature="e#15720#16148#0" />
-                <element signature="e#16239#17853#0" />
-                <element signature="e#17888#19504#0" />
-                <element signature="e#19545#20515#0" />
-                <element signature="e#20564#21114#0" />
-                <element signature="e#21155#21844#0" />
-                <element signature="e#21892#23359#0" />
-                <element signature="e#23649#25272#0" />
-                <element signature="e#25309#26946#0" />
-                <element signature="e#26996#27977#0" />
-                <element signature="e#28027#28587#0" />
-                <element signature="e#28630#29329#0" />
-                <element signature="e#23392#24413#0" />
-                <element signature="e#24453#24535#0" />
-                <element signature="e#24574#24646#0" />
-                <element signature="e#24683#24903#0" />
-                <element signature="e#33774#33994#0" />
-                <element signature="e#24936#25121#0" />
-                <element signature="e#34782#35839#0" />
+                <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#1;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#1;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+                <element signature="n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
+                <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+                <element signature="e#17823#19439#0" />
+                <element signature="e#19475#21091#0" />
+                <element signature="e#21140#22110#0" />
+                <element signature="e#22159#22709#0" />
+                <element signature="e#22751#23440#0" />
+                <element signature="e#23488#24957#0" />
+                <element signature="e#24999#26624#0" />
+                <element signature="e#26661#28298#0" />
+                <element signature="e#28348#29329#0" />
+                <element signature="e#29379#29939#0" />
+                <element signature="e#29982#30681#0" />
+                <element signature="e#30730#32203#0" />
+                <element signature="e#38709#40379#0" />
+                <element signature="e#42218#43254#0" />
+                <element signature="e#43309#43919#0" />
+                <element signature="e#46168#46188#0" />
+                <element signature="e#43967#44716#0" />
+                <element signature="e#44770#46275#0" />
+                <element signature="e#49103#49123#0" />
+                <element signature="e#32237#33258#0" />
+                <element signature="e#33298#33380#0" />
+                <element signature="e#33419#33491#0" />
+                <element signature="e#33528#33748#0" />
+                <element signature="e#33786#34008#0" />
+                <element signature="e#50926#51148#0" />
+                <element signature="e#34041#34226#0" />
+                <element signature="e#34260#34448#0" />
+                <element signature="e#51638#51826#0" />
+                <element signature="e#34483#34760#0" />
+                <element signature="e#34665#34752#0" />
+                <element signature="e#34794#36623#0" />
+                <element signature="e#36655#36723#0" />
               </folding>
             </state>
           </provider>
@@ -80,8 +96,8 @@
       <file leaf-file-name="framework7.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/node_modules/framework7/dist/js/framework7.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="360">
-              <caret line="9304" column="45" lean-forward="true" selection-start-line="9304" selection-start-column="45" selection-end-line="9304" selection-end-column="45" />
+            <state relative-caret-position="279120">
+              <caret line="9304" column="45" selection-start-line="9304" selection-start-column="45" selection-end-line="9304" selection-end-column="45" />
             </state>
           </provider>
         </entry>
@@ -89,7 +105,7 @@
       <file leaf-file-name="framework7-vue.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/node_modules/framework7-vue/src/framework7-vue.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-30">
+            <state relative-caret-position="600">
               <caret line="102" column="28" lean-forward="true" selection-start-line="102" selection-start-column="28" selection-end-line="102" selection-end-column="28" />
             </state>
           </provider>
@@ -116,7 +132,7 @@
       <file leaf-file-name="pullToRefresh.vue" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pages/pullToRefresh.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1800">
+            <state relative-caret-position="830">
               <caret line="60" column="32" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
             </state>
           </provider>
@@ -125,17 +141,21 @@
       <file leaf-file-name="infiniteScroll.vue" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pages/infiniteScroll.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1050">
-              <caret line="35" column="29" selection-start-line="35" selection-start-column="8" selection-end-line="35" selection-end-column="29" />
+            <state relative-caret-position="-460">
+              <caret line="14" column="8" lean-forward="true" selection-start-line="14" selection-start-column="8" selection-end-line="14" selection-end-column="8" />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="listView.vue" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/pages/listView.vue">
+      <file leaf-file-name="storeItemDetail.vue" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2400">
-              <caret line="80" column="34" selection-start-line="80" selection-start-column="30" selection-end-line="80" selection-end-column="34" />
+            <state relative-caret-position="750">
+              <caret line="202" column="96" lean-forward="true" selection-start-line="202" selection-start-column="96" selection-end-line="202" selection-end-column="96" />
+              <folding>
+                <element signature="e#2907#4402#0" />
+                <element signature="e#4449#5971#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -144,14 +164,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>click</find>
-      <find>明细</find>
-      <find>f7-link</find>
-      <find>明细一览</find>
-      <find>this.getBuy</find>
-      <find>getBuy</find>
-      <find>获取数据</find>
-      <find>title</find>
       <find>nest</find>
       <find>总明细</find>
       <find>approvedBuyOrders</find>
@@ -174,6 +186,14 @@
       <find>change</find>
       <find>lastM</find>
       <find>request</find>
+      <find>approvedTakeOrders</find>
+      <find>create</find>
+      <find>addTo</find>
+      <find>无正在</find>
+      <find>lastmodifiedTime</find>
+      <find>console</find>
+      <find>@click=&quot;a</find>
+      <find>onScroll</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -189,9 +209,9 @@
         <option value="$PROJECT_DIR$/src/routes.js" />
         <option value="$PROJECT_DIR$/src/pages/modals.vue" />
         <option value="$PROJECT_DIR$/src/api/api.js" />
-        <option value="$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue" />
         <option value="$PROJECT_DIR$/src/schoolStoresPage/userInfo.vue" />
         <option value="$PROJECT_DIR$/src/schoolStoresPage/storeItems.vue" />
+        <option value="$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue" />
         <option value="$PROJECT_DIR$/src/app.vue" />
       </list>
     </option>
@@ -226,7 +246,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -234,17 +253,29 @@
               <item name="schoolStoreM" type="b2602c69:ProjectViewProjectNode" />
               <item name="schoolStoreM" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="schoolStoreM" type="b2602c69:ProjectViewProjectNode" />
+              <item name="schoolStoreM" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="schoolStoreM" type="b2602c69:ProjectViewProjectNode" />
+              <item name="schoolStoreM" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="schoolStoresPage" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="SearchEverywhereHistoryKey" value="tab&#9;FILE&#9;file://D:/NodeProject/schoolStoresM/src/pages/navbarsAndToolbars/tab1.vue" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../schoolStoreFront" />
     <property name="nodejs_interpreter_path" value="node" />
   </component>
   <component name="RecentsManager">
@@ -287,12 +318,13 @@
       <workItem from="1525225403127" duration="12000" />
       <workItem from="1525225931622" duration="1349000" />
       <workItem from="1525236814056" duration="11085000" />
-      <workItem from="1525249697454" duration="5199000" />
+      <workItem from="1525249697454" duration="10106000" />
+      <workItem from="1525312979763" duration="4610000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="90836000" />
+    <option name="totallyTimeSpent" value="100353000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -303,8 +335,8 @@
       <window_info anchor="bottom" id="Docker" order="7" show_stripe_button="false" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info id="npm" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Run" order="2" />
+      <window_info id="npm" order="2" side_tool="true" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info id="Favorites" order="2" side_tool="true" />
@@ -326,7 +358,7 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="11" />
+      <option name="time" value="17" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -429,8 +461,6 @@
             <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-            <element signature="n#f7-block#1;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
-            <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
@@ -440,27 +470,45 @@
             <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-            <element signature="e#14502#14545#0" expanded="true" />
-            <element signature="e#14927#15699#0" />
-            <element signature="e#15720#16148#0" />
-            <element signature="e#16239#17853#0" />
-            <element signature="e#17888#19504#0" />
-            <element signature="e#19545#20515#0" />
-            <element signature="e#20564#21114#0" />
-            <element signature="e#21155#21844#0" />
-            <element signature="e#21892#23359#0" />
-            <element signature="e#23649#25272#0" />
-            <element signature="e#25309#26946#0" />
-            <element signature="e#26996#27977#0" />
-            <element signature="e#28027#28587#0" />
-            <element signature="e#28630#29329#0" />
-            <element signature="e#23392#24413#0" />
-            <element signature="e#24453#24535#0" />
-            <element signature="e#24574#24646#0" />
-            <element signature="e#24683#24903#0" />
-            <element signature="e#33774#33994#0" />
-            <element signature="e#24936#25121#0" />
-            <element signature="e#34782#35839#0" />
+            <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#1;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#1;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="e#17823#19439#0" />
+            <element signature="e#19475#21091#0" />
+            <element signature="e#21140#22110#0" />
+            <element signature="e#22159#22709#0" />
+            <element signature="e#22751#23440#0" />
+            <element signature="e#23488#24957#0" />
+            <element signature="e#24999#26624#0" />
+            <element signature="e#26661#28298#0" />
+            <element signature="e#28348#29329#0" />
+            <element signature="e#29379#29939#0" />
+            <element signature="e#29982#30681#0" />
+            <element signature="e#30730#32203#0" />
+            <element signature="e#38709#40379#0" />
+            <element signature="e#42218#43254#0" />
+            <element signature="e#43309#43919#0" />
+            <element signature="e#46168#46188#0" />
+            <element signature="e#43967#44716#0" />
+            <element signature="e#44770#46275#0" />
+            <element signature="e#49103#49123#0" />
+            <element signature="e#32237#33258#0" />
+            <element signature="e#33298#33380#0" />
+            <element signature="e#33419#33491#0" />
+            <element signature="e#33528#33748#0" />
+            <element signature="e#33786#34008#0" />
+            <element signature="e#50926#51148#0" />
+            <element signature="e#34041#34226#0" />
+            <element signature="e#34260#34448#0" />
+            <element signature="e#51638#51826#0" />
+            <element signature="e#34483#34760#0" />
+            <element signature="e#34665#34752#0" />
+            <element signature="e#34794#36623#0" />
+            <element signature="e#36655#36723#0" />
           </folding>
         </state>
       </provider>
@@ -594,13 +642,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="71" column="8" lean-forward="true" selection-start-line="71" selection-start-column="8" selection-end-line="71" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/swipeToDelete.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
@@ -636,13 +677,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/listView.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2400">
-          <caret line="80" column="34" selection-start-line="80" selection-start-column="30" selection-end-line="80" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/loginScreen/loginScreen.vue">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
@@ -657,20 +691,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/infiniteScroll.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1050">
-          <caret line="35" column="29" selection-start-line="35" selection-start-column="8" selection-end-line="35" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/pages/pullToRefresh.vue">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1800">
-          <caret line="60" column="32" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/api/api.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="630">
@@ -680,35 +700,65 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pages/mainPage.vue">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
+        <state relative-caret-position="510">
           <caret line="17" column="25" selection-start-line="17" selection-start-column="25" selection-end-line="17" selection-end-column="25" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/framework7-vue/src/framework7-vue.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-30">
+        <state relative-caret-position="600">
           <caret line="102" column="28" lean-forward="true" selection-start-line="102" selection-start-column="28" selection-end-line="102" selection-end-column="28" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/node_modules/framework7/dist/js/framework7.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="9304" column="45" lean-forward="true" selection-start-line="9304" selection-start-column="45" selection-end-line="9304" selection-end-column="45" />
+        <state relative-caret-position="279120">
+          <caret line="9304" column="45" selection-start-line="9304" selection-start-column="45" selection-end-line="9304" selection-end-column="45" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/listView.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="830">
+          <caret line="80" column="34" selection-start-line="80" selection-start-column="30" selection-end-line="80" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/pullToRefresh.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="830">
+          <caret line="60" column="32" selection-start-line="60" selection-start-column="32" selection-end-line="60" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pages/infiniteScroll.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-460">
+          <caret line="14" column="8" lean-forward="true" selection-start-line="14" selection-start-column="8" selection-end-line="14" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/schoolStoresPage/storeItemDetail.vue">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="750">
+          <caret line="202" column="96" lean-forward="true" selection-start-line="202" selection-start-column="96" selection-end-line="202" selection-end-column="96" />
+          <folding>
+            <element signature="e#2907#4402#0" />
+            <element signature="e#4449#5971#0" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/app.vue">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="154" column="35" lean-forward="true" selection-start-line="154" selection-start-column="35" selection-end-line="154" selection-end-column="35" />
+        <state relative-caret-position="623">
+          <caret line="916" column="29" lean-forward="true" selection-start-line="916" selection-start-column="29" selection-end-line="916" selection-end-column="29" />
           <folding>
             <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-            <element signature="n#f7-block#1;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
-            <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#0;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#f7-block#0;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
@@ -718,27 +768,45 @@
             <element signature="n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
             <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-page#0;n#f7-tab#1;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
-            <element signature="e#14502#14545#0" expanded="true" />
-            <element signature="e#14927#15699#0" />
-            <element signature="e#15720#16148#0" />
-            <element signature="e#16239#17853#0" />
-            <element signature="e#17888#19504#0" />
-            <element signature="e#19545#20515#0" />
-            <element signature="e#20564#21114#0" />
-            <element signature="e#21155#21844#0" />
-            <element signature="e#21892#23359#0" />
-            <element signature="e#23649#25272#0" />
-            <element signature="e#25309#26946#0" />
-            <element signature="e#26996#27977#0" />
-            <element signature="e#28027#28587#0" />
-            <element signature="e#28630#29329#0" />
-            <element signature="e#23392#24413#0" />
-            <element signature="e#24453#24535#0" />
-            <element signature="e#24574#24646#0" />
-            <element signature="e#24683#24903#0" />
-            <element signature="e#33774#33994#0" />
-            <element signature="e#24936#25121#0" />
-            <element signature="e#34782#35839#0" />
+            <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-link#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#1;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-link#1;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#1;n#f7-block#0;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" />
+            <element signature="n#style#0;n#f7-button#0;n#f7-list-item#1;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#f7-button#0;n#f7-list-item#2;n#f7-list#0;n#f7-accordion-content#0;n#f7-list-item#0;n#f7-list#0;n#f7-block#2;n#f7-block#0;n#f7-tab#2;n#f7-tabs#0;n#f7-page#0;n#f7-pages#0;n#f7-view#0;n#f7-popup#0;n#div#0;n#template#0;n#!!top" expanded="true" />
+            <element signature="e#17823#19439#0" />
+            <element signature="e#19475#21091#0" />
+            <element signature="e#21140#22110#0" />
+            <element signature="e#22159#22709#0" />
+            <element signature="e#22751#23440#0" />
+            <element signature="e#23488#24957#0" />
+            <element signature="e#24999#26624#0" />
+            <element signature="e#26661#28298#0" />
+            <element signature="e#28348#29329#0" />
+            <element signature="e#29379#29939#0" />
+            <element signature="e#29982#30681#0" />
+            <element signature="e#30730#32203#0" />
+            <element signature="e#38709#40379#0" />
+            <element signature="e#42218#43254#0" />
+            <element signature="e#43309#43919#0" />
+            <element signature="e#46168#46188#0" />
+            <element signature="e#43967#44716#0" />
+            <element signature="e#44770#46275#0" />
+            <element signature="e#49103#49123#0" />
+            <element signature="e#32237#33258#0" />
+            <element signature="e#33298#33380#0" />
+            <element signature="e#33419#33491#0" />
+            <element signature="e#33528#33748#0" />
+            <element signature="e#33786#34008#0" />
+            <element signature="e#50926#51148#0" />
+            <element signature="e#34041#34226#0" />
+            <element signature="e#34260#34448#0" />
+            <element signature="e#51638#51826#0" />
+            <element signature="e#34483#34760#0" />
+            <element signature="e#34665#34752#0" />
+            <element signature="e#34794#36623#0" />
+            <element signature="e#36655#36723#0" />
           </folding>
         </state>
       </provider>

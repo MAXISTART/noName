@@ -51,13 +51,19 @@
 
           <f7-grid class="modals-grid" >
             <f7-col width="100">
-              <f7-button big fill color="green">添加到申领单中</f7-button>
+              <f7-button big fill color="green" @click="addToTakeOrder(storeItem.goodItem)">添加到申领单中</f7-button>
             </f7-col>
           </f7-grid>
 
-          <f7-grid class="modals-grid">
+          <f7-grid class="modals-grid" >
             <f7-col width="100">
-              <f7-button big fill color="red">添加到库存操作单中</f7-button>
+              <f7-button big fill color="red" @click="addToStoreOperation(storeItem.goodItem, 1)">申请入库操作</f7-button>
+            </f7-col>
+          </f7-grid>
+
+          <f7-grid class="modals-grid" >
+            <f7-col width="100">
+              <f7-button big fill color="red" @click="addToStoreOperation(storeItem.goodItem, 2)">申请出库操作</f7-button>
             </f7-col>
           </f7-grid>
 
@@ -121,6 +127,94 @@
                 }
             })
         },
+
+        addToTakeOrder: function (goodItem) {
+            let f7 = this.$f7
+            f7.prompt('', '请输入数量', function (value) {
+                if(value <= 0){
+                    f7.alert('警告！', ' ' + value + ' 小于等于0，不符合要求');
+                }else{
+                    // 从session中获取临时采购单
+                    let tempTakeOrder = JSON.parse(sessionStorage.getItem('tempTakeOrder'));
+                    // takeOrderItems 实际上是一个map，storeItemId对应一个takeOrderItem
+
+                    if(!tempTakeOrder){
+                        tempTakeOrder = {};
+                    }
+                    let takeOrderItem = {};
+                    takeOrderItem.goodId = goodItem.id;
+                    takeOrderItem.name = goodItem.name;
+                    takeOrderItem.sort = goodItem.sort;
+                    takeOrderItem.spec = goodItem.spec;
+                    takeOrderItem.unit = goodItem.unit;
+                    takeOrderItem.price = goodItem.price;
+                    takeOrderItem.number = value;
+
+                    if(tempTakeOrder.takeOrderItems){
+                        tempTakeOrder.takeOrderItems[goodItem.id] = takeOrderItem;
+                    }else{
+                        tempTakeOrder.takeOrderItems = {};
+                        tempTakeOrder.takeOrderItems[goodItem.id] = takeOrderItem;
+                    }
+                    // console.log(tempTakeOrder);
+                    sessionStorage.setItem('tempTakeOrder', JSON.stringify(tempTakeOrder));
+                    f7.alert('成功！', '添加至临时申领单成功');
+                }
+            })
+        },
+
+        addToStoreOperation: function (goodItem, val) {
+            let f7 = this.$f7
+            f7.prompt('', '请输入数量', function (value) {
+                if(value <= 0){
+                    f7.alert('警告！', ' ' + value + ' 小于等于0，不符合要求');
+                }else{
+                    // 从session中获取临时采购单
+                    let tempStoreOperation ;
+
+                    if(val === 1){
+                        // 这是input单
+                        tempStoreOperation = JSON.parse(sessionStorage.getItem('tempInputStoreOperation'));
+                    }else if(val === 2){
+                        // 这是output单
+                        tempStoreOperation = JSON.parse(sessionStorage.getItem('tempOutputStoreOperation'));
+                    }
+                    // takeOrderItems 实际上是一个map，storeItemId对应一个takeOrderItem
+
+                    if(!tempStoreOperation){
+                        tempStoreOperation = {};
+                    }
+
+                    tempStoreOperation.type = val;
+
+                    let storeOperationItem = {};
+                    storeOperationItem.goodId = goodItem.id;
+                    storeOperationItem.name = goodItem.name;
+                    storeOperationItem.sort = goodItem.sort;
+                    storeOperationItem.spec = goodItem.spec;
+                    storeOperationItem.unit = goodItem.unit;
+                    storeOperationItem.price = goodItem.price;
+                    storeOperationItem.number = value;
+
+                    if(tempStoreOperation.storeOperationItems){
+                        tempStoreOperation.storeOperationItems[goodItem.id] = storeOperationItem;
+                    }else{
+                        tempStoreOperation.storeOperationItems = {};
+                        tempStoreOperation.storeOperationItems[goodItem.id] = storeOperationItem;
+                    }
+                    // console.log(tempStoreOperation);
+                    if(val === 1){
+                        // 这是input单
+                        sessionStorage.setItem('tempInputStoreOperation', JSON.stringify(tempStoreOperation));
+                    }else if(val === 2){
+                        // 这是output单
+                        sessionStorage.setItem('tempOutputStoreOperation', JSON.stringify(tempStoreOperation));
+                    }
+                    f7.alert('成功！', '添加至临时操作单成功');
+                }
+            })
+        },
+
         getStoreItem: function () {
             this.showCustomPreloader();
             // 获取前一个页面传过来的id
