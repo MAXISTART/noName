@@ -158,19 +158,16 @@ public class TakeOrderController extends BaseAdminController {
     @Transactional(readOnly = false)
     @PostMapping(value = "/quickOutput")
     public ResultVo quickOutput( @RequestBody List<String> takeOrderIds) {
-        List<StoreOperation> storeOperations = new ArrayList<>();
         for (String takeOrderId : takeOrderIds) {
             TakeOrder takeOrder = findTakeOrderById(takeOrderId);
             if(takeOrder.getHasBeenOutput() == null || takeOrder.getHasBeenOutput()!= 1){
                 // 已经入过一次库的不会再入库了，但是还没入库的会设置该标志
                 takeOrder.setHasBeenOutput(1);
                 takeOrderService.saveOrUpdate(takeOrder);
-                storeOperations.add(changeTakeOrder2StoreOperation(takeOrder));
+                storeOperationController.quickAddStoreOperation(changeTakeOrder2StoreOperation(takeOrder));
             }
         }
-        // 测试用的
-        //return storeOperationController.testAddStoreOperations(storeOperations);
-        return storeOperationController.addStoreOperations(storeOperations);
+        return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 

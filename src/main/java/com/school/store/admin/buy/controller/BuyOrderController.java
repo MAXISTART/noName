@@ -152,19 +152,16 @@ public class BuyOrderController extends BaseAdminController {
     @PostMapping(value = "/quickInput")
     public ResultVo quickInput(@RequestBody List<String> buyOrderIds) {
 
-        List<StoreOperation> storeOperations = new ArrayList<>();
         for (String buyOrderId : buyOrderIds) {
             BuyOrder buyOrder = findBuyOrderById(buyOrderId);
             if(buyOrder.getHasBeenInput() == null || buyOrder.getHasBeenInput()!= 1){
                 // 已经入过一次库的不会再入库了，但是还没入库的会设置该标志
                 buyOrder.setHasBeenInput(1);
                 buyOrderService.saveOrUpdate(buyOrder);
-                storeOperations.add(changeBuyOrder2StoreOperation(buyOrder));
+                storeOperationController.quickAddStoreOperation(changeBuyOrder2StoreOperation(buyOrder));
             }
         }
-        // 测试用的
-        //return storeOperationController.testAddStoreOperations(storeOperations);
-        return storeOperationController.addStoreOperations(storeOperations);
+        return simpleResult(ResultEnum.SUCCESS, null);
     }
 
 

@@ -68,30 +68,44 @@ public class StoreOperationController extends BaseAdminController {
     }
 
 
+    // 系统级别的应用，供快速出入库使用
+    @Permiss(need = false)
+    @Transactional(readOnly = false)
+    public ResultVo quickAddStoreOperation (StoreOperation storeOperation) {
+
+        storeOperation.setId(null);
+        // 快速出入库也只有管理员才能做到
+        storeOperation.setApprovalResult(1);
+        storeOperation.setOpinion("管理员自建入库单");
+        // 计算一次总价
+        if(storeOperation.getRequestTotalPrice() == null && storeOperation.getStoreOperationItems() != null){
+            BigDecimal totalPrice = new BigDecimal("0");
+            for (StoreOperationItem storeOperationItem : storeOperation.getStoreOperationItems()) {
+                BigDecimal temp = storeOperationItem.getPrice().multiply(storeOperationItem.getNumber());
+                totalPrice = totalPrice.add(temp);
+                // 因为在创建申领单的时候就已经addLockNumber一次，所以这里不需要再添加。（假设是申领单的话）
+            }
+            storeOperation.setRequestTotalPrice(totalPrice);
+        }
+        storeOperationService.save(storeOperation);
+        // 应用到库存中去
+        applyStoreOperation(storeOperation);
+        storeOperationItemService.save(storeOperation.getStoreOperationItems());
+        return simpleResult(ResultEnum.SUCCESS, null);
+    }
+
 
     @Transactional(readOnly = false)
     @PostMapping("/addStoreOperation")
     @Permiss(newOr = {Permit.USER, Permit.ADMIN})
     public ResultVo addStoreOperation(@RequestBody StoreOperation storeOperation) {
 
-        // 先判断是 申请请求的是管理员 还是 用户，如果是管理员就是默认 approvalResutl = 1，如果不是则看情况
-        boolean isUser = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.USER);
-        boolean isAdmin = permissionAspect.hasPermission(HttpUtil.getSessionPermissions(), Permit.ADMIN);
-        if(isAdmin){
-            // 如果有admin权限，那么 默认 approvalResutl = 1，但是不能先进行该操作，要有个审批的流程走，也就是要先addReduce。
-            storeOperation.setApprovalResult(1);
-            storeOperation.setOpinion("管理员自建入库单");
-        }else if(!isAdmin && isUser){
-            // 如果只有user权限，那么 默认 approvalResutl = 2，表示等待审核
-            storeOperation.setApprovalResult(2);
-        }else{
-            throw new BaseException(ResultEnum.PERMISSION_NOT_ALLOWED);
-        }
+        // 这个方法供所有用户使用，不分管理员和普通用户，仅仅是添加采购单，如果有出库操作的话会addLockNumber
+        storeOperation.setApprovalResult(2);
 
         if(storeOperation.getStoreOperationItems() == null || storeOperation.getStoreOperationItems().isEmpty()){
             throw new BaseException(ResultEnum.ITEMS_NOT_NULL);
         }
-
         storeOperation.setId(null);
         storeOperation.setRequestorId(HttpUtil.getSessionUserId());
         storeOperation.setRequestTime(new Date());
@@ -101,13 +115,16 @@ public class StoreOperationController extends BaseAdminController {
             for (StoreOperationItem storeOperationItem : storeOperation.getStoreOperationItems()) {
                 BigDecimal temp = storeOperationItem.getPrice().multiply(storeOperationItem.getNumber());
                 totalPrice = totalPrice.add(temp);
+                // 如果是出库类型的话，要先锁定
+                if(storeOperation.getType() == 2){
+                    storeItemController.addLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
+                }
             }
             storeOperation.setRequestTotalPrice(totalPrice);
         }
         storeOperationService.save(storeOperation);
-
-        // 保存明细内容，但是要先设置ID
-        applyStoreOperation(storeOperation, false);
+        // 下面这一步只是设置orderId
+        applyStoreOperation(storeOperation);
         storeOperationItemService.save(storeOperation.getStoreOperationItems());
         return simpleResult(ResultEnum.SUCCESS, null);
     }
@@ -120,7 +137,7 @@ public class StoreOperationController extends BaseAdminController {
     @Transactional(readOnly = false)
     @Permiss(need = false)
     // 这是系统级别的方法，不提供给任何用户，只是系统调用
-    public void applyStoreOperation(StoreOperation storeOperation, boolean needReduceLockNumber){
+    public void applyStoreOperation(StoreOperation storeOperation){
         List<StoreOperationItem> storeOperationItems = storeOperation.getStoreOperationItems();
         if (storeOperationItems != null) {
             for (StoreOperationItem storeOperationItem : storeOperationItems) {
@@ -137,10 +154,8 @@ public class StoreOperationController extends BaseAdminController {
                         case 2:
                             // 如果是带审批的出库类型
                             if (storeItemController.reduceNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber())) {
-                                if(needReduceLockNumber){
-                                    // 解放锁住的lockNumber
-                                    storeItemController.reduceLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
-                                }
+                                // 解放锁住的lockNumber
+                                storeItemController.reduceLockNumber(storeOperationItem.getGoodId(), storeOperationItem.getNumber());
                                 break;
                             } else {
                                 // 事务自动回滚
@@ -241,7 +256,7 @@ public class StoreOperationController extends BaseAdminController {
             StoreOperation item = storeOperationService.findById(storeOperation.getId());
             entityRefineService.refine(item);
             item.setApprovalResult(storeOperation.getApprovalResult());
-            applyStoreOperation(item, true);
+            applyStoreOperation(item);
             storeOperationService.saveOrUpdate(item);
         });
         return simpleResult(ResultEnum.SUCCESS, null);
