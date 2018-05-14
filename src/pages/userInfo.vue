@@ -1,6 +1,6 @@
 <template>
   <f7-page>
-    <f7-navbar title="个人信息" back-link="Forms" sliding>
+    <f7-navbar title="个人信息" back-link="返回" sliding>
       <f7-nav-right>
         <f7-link icon="icon-bars" open-panel="left"></f7-link>
       </f7-nav-right>

@@ -9,7 +9,7 @@
     <f7-block>
       <f7-button href="/about/">关于该系统</f7-button>
     </f7-block>
-    <f7-block-title>FRAMEWORK7 KITCHEN SINK</f7-block-title>
+    <f7-block-title>常用功能</f7-block-title>
     <f7-list>
       <f7-list-item
         link-ignore-cache

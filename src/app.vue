@@ -16,7 +16,15 @@
                   link-close-panel
                   link-view=".view-main">
                   <f7-link open-popup="#login-screen">登录</f7-link>
+
               </f7-list-item>
+
+                <f7-list-item
+                        link-close-panel
+                        link-view=".view-main">
+                    <f7-link href="/about/">关于系统的说明</f7-link>
+
+                </f7-list-item>
 
             </f7-list>
           </f7-page>
@@ -326,26 +334,26 @@
     </f7-popup>
 
     <!-- Login Screen -->
-    <f7-login-screen id="login-screen">
+    <f7-login-screen id="login-screen" :opened="true">
       <f7-view>
         <f7-pages>
            <f7-page login-screen>
-            <f7-login-screen-title>Framework7</f7-login-screen-title>
+            <f7-login-screen-title>请先登录系统</f7-login-screen-title>
             <f7-list form>
               <f7-list-item>
-                <f7-label>Username</f7-label>
+                <f7-label>用户手机/邮箱</f7-label>
                 <f7-input name="username" placeholder="Your username" type="text" v-model="username"></f7-input>
               </f7-list-item>
               <f7-list-item>
-                <f7-label>Password</f7-label>
+                <f7-label>密码</f7-label>
                 <f7-input name="password" type="password" placeholder="Your password" v-model="password"></f7-input>
               </f7-list-item>
             </f7-list>
             <f7-list>
-              <f7-list-button title="Sign In" @click="closeLogin"></f7-list-button>
+              <f7-list-button title="登录" @click="closeLogin"></f7-list-button>
               <f7-list-label>
-                <div>Some text about login information.</div>
-                <div>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</div>
+                <div>如果提示系统错误请联系管理员</div>
+                <div>If you get trouble in logging, please make contact to administrator</div>
               </f7-list-label>
             </f7-list>
           </f7-page> 
