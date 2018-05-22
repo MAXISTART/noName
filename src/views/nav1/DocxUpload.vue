@@ -18,6 +18,7 @@
 					:auto-upload="false">
 				<el-button slot="trigger" size="small" type="primary">选取文件</el-button>
 				<el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">解析文件</el-button>
+				<el-button style="margin-left: 10px;" size="small" type="success" @click="testExcel">临时测试文件</el-button>
 			</el-upload>
 
 		</div>
@@ -58,6 +59,20 @@
                     // 请求失败回调
                 });
 			},
+            testExcel() {
+                // 该方法是在测试阶段使用
+                requestApi.config.testExcel(this).then(res => {
+                    res = res.body;
+                    if(res.code === Enum.SUCCESS.code){
+                        alert("测试没问题");
+                    }else{
+                        alert(res.msg);
+                    }
+                }, err => {
+                    alert(Enum.SYSTEM_ERROR.msg);
+                });
+
+            },
             onError(err, file, fileList) {
                 // 上传失败
                 msgUtils.error(this, Enum.UPLOAD_ERR);

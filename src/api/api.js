@@ -32,7 +32,8 @@ export const requestApi = {
     },
     config: {
         getInitData: (ref) => {return ref.$http.get(getApi(config,'getInitData'))},
-        uploadExcels: () => {return getApi(config,'uploadExcels')}
+        uploadExcels: () => {return getApi(config,'uploadExcels')},
+        testExcel: (ref) => {return ref.$http.get(getApi(config,'testExcel'))}
     },
     good: {
         findByParam: (ref, params) => {return ref.$http.post(getApi(good,'findGoodItemsBySearchParams'), params)},
