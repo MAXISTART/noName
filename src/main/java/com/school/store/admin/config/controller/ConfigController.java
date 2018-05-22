@@ -79,12 +79,12 @@ public class ConfigController extends BaseAdminController{
     @GetMapping("/testExcel")
     @Transactional
     public ResultVo testExcel(){
-        excelUtils.init(null, "办公用品信息表_20180411230729.xlsx");
+        excelUtils.init(null, "办公用品信息表_20180515094339.xlsx");
         excelUtils.getGoodItems().forEach(goodItem -> {
             goodController.addGoodItem(goodItem);
         });
 
-        excelUtils.init(null, "办公用品入库表_20180411233323.xlsx");
+        excelUtils.init(null, "办公用品入库表_20180515094431.xlsx");
         List<BuyOrder> buyOrders = excelUtils.getBuyOrders();
         buyOrders.forEach(buyOrder -> {
             buyOrderController.addBuyOrder(buyOrder);
@@ -93,7 +93,7 @@ public class ConfigController extends BaseAdminController{
         buyOrderController.approve(buyOrders);
         buyOrderController.quickInput(buyOrders.stream().map(buyOrder -> buyOrder.getId()).collect(Collectors.toList()));
 
-        excelUtils.init(null, "办公用品申领表_20180412004119.xlsx");
+        excelUtils.init(null, "办公用品申领表_20180515094452.xlsx");
         List<TakeOrder> takeOrders = excelUtils.getTakeOrders();
         takeOrders.forEach(takeOrder -> {
             takeOrderController.addTakeOrder(takeOrder);

@@ -77,6 +77,8 @@ public class StoreOperationController extends BaseAdminController {
         // 快速出入库也只有管理员才能做到
         storeOperation.setApprovalResult(1);
         storeOperation.setOpinion("管理员自建入库单");
+        storeOperation.setResponsorId(HttpUtil.getSessionId());
+        storeOperation.setApprovalTime(new Date());
         // 计算一次总价
         if(storeOperation.getRequestTotalPrice() == null && storeOperation.getStoreOperationItems() != null){
             BigDecimal totalPrice = new BigDecimal("0");
