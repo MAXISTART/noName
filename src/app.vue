@@ -371,8 +371,8 @@ import { requestApi, Enum, TimeUtil } from './api/api';
 export default {
   data () {
     return {
-      username: '15521394967',
-      password: '123456',
+      username: '',
+      password: '',
         dataPreLoaded: false,
 
         // 属于采购板块的
@@ -1022,6 +1022,8 @@ export default {
           }else if(type === 2){
               // 出库
               return "出库类型"
+          }else {
+              return "无"
           }
       },
 

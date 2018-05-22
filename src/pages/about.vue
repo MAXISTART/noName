@@ -7,7 +7,11 @@
     </f7-navbar>
     <f7-block-title>功能总体概述</f7-block-title>
     <f7-block>
-      <p>1. 用户添加采购单和</p>
+      <p>1. 用户可以申请物品的采购以及申领，同时还能查看自己所做的申请订单</p>
+      <p>2. 在“我的明细”那里，有三页，其中要分清这三项，出入库操作是直接对库存进行操作的，而采购和申领是区别于他的。
+            而每一页中，往下拉是刷新数据，往下滑是获取更多数据。
+      </p>
+      <p>3. 下面以采购单为例，其余下单是类似的</p>
     </f7-block>
 
     <f7-block-title>采购单下单示例</f7-block-title>
@@ -20,95 +24,95 @@
         :key="index"
       ></f7-timeline-item>
     </f7-timeline>
-    <f7-block-title>SIDE BY SIDE</f7-block-title>
-    <f7-timeline sides>
-      <f7-timeline-item v-for="(item, index) in items2"
-        inner
-        :day="item.day"
-        :month="item.month"
-        :content="item.content"
-        :key="index"
-      ></f7-timeline-item>
-    </f7-timeline>
-    <f7-block-title>ONLY TABLET SIDE BY SIDE</f7-block-title>
-    <f7-timeline tablet-sides>
-      <f7-timeline-item v-for="(item, index) in items2"
-        inner
-        :day="item.day"
-        :month="item.month"
-        :content="item.content"
-        :key="index"
-      ></f7-timeline-item>
-    </f7-timeline>
-    <f7-block-title>FORCED SIDES</f7-block-title>
-    <f7-timeline sides>
-      <f7-timeline-item v-for="(item, index) in items3"
-        inner
-        :side="item.side"
-        :day="item.day"
-        :month="item.month"
-        :content="item.content"
-        :key="index"
-      ></f7-timeline-item>
-    </f7-timeline>
-    <f7-block-title>RICH CONTENT</f7-block-title>
-    <f7-timeline>
-      <f7-timeline-item day="21" month="DEC" inner>
-        <div class="timeline-item-time">12:56</div>
-        <div class="timeline-item-title">Item Title</div>
-        <div class="timeline-item-subtitle">Item Subtitle</div>
-        <div class="timeline-item-text">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
-        </div>
-        <div class="timeline-item-time">15:07</div>
-        <div class="timeline-item-title">Item Title</div>
-        <div class="timeline-item-subtitle">Item Subtitle</div>
-        <div class="timeline-item-text">
-          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
-        </div>
-      </f7-timeline-item>
-      <f7-timeline-item day="22" month="DEC">
-        <div class="timeline-item-inner">
-          <div class="timeline-item-time">12:56</div>
-          <div class="timeline-item-title">Item Title</div>
-          <div class="timeline-item-subtitle">Item Subtitle</div>
-          <div class="timeline-item-text">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
-          </div>
-        </div>
-        <div class="timeline-item-inner">
-          <div class="timeline-item-time">15:07</div>
-          <div class="timeline-item-title">Item Title</div>
-          <div class="timeline-item-subtitle">Item Subtitle</div>
-          <div class="timeline-item-text">
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
-          </div>
-        </div>
-      </f7-timeline-item>
-      <f7-timeline-item day="23" month="DEC" class="timeline-card">
-        <f7-card title="Card Header" content="Card Content" footer="Card Footer"></f7-card>  
-      </f7-timeline-item>
-      <f7-timeline-item day="24" month="DEC" class="timeline-list">
-        <f7-list inset>
-          <f7-list-item link="#">Item 1</f7-list-item>
-          <f7-list-item link="#">Item 1</f7-list-item>
-          <f7-list-item link="#">Item 1</f7-list-item>
-        </f7-list>
-      </f7-timeline-item>
-      <f7-timeline-item day="25" month="DEC" content="Plain text"></f7-timeline-item>
-    </f7-timeline>
-    <f7-block-title>INSIDE CONTENT BLOCK</f7-block-title>
-    <f7-block inner>
-      <f7-timeline>
-        <f7-timeline-item v-for="(item, index) in items1"
-          inner
-          :day="item.day"
-          :month="item.month"
-          :content="item.content"
-          :key="index"
-        ></f7-timeline-item>
-      </f7-timeline>
-    </f7-block>
+    <!--    <f7-block-title>SIDE BY SIDE</f7-block-title>
+        <f7-timeline sides>
+          <f7-timeline-item v-for="(item, index) in items2"
+            inner
+            :day="item.day"
+            :month="item.month"
+            :content="item.content"
+            :key="index"
+          ></f7-timeline-item>
+        </f7-timeline>
+        <f7-block-title>ONLY TABLET SIDE BY SIDE</f7-block-title>
+        <f7-timeline tablet-sides>
+          <f7-timeline-item v-for="(item, index) in items2"
+            inner
+            :day="item.day"
+            :month="item.month"
+            :content="item.content"
+            :key="index"
+          ></f7-timeline-item>
+        </f7-timeline>
+        <f7-block-title>FORCED SIDES</f7-block-title>
+        <f7-timeline sides>
+          <f7-timeline-item v-for="(item, index) in items3"
+            inner
+            :side="item.side"
+            :day="item.day"
+            :month="item.month"
+            :content="item.content"
+            :key="index"
+          ></f7-timeline-item>
+        </f7-timeline>
+        <f7-block-title>RICH CONTENT</f7-block-title>
+        <f7-timeline>
+          <f7-timeline-item day="21" month="DEC" inner>
+            <div class="timeline-item-time">12:56</div>
+            <div class="timeline-item-title">Item Title</div>
+            <div class="timeline-item-subtitle">Item Subtitle</div>
+            <div class="timeline-item-text">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
+            </div>
+            <div class="timeline-item-time">15:07</div>
+            <div class="timeline-item-title">Item Title</div>
+            <div class="timeline-item-subtitle">Item Subtitle</div>
+            <div class="timeline-item-text">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
+            </div>
+          </f7-timeline-item>
+          <f7-timeline-item day="22" month="DEC">
+            <div class="timeline-item-inner">
+              <div class="timeline-item-time">12:56</div>
+              <div class="timeline-item-title">Item Title</div>
+              <div class="timeline-item-subtitle">Item Subtitle</div>
+              <div class="timeline-item-text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
+              </div>
+            </div>
+            <div class="timeline-item-inner">
+              <div class="timeline-item-time">15:07</div>
+              <div class="timeline-item-title">Item Title</div>
+              <div class="timeline-item-subtitle">Item Subtitle</div>
+              <div class="timeline-item-text">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolor fugiat ipsam hic porro enim, accusamus perferendis, quas commodi alias quaerat eius nemo deleniti. Odio quasi quos quis iure, aperiam pariatur?
+              </div>
+            </div>
+          </f7-timeline-item>
+          <f7-timeline-item day="23" month="DEC" class="timeline-card">
+            <f7-card title="Card Header" content="Card Content" footer="Card Footer"></f7-card>
+          </f7-timeline-item>
+          <f7-timeline-item day="24" month="DEC" class="timeline-list">
+            <f7-list inset>
+              <f7-list-item link="#">Item 1</f7-list-item>
+              <f7-list-item link="#">Item 1</f7-list-item>
+              <f7-list-item link="#">Item 1</f7-list-item>
+            </f7-list>
+          </f7-timeline-item>
+          <f7-timeline-item day="25" month="DEC" content="Plain text"></f7-timeline-item>
+        </f7-timeline>
+        <f7-block-title>INSIDE CONTENT BLOCK</f7-block-title>
+        <f7-block inner>
+          <f7-timeline>
+            <f7-timeline-item v-for="(item, index) in items1"
+              inner
+              :day="item.day"
+              :month="item.month"
+              :content="item.content"
+              :key="index"
+            ></f7-timeline-item>
+          </f7-timeline>
+        </f7-block>-->
   </f7-page>
 </template>
 
